@@ -273,24 +273,17 @@ footer{text-align:center;color:#777;padding:25px;font-size:12px}
   <button class="primary" onclick="sendTipDemo()">Continue</button><p id="tipStatus" class="status"></p>
 </div></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
 <script>
 /* Add Supabase project URL and publishable/anon key here when ready.
    NEVER put a service-role key or LiveKit API secret in this HTML. */
-const SUPABASE_URL = "http://rhysucxztnjlskodkads.supabase.co";
+const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
 const SUPABASE_KEY = "sb_publishable_cFrF4JmuSfQv064BoFG7A_Y8KfSnv4";
 let sb = null, authMode = "signup", liveRoom = null, cameraStream = null;
 let objectURLs = [], followCount = 0, localBalance = 0;
 
-<script>
-/* Add Supabase project URL and publishable/anon key here when ready.
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
-
-<script>
-/* Add Supabase project URL and publishable/anon key here when ready.
-
-if (window.supabase && SUPABASE_URL.startsWith("https://"rhysucxztnjlkodkads.supabase.co) && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_KEY.includes("YOUR_")) {
+if (window.supabase && SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_KEY.includes("YOUR_")) {
   sb = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   refreshUser();
 }
@@ -459,4 +452,3 @@ window.addEventListener("beforeunload",()=>{if(liveRoom)liveRoom.disconnect();ob
 </script>
 </body>
 </html>
-
