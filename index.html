@@ -281,7 +281,7 @@ const SUPABASE_KEY = "sb_publishable_cFrF4JmuSfQv064BoFG7A_Y8KfSnv4";
 let sb = null, authMode = "signup", liveRoom = null, cameraStream = null;
 let objectURLs = [], followCount = 0, localBalance = 0;
 
-if (window.supabase && SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_KEY.includes("YOUR_")) {
+if (window.supabase && SUPABASE_URL.startsWith("https://"rhysucxztnjlkodkads.supabase.co) && !SUPABASE_URL.includes("YOUR_") && !SUPABASE_KEY.includes("YOUR_")) {
   sb = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
   refreshUser();
 }
