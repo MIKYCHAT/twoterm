@@ -355,7 +355,6 @@ document.getElementById("authForm").addEventListener("submit",async e=>{
     await refreshUser();
   }catch(err){out.textContent=err.message||"Account request failed."}
 });
-async function refreshUser(){
 async function refreshUser() {
   if (!sb) return;
 
