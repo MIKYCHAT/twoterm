@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08080c">
+<title>TWOTERM — Watch. Create. Connect.</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#08080c;color:#fff;font-family:Arial,sans-serif}
+header{height:60px;position:sticky;top:0;z-index:10;background:#111116;border-bottom:1px solid #292933;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+.logo{font-size:25px;font-weight:900;letter-spacing:-1px}
+.logo span{color:#fe2c55}
+button{cursor:pointer;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:bold}
+.pink{background:#fe2c55}
+.dark{background:#25252e}
+.layout{display:grid;grid-template-columns:190px minmax(0,1fr) 220px;max-width:1200px;margin:auto}
+nav,.right{padding:22px 14px}
+nav a{display:block;color:#ddd;text-decoration:none;padding:15px 10px;border-radius:9px;margin-bottom:5px}
+nav a:hover{background:#22222b}
+main{padding:20px 14px;max-width:560px;width:100%;margin:auto}
+.tabs{display:flex;justify-content:center;gap:30px;margin-bottom:17px;color:#aaa}
+.tabs strong{color:white;border-bottom:3px solid #fe2c55;padding-bottom:9px}
+.video{height:min(65vh,570px);min-height:360px;position:relative;overflow:hidden;border-radius:14px;background:linear-gradient(145deg,#242044,#762d64,#e15a71);display:flex;align-items:center;justify-content:center}
+.video.two{background:linear-gradient(145deg,#123b42,#187d78,#c5a55e)}
+.video.three{background:linear-gradient(145deg,#1b234b,#7357ac,#e49a9c)}
+.play{font-size:64px;text-shadow:0 2px 20px #0008}
+.video-note{position:absolute;bottom:18px;left:15px;right:65px;text-shadow:0 1px 5px #000}
+.video-note p{line-height:1.5}
+.actions{position:absolute;right:12px;bottom:22px;display:grid;gap:18px;text-align:center}
+.actions button{background:#171720cc;font-size:21px;padding:8px}
+.actions small{display:block;font-size:12px;margin-top:4px}
+.creator{font-weight:bold}
+.creator:before{content:"";display:inline-block;width:30px;height:30px;background:#fe2c55;border-radius:50%;vertical-align:middle;margin-right:8px}
+.right .panel{background:#15151c;padding:15px;border-radius:12px;margin-bottom:14px;color:#ccc;line-height:1.6}
+footer{text-align:center;color:#777;font-size:12px;padding:22px}
+@media(max-width:760px){
+ .layout{display:block;padding-bottom:65px}
+ nav,.right{display:none}
+ main{padding:12px 9px}
+ header{padding:0 12px}
+ .video{height:calc(100dvh - 150px);min-height:420px;max-height:720px}
+}
+@media(min-width:761px){main{padding-top:24px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">TWO<span>TERM</span></div>
+  <button class="dark" onclick="alert('Search is coming soon!')">⌕ Search</button>
+  <button class="pink" onclick="alert('Account registration is coming in Step 4!')">Log in</button>
+</header>
+
+<div class="layout">
+<nav>
+  <a href="#" onclick="window.scrollTo(0,0)">⌂ &nbsp; For You</a>
+  <a href="#following">♧ &nbsp; Following</a>
+  <a href="#discover">◉ &nbsp; Discover</a>
+  <a href="#create" onclick="alert('Video uploading will be added later!')">＋ &nbsp; Upload</a>
+  <a href="#profile" onclick="alert('Creator profiles are coming soon!')">♙ &nbsp; Profile</a>
+  <hr style="border-color:#292933">
+  <p style="color:#888;font-size:12px">YOUR WORLD. YOUR VIDEOS.</p>
+</nav>
+
+<main>
+  <div class="tabs"><strong>For You</strong><span id="following">Following</span></div>
+
+  <section class="video" id="video1">
+    <div class="play">▶</div>
+    <div class="video-note">
+      <div class="creator">@twoterm_creator</div>
+      <p>Your next favorite video starts here. Welcome to TWOTERM! ✨ #TWOTERM</p>
+    </div>
+    <div class="actions">
+      <div><button onclick="like(this)">♡</button><small> <span>0</span></small></div>
+      <div><button onclick="comment()">☏</button><small>Comment</small></div>
+      <div><button onclick="share()">↗</button><small>Share</small></div>
+    </div>
+  </section>
+
+  <section style="margin-top:18px">
+    <div class="video two" id="video2">
+      <div class="play">▶</div>
+      <div class="video-note">
+        <div class="creator">@discover_daily</div>
+        <p>Discover new ideas, new creators and new experiences. 🌍</p>
+      </div>
+      <div class="actions">
+        <div><button onclick="like(this)">♡</button><small><span>0</span></small></div>
+        <div><button onclick="comment()">☏</button><small>Comment</small></div>
+        <div><button onclick="share()">↗</button><small>Share</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:18px">
+    <div class="video three" id="video3">
+      <div class="play">▶</div>
+      <div class="video-note">
+        <div class="creator">@creative_world</div>
+        <p>Create. Connect. Share your world with TWOTERM. 🎬</p>
+      </div>
+      <div class="actions">
+        <div><button onclick="like(this)">♡</button><small><span>0</span></small></div>
+        <div><button onclick="comment()">☏</button><small>Comment</small></div>
+        <div><button onclick="share()">↗</button><small>Share</small></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<aside class="right">
+  <div class="panel"><strong>Welcome to TWOTERM</strong><br>Explore creators and discover a world of short videos.</div>
+  <div class="panel"><strong>For creators</strong><br>Share your talent with the world. Upload tools are coming soon.</div>
+  <div class="panel"><strong>Community first</strong><br>Respect others and share responsibly.</div>
+</aside>
+</div>
+
+<footer>TWOTERM © 2026 · Watch. Create. Connect.</footer>
+
+<script>
+function like(button){
+ const count=button.parentElement.querySelector("span");
+ const active=button.dataset.liked==="yes";
+ button.dataset.liked=active?"no":"yes";
+ button.textContent=active?"♡":"♥";
+ button.style.color=active?"white":"#fe2c55";
+ count.textContent=Number(count.textContent)+(active?-1:1);
+}
+function comment(){
+ const message=prompt("Write a comment (demo only):");
+ if(message && message.trim()) alert("Your demo comment: "+message);
+}
+async function share(){
+ try{
+  if(navigator.share) await navigator.share({title:"TWOTERM",text:"Discover TWOTERM!"});
+  else {await navigator.clipboard.writeText(location.href);alert("Page link copied!");}
+ }catch(e){}
+}
+</script>
+</body>
+</html>
