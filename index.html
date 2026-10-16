@@ -356,6 +356,106 @@ document.getElementById("authForm").addEventListener("submit",async e=>{
   }catch(err){out.textContent=err.message||"Account request failed."}
 });
 async function refreshUser(){
+async function refreshUser() {
+  if (!sb) return;
+
+  const { data, error } = await sb.auth.getSession();
+  if (error) {
+    console.error("Session error:", error.message);
+    return;
+  }
+
+  const user = data.session?.user;
+  const button = document.getElementById("authButton");
+
+  button.textContent = user ? "Log out" : "Log in";
+  button.onclick = user ? logout : openAuth;
+
+  if (!user) {
+    document.getElementById("profileName").textContent =
+      "Your creator profile";
+    document.getElementById("profileEmail").textContent =
+      "Sign in to set up your profile";
+    document.getElementById("bio").textContent =
+      "Video creator · Welcome to my profile.";
+    document.getElementById("avatar").textContent = "?";
+    return;
+  }
+
+  const meta = user.user_metadata || {};
+  const name = meta.display_name || user.email.split("@")[0];
+
+  document.getElementById("profileName").textContent = name;
+  document.getElementById("profileEmail").textContent =
+    (meta.username ? "@" + meta.username + " · " : "") + user.email;
+  document.getElementById("bio").textContent =
+    meta.bio || "Tell people about yourself.";
+  document.getElementById("avatar").textContent =
+    name.charAt(0).toUpperCase();
+
+  document.getElementById("authStatus").textContent = "Signed in.";
+}
+
+async function editProfile() {
+  if (!sb) {
+    alert("Supabase is not connected.");
+    return;
+  }
+
+  const { data, error } = await sb.auth.getUser();
+  if (error || !data.user) {
+    alert("Please log in before editing your profile.");
+    openAuth();
+    return;
+  }
+
+  const meta = data.user.user_metadata || {};
+
+  const name = prompt(
+    "Your display name:",
+    meta.display_name || data.user.email.split("@")[0]
+  );
+  if (name === null) return;
+
+  if (!name.trim()) {
+    alert("Display name cannot be empty.");
+    return;
+  }
+
+  const username = prompt(
+    "Choose a username (without @):",
+    meta.username || ""
+  );
+  if (username === null) return;
+
+  if (!/^[a-zA-Z0-9_]{3,24}$/.test(username.trim())) {
+    alert("Username must be 3–24 characters using letters, numbers, or underscores.");
+    return;
+  }
+
+  const bio = prompt(
+    "Write a short profile bio:",
+    meta.bio || ""
+  );
+  if (bio === null) return;
+
+  const result = await sb.auth.updateUser({
+    data: {
+      display_name: name.trim(),
+      username: username.trim().toLowerCase(),
+      bio: bio.trim()
+    }
+  });
+
+  if (result.error) {
+    alert("Could not save profile: " + result.error.message);
+    return;
+  }
+
+  await refreshUser();
+  alert("Your profile has been saved!");
+}
+
   if(!sb)return;
   const {data,error}=await sb.auth.getSession();if(error)return;
   const u=data.session?.user;
