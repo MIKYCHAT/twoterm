@@ -3,74 +3,74 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#08080c">
 <title>TWOTERM — Watch. Create. Connect.</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#08080c;color:#fff;font-family:Arial,sans-serif}
-header{height:60px;position:sticky;top:0;z-index:10;background:#111116;border-bottom:1px solid #292933;display:flex;align-items:center;justify-content:space-between;padding:0 18px}
+body{margin:0;background:#08080c;color:white;font-family:Arial,sans-serif}
+header{height:60px;position:sticky;top:0;z-index:10;background:#111116;border-bottom:1px solid #292933;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
 .logo{font-size:25px;font-weight:900;letter-spacing:-1px}
 .logo span{color:#fe2c55}
-button{cursor:pointer;color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:bold}
+button{cursor:pointer;color:white;border:0;border-radius:9px;padding:10px 13px;font-weight:bold}
 .pink{background:#fe2c55}
-.dark{background:#25252e}
-.layout{display:grid;grid-template-columns:190px minmax(0,1fr) 220px;max-width:1200px;margin:auto}
-nav,.right{padding:22px 14px}
-nav a{display:block;color:#ddd;text-decoration:none;padding:15px 10px;border-radius:9px;margin-bottom:5px}
+.dark{background:#292933}
+.layout{display:grid;grid-template-columns:180px minmax(0,560px) 210px;justify-content:center;gap:14px}
+nav,.right{padding:20px 10px}
+nav a{display:block;color:#ddd;text-decoration:none;padding:15px 10px;border-radius:9px}
 nav a:hover{background:#22222b}
-main{padding:20px 14px;max-width:560px;width:100%;margin:auto}
-.tabs{display:flex;justify-content:center;gap:30px;margin-bottom:17px;color:#aaa}
+main{padding:18px 8px;min-width:0}
+.tabs{display:flex;justify-content:center;gap:30px;margin-bottom:14px;color:#aaa}
 .tabs strong{color:white;border-bottom:3px solid #fe2c55;padding-bottom:9px}
-.video{height:min(65vh,570px);min-height:360px;position:relative;overflow:hidden;border-radius:14px;background:linear-gradient(145deg,#242044,#762d64,#e15a71);display:flex;align-items:center;justify-content:center}
-.video.two{background:linear-gradient(145deg,#123b42,#187d78,#c5a55e)}
-.video.three{background:linear-gradient(145deg,#1b234b,#7357ac,#e49a9c)}
-.play{font-size:64px;text-shadow:0 2px 20px #0008}
-.video-note{position:absolute;bottom:18px;left:15px;right:65px;text-shadow:0 1px 5px #000}
-.video-note p{line-height:1.5}
-.actions{position:absolute;right:12px;bottom:22px;display:grid;gap:18px;text-align:center}
-.actions button{background:#171720cc;font-size:21px;padding:8px}
-.actions small{display:block;font-size:12px;margin-top:4px}
-.creator{font-weight:bold}
-.creator:before{content:"";display:inline-block;width:30px;height:30px;background:#fe2c55;border-radius:50%;vertical-align:middle;margin-right:8px}
-.right .panel{background:#15151c;padding:15px;border-radius:12px;margin-bottom:14px;color:#ccc;line-height:1.6}
-footer{text-align:center;color:#777;font-size:12px;padding:22px}
+.feed-card{position:relative;height:min(72vh,650px);min-height:430px;margin-bottom:20px;background:#181820;border-radius:13px;overflow:hidden}
+video{width:100%;height:100%;object-fit:cover;display:block;background:#181820}
+.video-note{position:absolute;bottom:16px;left:14px;right:70px;z-index:2;text-shadow:0 1px 5px #000;pointer-events:none}
+.creator{font-weight:bold;margin-bottom:8px}
+.video-note p{line-height:1.45;margin:6px 0}
+.actions{position:absolute;right:9px;bottom:18px;display:grid;gap:16px;z-index:3;text-align:center}
+.actions button{background:#111b;color:white;font-size:21px;padding:9px}
+.actions small{display:block;font-size:11px;margin-top:3px}
+.mute{position:absolute;right:10px;top:10px;z-index:3;background:#111b}
+.playing-label{position:absolute;top:12px;left:12px;background:#111b;border-radius:6px;padding:6px 9px;font-size:12px;pointer-events:none}
+.panel{background:#15151c;border-radius:12px;padding:14px;margin-bottom:12px;color:#ccc;line-height:1.5}
+footer{text-align:center;color:#777;font-size:12px;padding:20px}
 @media(max-width:760px){
- .layout{display:block;padding-bottom:65px}
+ .layout{display:block;padding-bottom:10px}
  nav,.right{display:none}
- main{padding:12px 9px}
+ main{padding:12px 8px}
+ .feed-card{height:calc(100dvh - 140px);min-height:430px;max-height:800px}
  header{padding:0 12px}
- .video{height:calc(100dvh - 150px);min-height:420px;max-height:720px}
 }
-@media(min-width:761px){main{padding-top:24px}}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">TWO<span>TERM</span></div>
-  <button class="dark" onclick="alert('Search is coming soon!')">⌕ Search</button>
-  <button class="pink" onclick="alert('Account registration is coming in Step 4!')">Log in</button>
+  <button class="dark" onclick="alert('Search will be added later.')">⌕ Search</button>
+  <button class="pink" onclick="alert('Accounts will be added later.')">Log in</button>
 </header>
 
 <div class="layout">
 <nav>
-  <a href="#" onclick="window.scrollTo(0,0)">⌂ &nbsp; For You</a>
-  <a href="#following">♧ &nbsp; Following</a>
-  <a href="#discover">◉ &nbsp; Discover</a>
-  <a href="#create" onclick="alert('Video uploading will be added later!')">＋ &nbsp; Upload</a>
-  <a href="#profile" onclick="alert('Creator profiles are coming soon!')">♙ &nbsp; Profile</a>
-  <hr style="border-color:#292933">
-  <p style="color:#888;font-size:12px">YOUR WORLD. YOUR VIDEOS.</p>
+  <a href="#">⌂ &nbsp; For You</a>
+  <a href="#feed2">♧ &nbsp; Following</a>
+  <a href="#feed3">◉ &nbsp; Discover</a>
+  <a href="#" onclick="alert('Video uploads are coming later.')">＋ &nbsp; Upload</a>
+  <a href="#" onclick="alert('Creator profiles are coming later.')">♙ &nbsp; Profile</a>
 </nav>
 
 <main>
-  <div class="tabs"><strong>For You</strong><span id="following">Following</span></div>
+  <div class="tabs"><strong>For You</strong><span>Following</span></div>
 
-  <section class="video" id="video1">
-    <div class="play">▶</div>
+  <section class="feed-card">
+    <video id="video1" playsinline muted loop autoplay preload="metadata"
+      poster="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"
+      src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+    <span class="playing-label">TWOTERM VIDEO</span>
+    <button class="mute" onclick="toggleMute('video1',this)">🔇 Sound on</button>
     <div class="video-note">
       <div class="creator">@twoterm_creator</div>
-      <p>Your next favorite video starts here. Welcome to TWOTERM! ✨ #TWOTERM</p>
+      <p>Welcome to TWOTERM! Discover something new. 🌸 #TWOTERM</p>
     </div>
     <div class="actions">
       <div><button onclick="like(this)">♡</button><small> <span>0</span></small></div>
@@ -79,41 +79,41 @@ footer{text-align:center;color:#777;font-size:12px;padding:22px}
     </div>
   </section>
 
-  <section style="margin-top:18px">
-    <div class="video two" id="video2">
-      <div class="play">▶</div>
-      <div class="video-note">
-        <div class="creator">@discover_daily</div>
-        <p>Discover new ideas, new creators and new experiences. 🌍</p>
-      </div>
-      <div class="actions">
-        <div><button onclick="like(this)">♡</button><small><span>0</span></small></div>
-        <div><button onclick="comment()">☏</button><small>Comment</small></div>
-        <div><button onclick="share()">↗</button><small>Share</small></div>
-      </div>
+  <section class="feed-card" id="feed2">
+    <video id="video2" playsinline muted loop preload="metadata"
+      src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+    <button class="mute" onclick="toggleMute('video2',this)">🔇 Sound on</button>
+    <div class="video-note">
+      <div class="creator">@discover_daily</div>
+      <p>Discover new things and enjoy the moment. 🌍</p>
+    </div>
+    <div class="actions">
+      <div><button onclick="like(this)">♡</button><small><span>0</span></small></div>
+      <div><button onclick="comment()">☏</button><small>Comment</small></div>
+      <div><button onclick="share()">↗</button><small>Share</small></div>
     </div>
   </section>
 
-  <section style="margin-top:18px">
-    <div class="video three" id="video3">
-      <div class="play">▶</div>
-      <div class="video-note">
-        <div class="creator">@creative_world</div>
-        <p>Create. Connect. Share your world with TWOTERM. 🎬</p>
-      </div>
-      <div class="actions">
-        <div><button onclick="like(this)">♡</button><small><span>0</span></small></div>
-        <div><button onclick="comment()">☏</button><small>Comment</small></div>
-        <div><button onclick="share()">↗</button><small>Share</small></div>
-      </div>
+  <section class="feed-card" id="feed3">
+    <video id="video3" playsinline muted loop preload="metadata"
+      src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4"></video>
+    <button class="mute" onclick="toggleMute('video3',this)">🔇 Sound on</button>
+    <div class="video-note">
+      <div class="creator">@creative_world</div>
+      <p>Create. Connect. Share your world. 🎬</p>
+    </div>
+    <div class="actions">
+      <div><button onclick="like(this)">♡</button><small><span>0</span></small></div>
+      <div><button onclick="comment()">☏</button><small>Comment</small></div>
+      <div><button onclick="share()">↗</button><small>Share</small></div>
     </div>
   </section>
 </main>
 
 <aside class="right">
-  <div class="panel"><strong>Welcome to TWOTERM</strong><br>Explore creators and discover a world of short videos.</div>
-  <div class="panel"><strong>For creators</strong><br>Share your talent with the world. Upload tools are coming soon.</div>
-  <div class="panel"><strong>Community first</strong><br>Respect others and share responsibly.</div>
+  <div class="panel"><strong>Welcome to TWOTERM</strong><br>Watch videos and discover creators.</div>
+  <div class="panel"><strong>For creators</strong><br>Video uploading is our next development step.</div>
+  <div class="panel"><strong>Community</strong><br>Share responsibly and respect other users.</div>
 </aside>
 </div>
 
@@ -121,23 +121,50 @@ footer{text-align:center;color:#777;font-size:12px;padding:22px}
 
 <script>
 function like(button){
- const count=button.parentElement.querySelector("span");
- const active=button.dataset.liked==="yes";
- button.dataset.liked=active?"no":"yes";
- button.textContent=active?"♡":"♥";
- button.style.color=active?"white":"#fe2c55";
- count.textContent=Number(count.textContent)+(active?-1:1);
+  const count=button.parentElement.querySelector("span");
+  const active=button.dataset.liked==="yes";
+  button.dataset.liked=active?"no":"yes";
+  button.textContent=active?"♡":"♥";
+  button.style.color=active?"white":"#fe2c55";
+  count.textContent=Number(count.textContent)+(active?-1:1);
+}
+function toggleMute(id,button){
+  const video=document.getElementById(id);
+  video.muted=!video.muted;
+  button.textContent=video.muted?"🔇 Sound on":"🔊 Mute";
+  if(!video.paused) return;
+  video.play().catch(()=>{});
 }
 function comment(){
- const message=prompt("Write a comment (demo only):");
- if(message && message.trim()) alert("Your demo comment: "+message);
+  const message=prompt("Write a comment (demo only):");
+  if(message&&message.trim())alert("Demo comment: "+message);
 }
 async function share(){
- try{
-  if(navigator.share) await navigator.share({title:"TWOTERM",text:"Discover TWOTERM!"});
-  else {await navigator.clipboard.writeText(location.href);alert("Page link copied!");}
- }catch(e){}
+  try{
+    if(navigator.share){
+      await navigator.share({title:"TWOTERM",text:"Watch videos on TWOTERM",url:location.href});
+    }else{
+      await navigator.clipboard.writeText(location.href);
+      alert("Website link copied!");
+    }
+  }catch(e){}
+}
+const videos=[...document.querySelectorAll("video")];
+if("IntersectionObserver" in window){
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      const video=entry.target;
+      if(entry.isIntersecting){
+        videos.forEach(other=>{if(other!==video)other.pause()});
+        video.play().catch(()=>{});
+      }else{
+        video.pause();
+      }
+    });
+  },{threshold:0.65});
+  videos.forEach(video=>observer.observe(video));
 }
 </script>
 </body>
 </html>
+
