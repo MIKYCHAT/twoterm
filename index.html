@@ -89,7 +89,15 @@ function openModal(id){$(id).classList.remove("hidden")}
 function requireLogin(){if(currentUser)return true;openAuth();setStatus("authStatus","Please log in to use this feature.");return false}
 function go(page,button){document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));const target=$(page+"Page");if(target)target.classList.remove("hidden");document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));if(button)button.classList.add("active");window.scrollTo({top:0,behavior:"smooth"});if(page==="home")loadFeed();if(page==="following")loadFollowingFeed();if(page==="saved")loadSaved();if(page==="profile")refreshProfile();if(page==="discover")loadDiscover()}
 function openAuth(){openModal("authModal")}
-function openUpload(){if(requireLogin())openModal("uploadModal")}
+function openUpload(){if(requireLogin())openModal("uploadModal")}function openUpload(){
+  openModal("uploadModal");
+  setStatus(
+    "recordStatus",
+    currentUser
+      ? "Ready to create your video."
+      : "You can create a video now. Log in when you are ready to publish."
+  );
+}
 function openLive(){openModal("liveModal")}
 function setFeedMode(mode,button){document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));button.classList.add("active");feedMode=mode;if(mode==="following")go("following");else{go("home");loadFeed()}}
 function toggleAuth(){authMode=authMode==="signup"?"login":"signup";$("authTitle").textContent=authMode==="signup"?"Create your account":"Log in";$("authSubmit").textContent=authMode==="signup"?"Create account":"Log in";$("nameLabel").classList.toggle("hidden",authMode==="login");$("displayName").classList.toggle("hidden",authMode==="login");$("ageFields").classList.toggle("hidden",authMode==="login");$("dob").required=authMode==="signup"}
