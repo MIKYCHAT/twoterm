@@ -168,7 +168,19 @@ header{height:66px;position:sticky;top:0;z-index:20;display:flex;align-items:cen
 <div id="liveModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h2>🔴 LIVE studio</h2><button class="close" onclick="closeModal('liveModal')">×</button></div><p class="small">Live access requires a secure LiveKit token function and verified creator status.</p><label>Live title</label><input class="field" id="liveTitle" maxlength="120" placeholder="Give your live a title"><button class="livebtn" id="liveStartButton" onclick="startLive()" style="width:100%">Check eligibility</button><p id="liveStatus" class="status">Live access has not been checked.</p></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+<script>async function getLiveKitToken(roomName) {
+  const { data, error } = await supabase.functions.invoke(
+    "livekit-token",
+    { body: { roomName } }
+  );
+
+  if (error) throw error;
+  if (!data?.token || !data?.serverUrl) {
+    throw new Error("LiveKit token response is incomplete");
+  }
+
+  return data;
+}
 /* Replace the placeholder with the CURRENT publishable key from this project.
    Never put a service_role key or secret key in this file. */
 const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
