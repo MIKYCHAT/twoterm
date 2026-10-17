@@ -7,6 +7,84 @@
 <meta name="theme-color" content="#101014">
 <title>TWOTERM — Watch. Create. Connect.</title>
 <style>
+/* TWOTERM Phase 2: responsive layout */
+:root {
+  --twoterm-header-height: 60px;
+  --twoterm-bottom-nav-height: 64px;
+  --twoterm-content-width: 1100px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+.twoterm-layout {
+  width: 100%;
+  max-width: var(--twoterm-content-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px;
+}
+
+.twoterm-main {
+  min-width: 0;
+}
+
+.twoterm-sidebar {
+  position: sticky;
+  top: calc(var(--twoterm-header-height) + 16px);
+  align-self: start;
+}
+
+.twoterm-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .twoterm-layout {
+    display: block;
+    padding: 10px 10px
+      calc(var(--twoterm-bottom-nav-height) + 20px +
+      env(safe-area-inset-bottom));
+  }
+
+  .twoterm-sidebar {
+    display: none;
+  }
+
+  .twoterm-bottom-nav {
+    position: fixed;
+    z-index: 50;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-height: var(--twoterm-bottom-nav-height);
+    padding: 6px 8px
+      calc(6px + env(safe-area-inset-bottom));
+    background: #15151d;
+    border-top: 1px solid #353542;
+  }
+
+  .twoterm-bottom-nav button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+    
 /* Active navigation destination */
 .nav-item[aria-current="page"] {
   color: #ff5c93;
