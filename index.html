@@ -21,6 +21,84 @@ header{height:66px;position:sticky;top:0;z-index:20;display:flex;align-items:cen
 @media(max-width:1100px){.layout{grid-template-columns:175px minmax(0,720px)}.rightbar{display:none}}
 @media(max-width:700px){header{height:58px;padding:0 8px;gap:7px}.logo{font-size:21px}.searchbox{flex:1;width:auto}.searchbox input{font-size:12px}.searchbox button{display:none}.headright{gap:4px}.headright button{font-size:10px;padding:8px}.layout{display:block;padding:10px 8px 80px}.sidebar{display:none}.hero{padding:17px}.video-stage{height:62vh;min-height:260px}.actions{gap:4px}.action{font-size:11px;padding:8px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:25;background:#15151af7;border-top:1px solid var(--line);justify-content:space-around;padding:7px 2px calc(7px + env(safe-area-inset-bottom));backdrop-filter:blur(14px)}.mobile-nav button{background:transparent;padding:5px 3px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px}.mobile-nav b{font-size:20px}}
 </style>
+/* TWOTERM Phase 2: responsive layout */
+:root {
+  --twoterm-header-height: 60px;
+  --twoterm-bottom-nav-height: 64px;
+  --twoterm-content-width: 1100px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+.twoterm-layout {
+  width: 100%;
+  max-width: var(--twoterm-content-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px;
+}
+
+.twoterm-main {
+  min-width: 0;
+}
+
+.twoterm-sidebar {
+  position: sticky;
+  top: calc(var(--twoterm-header-height) + 16px);
+  align-self: start;
+}
+
+.twoterm-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .twoterm-layout {
+    display: block;
+    padding: 10px 10px
+      calc(var(--twoterm-bottom-nav-height) + 20px +
+      env(safe-area-inset-bottom));
+  }
+
+  .twoterm-sidebar {
+    display: none;
+  }
+
+  .twoterm-bottom-nav {
+    position: fixed;
+    z-index: 50;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    min-height: var(--twoterm-bottom-nav-height);
+    padding: 6px 8px
+      calc(6px + env(safe-area-inset-bottom));
+    background: #15151d;
+    border-top: 1px solid #353542;
+  }
+
+  .twoterm-bottom-nav button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+  
 </head>
 <body>
 <header>
