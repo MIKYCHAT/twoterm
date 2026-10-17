@@ -3,2122 +3,849 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090811">
-<title>TWOTERM — Create Your World</title>
-<meta name="description" content="Discover creators, share short videos and connect with the world on TWOTERM.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101014">
+<title>TWOTERM — Discover Your World</title>
 <style>
-:root{color-scheme:dark;--bg:#090811;--surface:#12111c;--surface2:#1b1927;--line:#302b40;--pink:#ff397e;--purple:#a66bff;--text:#faf8ff;--muted:#aaa4bd;--green:#5fe0b0}
+:root{--bg:#101014;--panel:#191920;--panel2:#25252e;--line:#353540;--pink:#ff356f;--cyan:#25e4db;--text:#f8f8fc;--muted:#a5a5b3}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;transition:transform .15s,opacity .15s}
-button:active{transform:scale(.97)}
+body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:9px;padding:10px 13px;background:var(--panel2);color:white;font-weight:700}
 button:disabled{opacity:.5;cursor:not-allowed}
-a{color:inherit;text-decoration:none}
-.hidden{display:none!important}
-.muted,.small{color:var(--muted)}
-.small{font-size:12px}
-.brand{display:flex;align-items:center;gap:9px;font-size:22px;font-weight:950;letter-spacing:-1px}
-.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 5px 25px #ff397e35;color:#fff;font-size:19px}
-.brand span{color:#ff5c9a}
-.topbar{height:70px;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:22px;padding:0 max(22px,calc((100vw - 1440px)/2));background:#090811ed;backdrop-filter:blur(18px);border-bottom:1px solid #ffffff0c}
-.search{margin:auto;max-width:440px;flex:1;display:flex;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:15px;padding:0 13px}
-.search input{background:transparent;border:0;outline:0;color:white;width:100%;padding:12px}
-.search button{border:0;background:transparent;color:var(--muted);font-size:18px}
-.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:white;font-weight:750}
-.btn-primary{background:linear-gradient(115deg,var(--pink),#a34fff);border:0;color:white;box-shadow:0 5px 22px #ff397e20}
-.btn-quiet{background:transparent}
-.layout{max-width:1440px;margin:auto;padding:24px;display:grid;grid-template-columns:220px minmax(0,1fr) 270px;gap:25px;align-items:start}
-.sidebar,.rightbar{position:sticky;top:94px;display:grid;gap:8px}
-.navitem{width:100%;display:flex;align-items:center;gap:13px;text-align:left;border:0;border-radius:13px;padding:13px 15px;background:transparent;color:#b8b1c9;font-weight:700}
-.navitem:hover,.navitem.active{background:#21182c;color:white}
-.navitem.active{box-shadow:inset 3px 0 var(--pink)}
-.navicon{width:24px;text-align:center;font-size:20px}
-.side-heading{margin:20px 12px 8px;color:#827b94;font-size:10px;letter-spacing:1.6px;font-weight:900}
-.card{border:1px solid var(--line);background:linear-gradient(145deg,#171421,#100f19);border-radius:20px;padding:18px}
-.hero{position:relative;overflow:hidden;padding:27px;background:radial-gradient(ellipse at 85% 10%,#9b4cff33,transparent 42%),radial-gradient(ellipse at 10% 100%,#ff397e20,transparent 40%),#14111f}
-.hero h1{font-size:clamp(27px,3vw,39px);line-height:1.1;letter-spacing:-1.6px;margin:0 0 12px;max-width:540px}
-.gradient-text{background:linear-gradient(100deg,#ff69a2,#b99aff);background-clip:text;color:transparent}
-.hero p{max-width:500px;color:#c0b9ce;margin-bottom:20px}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 14px}
-.section-head h2{font-size:19px;margin:0;letter-spacing:-.4px}
-.tabs{display:flex;gap:20px;border-bottom:1px solid var(--line);margin:20px 0 18px}
-.tab{padding:0 0 12px;background:transparent;border:0;color:var(--muted);font-weight:800;position:relative}
-.tab.active{color:white}
-.tab.active:after{content:"";position:absolute;height:3px;bottom:-1px;left:0;right:0;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:5px}
-.feed{display:grid;gap:18px}
-.video-card{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:#12101a}
-.video-layout{display:grid;grid-template-columns:minmax(0,1fr) 72px}
-.video-stage{position:relative;min-height:330px;background:#08070d;overflow:hidden}
-.video-stage video{width:100%;height:100%;max-height:610px;min-height:330px;display:block;object-fit:contain;background:#08070d}
-.video-meta{padding:16px 17px 18px}
-.creator-row{display:flex;align-items:center;gap:10px}
-.avatar{width:43px;height:43px;border-radius:50%;object-fit:cover;display:grid;place-items:center;flex-shrink:0;background:linear-gradient(135deg,#ff4389,#8459ff);font-weight:900}
-.creator-info{min-width:0;flex:1}
-.creator-name{font-weight:850}
-.verified{color:#70d8ff}
-.follow-btn{background:white;color:#17111f;border:0;border-radius:9px;padding:8px 13px;font-weight:850}
-.caption{white-space:pre-wrap;overflow-wrap:anywhere;margin:13px 0}
-.sound{font-size:12px;color:#c3b7d7}
-.video-actions{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:17px;padding:0 8px 22px}
-.action{display:grid;justify-items:center;gap:4px;background:transparent;border:0;color:white;font-size:22px}
-.action span{font-size:11px;color:#d4cddd;font-weight:700}
-.action.liked{color:var(--pink)}
-.action .following{color:var(--green)}
-.empty{padding:35px 15px;text-align:center;border:1px dashed #453b57;border-radius:18px;color:var(--muted)}
-.creator-list{display:grid;gap:15px}
-.creator-item{display:flex;align-items:center;gap:10px}
-.creator-item .creator-info{flex:1;min-width:0}
-.creator-item .creator-name{font-size:12px}
-.creator-item button{border:0;background:#2b2037;color:#f4eaff;border-radius:9px;padding:8px;font-size:12px;font-weight:800}
-.feature-row{display:flex;gap:12px;align-items:center;margin-top:14px}
-.feature-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:13px;background:#29203a;font-size:19px}
-.feature-row strong{display:block;font-size:12px}
-.feature-row small{color:var(--muted);font-size:11px}
-.bottomnav{display:none}
-.page{min-width:0}
-.grid-videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.grid-video{border-radius:12px;overflow:hidden;background:#1a1724}
-.grid-video video{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-.grid-video p{padding:8px;margin:0;font-size:12px}
-.profile-cover{height:125px;border-radius:16px;background:radial-gradient(ellipse at 80% 20%,#a66bff99,transparent 40%),linear-gradient(120deg,#31162f,#171426,#222044)}
-.profile-head{display:flex;align-items:end;gap:15px;margin-top:-35px;padding:0 16px;position:relative}
-.profile-head .avatar{width:86px;height:86px;border:4px solid #12111c;font-size:26px}
-.profile-details{padding:15px 16px}
-.stats{display:flex;gap:22px;margin:18px 0}
-.stats strong{display:block;font-size:18px}
-.stats span{font-size:11px;color:var(--muted)}
-.modal{width:min(94vw,470px);max-height:88vh;overflow:auto;padding:25px;background:#15121f;color:white;border:1px solid #433650;border-radius:22px}
-.modal::backdrop{background:#030208d9;backdrop-filter:blur(5px)}
-.modal h2{margin:0 0 7px;font-size:23px;letter-spacing:-.7px}
-.form{display:grid;gap:13px;margin-top:20px}
-.field{display:grid;gap:6px;color:#c9c0d8;font-size:12px;font-weight:750}
-.field input,.field textarea,.field select{width:100%;padding:13px;background:#0d0b14;border:1px solid #3b324a;border-radius:11px;color:white;outline:none}
-.field input:focus,.field textarea:focus{border-color:#b36aff}
-.field textarea{min-height:90px;resize:vertical}
-.form-status{min-height:20px;color:#c9bfd8;font-size:12px;overflow-wrap:anywhere}
-.checkline{display:flex;align-items:center;gap:8px;color:#c9c0d8;font-size:12px}
-.checkline input{width:auto}
-.modal-footer{margin-top:15px;display:flex;gap:8px;flex-wrap:wrap}
-.discover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.discover-tile{min-height:105px;padding:15px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#27203a,#14111e);display:flex;flex-direction:column;justify-content:end}
-.discover-tile b{font-size:14px}.discover-tile small{color:var(--muted)}
-.live-preview{width:100%;max-height:340px;object-fit:cover;background:#08070d;border-radius:14px}
-.badge-live{background:#ff2e58;color:white;border-radius:6px;font-size:10px;font-weight:900;padding:3px 6px}
-@media(max-width:1100px){.layout{grid-template-columns:190px minmax(0,1fr)}.rightbar{display:none}}
+.primary{background:var(--pink)}.livebtn{background:#e52d50}
+header{height:64px;position:sticky;top:0;z-index:10;background:#111115f5;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:12px}
+.logo{font-size:26px;font-weight:1000;letter-spacing:-1px;white-space:nowrap}.logo span{color:var(--pink)}
+.searchbox{display:flex;background:var(--panel2);border-radius:9px;width:min(360px,35vw);overflow:hidden}.searchbox input{background:transparent;color:white;border:0;outline:0;padding:11px;width:100%;min-width:0}
+.headright{display:flex;gap:7px;align-items:center}
+.layout{max-width:1450px;margin:auto;display:grid;grid-template-columns:190px minmax(0,720px) 240px;gap:20px;padding:18px}
+.sidebar,.rightbar{position:sticky;top:82px;height:max-content}
+.nav{display:block;width:100%;text-align:left;background:transparent;padding:13px;margin-bottom:4px;font-size:15px}.nav:hover,.nav.active{background:var(--panel2);color:var(--pink)}
+.panel,.video-card{background:var(--panel);border:1px solid var(--line);border-radius:13px;margin-bottom:15px;overflow:hidden}
+.panel{padding:15px}.panel h3{margin:0 0 10px}
+.small{font-size:12px;color:var(--muted);line-height:1.6}
+.tabs{display:flex;gap:20px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow:auto}
+.tab{background:transparent;color:var(--muted);border-radius:0;white-space:nowrap}.tab.active{border-bottom:3px solid var(--pink);color:white}
+.video-stage{height:min(68vh,650px);min-height:300px;background:#050507}
+.video-stage video{width:100%;height:100%;object-fit:contain;display:block;background:#050507}
+.video-meta{padding:14px 14px 6px}.creator-line{display:flex;align-items:center;gap:10px}
+.avatar{width:42px;height:42px;flex:none;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),#8256ed);font-weight:900;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.creator-info{flex:1;min-width:0}.creator-name{font-weight:800;overflow-wrap:anywhere}
+.caption{font-size:14px;line-height:1.55;margin:10px 0;overflow-wrap:anywhere}
+.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 14px 14px}
+.action{font-size:12px;padding:9px 11px}.action.active{color:var(--pink);outline:1px solid #71334b}
+.field{display:block;width:100%;padding:12px;margin:7px 0 13px;border-radius:8px;border:1px solid var(--line);background:#111116;color:white}
+label{font-size:12px;color:var(--muted)}textarea.field{min-height:80px;resize:vertical}
+.modal{position:fixed;inset:0;background:#000b;z-index:30;display:flex;align-items:center;justify-content:center;padding:15px}
+.hidden{display:none!important}.modal-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;width:min(480px,100%);max-height:90vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.modal-head h2{margin:0;font-size:20px}
+.status{font-size:12px;line-height:1.6;color:#d9c6ff;overflow-wrap:anywhere}
+.row{display:flex;gap:8px;flex-wrap:wrap}.row>*{flex:1}
+.profile-cover{height:100px;background:linear-gradient(120deg,#602c87,#d02b66,#253e75);border-radius:10px}
+.stats{display:flex;gap:24px;margin:18px 0}.stats strong{display:block;font-size:18px}.stats span{font-size:12px;color:var(--muted)}
+.grid-videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.grid-video{background:var(--panel2);border-radius:8px;overflow:hidden;min-width:0}.grid-video video{width:100%;aspect-ratio:3/4;object-fit:contain;background:#000}.grid-video p{font-size:12px;padding:7px;margin:0;overflow-wrap:anywhere}
+.comment-item{padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+footer{text-align:center;color:#777;padding:22px;font-size:12px}
+.mobile-nav{display:none}
+@media(max-width:1050px){.layout{grid-template-columns:170px minmax(0,720px)}.rightbar{display:none}}
 @media(max-width:700px){
- .topbar{height:60px;padding:0 13px;gap:10px}.brand{font-size:19px}.brand-mark{width:30px;height:30px}.search{max-width:none}.search input{padding:10px 5px}.topbar>.btn{padding:9px}
- .layout{display:block;padding:12px 10px 88px}.sidebar,.rightbar{display:none}
- .hero{padding:22px 19px;border-radius:18px}.hero h1{font-size:30px}
- .video-card{border-radius:17px}.video-layout{grid-template-columns:minmax(0,1fr) 57px}
- .video-stage{min-height:260px}.video-stage video{min-height:260px;max-height:66vh}
- .video-actions{gap:16px;padding-bottom:18px}.action{font-size:21px}
- .video-meta{padding:13px}.section-head{margin-top:20px}
- .bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;justify-content:space-around;gap:2px;padding:8px 4px calc(8px + env(safe-area-inset-bottom));background:#0d0b14f5;backdrop-filter:blur(18px);border-top:1px solid #ffffff12}
- .bottomnav button{display:grid;justify-items:center;gap:3px;flex:1;border:0;background:transparent;color:#9991aa;font-size:10px;padding:3px}
- .bottomnav button span{font-size:21px;line-height:1.2}.bottomnav button.active{color:#ff5b9b}
- .bottomnav .create{font-size:23px;color:white;background:linear-gradient(120deg,var(--pink),var(--purple));border-radius:9px;max-width:44px;margin:0 6px}
- .discover-grid{grid-template-columns:repeat(2,1fr)}.grid-videos{gap:7px}
+ header{height:58px;padding:0 8px;gap:7px}.logo{font-size:20px}.searchbox{flex:1;width:auto}.searchbox input{padding:9px}.headright{gap:4px}.headright button{padding:8px;font-size:11px}
+ .layout{display:block;padding:10px 8px 78px}.sidebar{display:none}.video-stage{height:62vh;min-height:280px}.actions{gap:5px}.action{padding:8px;font-size:11px}
+ .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:15;background:#15151af7;border-top:1px solid var(--line);justify-content:space-around;padding:7px 2px calc(7px + env(safe-area-inset-bottom))}
+ .mobile-nav button{background:transparent;padding:5px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px}.mobile-nav b{font-size:20px}
 }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <a class="brand" href="#" onclick="go('home');return false"><span class="brand-mark">T</span> TWO<span>TERM</span></a>
-  <label class="search"><span>⌕</span><input id="searchInput" placeholder="Search creators and videos" aria-label="Search"><button onclick="searchFeed()" aria-label="Search">↵</button></label>
-  <button id="topAuth" class="btn btn-primary" onclick="openAuth()">Log in</button>
+<header>
+  <div class="logo">TWO<span>TERM</span></div>
+  <div class="searchbox"><input id="search" placeholder="Search videos or creators..." aria-label="Search"><button onclick="searchFeed()">⌕</button></div>
+  <div class="headright">
+    <button class="primary" onclick="openUpload()">＋ Create</button>
+    <button class="livebtn" onclick="openLive()">● LIVE</button>
+    <button id="authButton" onclick="openAuth()">Log in</button>
+  </div>
 </header>
 
 <div class="layout">
   <aside class="sidebar">
-    <button class="navitem active" data-page="home" onclick="go('home',this)"><span class="navicon">⌂</span> For You</button>
-    <button class="navitem" data-page="following" onclick="go('following',this)"><span class="navicon">♡</span> Following</button>
-    <button class="navitem" data-page="discover" onclick="go('discover',this)"><span class="navicon">⌕</span> Discover</button>
-    <button class="navitem" data-page="live" onclick="go('live',this)"><span class="navicon">◉</span> LIVE Studio</button>
-    <button class="navitem" data-page="inbox" onclick="go('inbox',this)"><span class="navicon">✉</span> Notifications</button>
-    <button class="navitem" data-page="profile" onclick="go('profile',this)"><span class="navicon">♙</span> My profile</button>
-    <button class="navitem" onclick="openUpload()"><span class="navicon">⊕</span> Create video</button>
-    <div class="side-heading">YOUR CREATOR JOURNEY</div>
-    <div class="card">
-      <div style="font-weight:850">Your voice matters.</div>
-      <p class="small">Create original videos, meet your audience and build your community.</p>
-      <button class="btn btn-primary" style="width:100%" onclick="openAuth()">Join TWOTERM</button>
-    </div>
-    <div class="side-heading">COMMUNITY</div>
-    <p class="small" style="padding:0 12px">Safety · Privacy · Community guidelines</p>
+    <button class="nav active" onclick="go('home',this)">⌂ &nbsp; For You</button>
+    <button class="nav" onclick="go('following',this)">♡ &nbsp; Following</button>
+    <button class="nav" onclick="go('profile',this)">♙ &nbsp; My Profile</button>
+    <button class="nav" onclick="openUpload()">＋ &nbsp; Upload video</button>
+    <button class="nav" onclick="go('saved',this)">🔖 &nbsp; Saved videos</button>
+    <button class="nav" onclick="go('live',this)">🔴 &nbsp; LIVE</button>
+    <div class="panel"><b>Welcome to TWOTERM</b><p class="small">Discover videos, share your talent and connect with creators worldwide.</p><p class="small">Please respect other people and report harmful content.</p></div>
   </aside>
 
-  <main class="page">
-    <section id="homePage">
-      <div class="card hero">
-        <div class="small" style="letter-spacing:2px;font-weight:900;color:#ff91b9;margin-bottom:9px">YOUR WORLD. YOUR STAGE.</div>
-        <h1>Every creator has a story.<br><span class="gradient-text">What's yours?</span></h1>
-        <p>Discover fresh perspectives, share your best moments and connect with a world of creators.</p>
-        <div class="row" style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="openUpload()">＋ Create a video</button>
-          <button class="btn" onclick="go('discover')">Explore creators ↗</button>
-        </div>
-      </div>
+  <main>
+    <section id="homePage" class="page">
       <div class="tabs">
-        <button class="tab active" onclick="setFeedMode('foryou',this)">For You</button>
-        <button class="tab" onclick="setFeedMode('following',this)">Following</button>
-        <button class="tab" onclick="setFeedMode('trending',this)">Trending</button>
+        <button class="tab active" onclick="setTab('all',this)">For You</button>
+        <button class="tab" onclick="setTab('following',this)">Following</button>
       </div>
-      <div id="feed" class="feed"><div class="empty">Connecting to TWOTERM…</div></div>
+      <p id="feedStatus" class="status">Connecting to TWOTERM…</p>
+      <div id="feed"></div>
+      <button id="loadMore" class="primary" onclick="loadFeed(true)" style="width:100%">Load more videos</button>
     </section>
 
-    <section id="followingPage" class="hidden">
-      <div class="section-head"><h2>Following</h2></div>
-      <div id="followingFeed" class="feed"><div class="empty">Log in and follow creators to build your feed.</div></div>
+    <section id="followingPage" class="page hidden">
+      <h2>Following</h2><p class="small">Videos from creators you follow.</p><div id="followingFeed"></div>
     </section>
 
-    <section id="discoverPage" class="hidden">
-      <div class="section-head"><h2>Discover your next favourite</h2></div>
-      <div class="discover-grid">
-        <div class="discover-tile"><b>🎵 Music</b><small>Sounds and performances</small></div>
-        <div class="discover-tile"><b>😂 Comedy</b><small>Moments that make you laugh</small></div>
-        <div class="discover-tile"><b>⚽ Sports</b><small>Skills and highlights</small></div>
-        <div class="discover-tile"><b>🎮 Gaming</b><small>Play, watch and connect</small></div>
-        <div class="discover-tile"><b>🌍 Lifestyle</b><small>Life from every angle</small></div>
-        <div class="discover-tile"><b>✨ Creativity</b><small>Original ideas</small></div>
-      </div>
-      <div class="section-head"><h2>Explore videos</h2></div>
-      <div id="discoverFeed" class="feed"></div>
-    </section>
-
-    <section id="profilePage" class="hidden">
-      <div class="card">
+    <section id="profilePage" class="page hidden">
+      <div class="panel">
         <div class="profile-cover"></div>
-        <div class="profile-head">
-          <img id="profileAvatar" class="avatar" alt="Profile picture" src="">
-          <div style="padding-bottom:6px;flex:1"><div id="profileName" style="font-size:20px;font-weight:900">Your profile</div><div id="profileHandle" class="small">@creator</div></div>
-          <button class="btn" onclick="editProfile()">Edit profile</button>
-        </div>
-        <div class="profile-details">
-          <p id="profileBio" class="muted">Add a bio to tell the world about yourself.</p>
-          <a id="profileWebsite" class="hidden" href="#" target="_blank" rel="noopener">Visit my website ↗</a>
-          <div class="stats">
-            <div><strong id="videoCount">0</strong><span>Videos</span></div>
-            <div><strong id="followingCount">0</strong><span>Following</span></div>
-            <div><strong id="followerCount">0</strong><span>Followers</span></div>
-          </div>
-          <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="document.getElementById('avatarFile').click()">Change picture</button>
-            <button class="btn" onclick="openUpload()">＋ Post video</button>
-            <button class="btn" onclick="logout()">Log out</button>
-          </div>
-          <input id="avatarFile" type="file" accept="image/*" class="hidden" onchange="uploadAvatar()">
-        </div>
+        <h2 id="profileName">Your profile</h2><p class="small" id="profileEmail">Log in to view your account.</p>
+        <p id="profileBio">Video creator · Welcome to TWOTERM.</p>
+        <div class="stats"><div><strong id="videoCount">0</strong><span>Videos</span></div><div><strong id="followers">0</strong><span>Followers</span></div><div><strong id="followingCount">0</strong><span>Following</span></div></div>
+        <button onclick="editProfile()">Edit profile</button>
+        <button onclick="refreshProfile()">Refresh</button>
+        <p id="profileStatus" class="status"></p>
       </div>
-      <div class="section-head"><h2>Your videos</h2></div>
-      <div id="profileVideos" class="grid-videos"></div>
+      <div class="panel"><h3>My videos</h3><div id="profileVideos" class="grid-videos"></div></div>
     </section>
 
-    <section id="livePage" class="hidden">
-      <div class="card hero">
-        <span class="badge-live">LIVE STUDIO</span>
-        <h1 style="margin-top:15px">Your audience is waiting.</h1>
-        <p>Start a live session when your creator account is approved and you meet the platform's eligibility requirements.</p>
-      </div>
-      <div class="card" style="margin-top:15px">
-        <label class="field">Live stream title<input id="liveTitle" maxlength="100" placeholder="Give your live a title"></label>
-        <video id="cameraPreview" class="live-preview hidden" autoplay playsinline muted style="margin-top:15px"></video>
-        <p id="liveStatus" class="form-status">Live streaming needs a secure LiveKit token function and server-side eligibility checks.</p>
-        <div class="row" style="display:flex;gap:9px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="startLive()">◉ Check eligibility & go live</button>
-          <button class="btn" onclick="endLive()">End live</button>
-        </div>
-      </div>
+    <section id="savedPage" class="page hidden">
+      <h2>Saved videos</h2><div id="savedFeed"></div>
     </section>
 
-    <section id="inboxPage" class="hidden">
-      <div class="section-head"><h2>Notifications</h2></div>
-      <div class="empty">Your notifications will appear here when the notification service is connected.</div>
-    </section>
-
-    <section id="walletPage" class="hidden">
-      <div class="card hero"><h1>Creator wallet</h1><p>Gifts and withdrawals require a verified payment provider and secure server-side records.</p><div class="empty">No real-money balance is available in this demo.</div></div>
+    <section id="livePage" class="page hidden">
+      <div class="panel"><h2>🔴 TWOTERM LIVE</h2><p class="small">Live streaming requires a secure server-issued LiveKit token and a verified creator account. This page does not bypass verification.</p><button class="livebtn" onclick="openLive()">Open LIVE studio</button><p id="liveStatus" class="status">LiveKit eligibility and server token must be configured before broadcasting.</p></div>
     </section>
   </main>
 
   <aside class="rightbar">
-    <div class="card">
-      <div class="section-head" style="margin:0 0 15px"><h2>Creator spotlight</h2><span>✦</span></div>
-      <div class="creator-list">
-        <div class="creator-item"><div class="avatar">L</div><div class="creator-info"><div class="creator-name">Luna Rose</div><div class="small">Music & lifestyle</div></div><span class="verified">✓</span></div>
-        <div class="creator-item"><div class="avatar">K</div><div class="creator-info"><div class="creator-name">Kai Rivers</div><div class="small">Creator inspiration</div></div><span class="verified">✓</span></div>
-        <div class="creator-item"><div class="avatar">M</div><div class="creator-info"><div class="creator-name">Mira Jade</div><div class="small">Daily stories</div></div><span class="verified">✓</span></div>
-      </div>
-      <p class="small" style="margin:15px 0 0">Sample creator profiles. These are design examples, not registered accounts.</p>
-    </div>
-    <div class="card">
-      <div style="font-weight:900">Built for creators</div>
-      <div class="feature-row"><div class="feature-icon">🎬</div><div><strong>Short-form video</strong><small>Share your perspective</small></div></div>
-      <div class="feature-row"><div class="feature-icon">💬</div><div><strong>Real community</strong><small>Meet your audience</small></div></div>
-      <div class="feature-row"><div class="feature-icon">💎</div><div><strong>Creator rewards</strong><small>Payments require setup</small></div></div>
-    </div>
-    <p class="small">TWOTERM © 2026<br>Adults 18+ · Safety · Privacy</p>
+    <div class="panel"><h3>🚀 Start creating</h3><p class="small">Upload your video and let new people discover you.</p><button class="primary" onclick="openUpload()">Upload video</button></div>
+    <div class="panel"><h3>Safety & trust</h3><p class="small">Never share passwords or private information. Report harmful content and respect other creators.</p></div>
+    <div class="panel"><h3>About TWOTERM</h3><p class="small">Watch. Create. Connect.</p></div>
   </aside>
 </div>
 
-<nav class="bottomnav">
-  <button class="active" data-mobile="home" onclick="go('home')"><span>⌂</span>Home</button>
-  <button data-mobile="discover" onclick="go('discover')"><span>⌕</span>Discover</button>
-  <button class="create" onclick="openUpload()" aria-label="Create video">＋</button>
-  <button data-mobile="live" onclick="go('live')"><span>◉</span>Live</button>
-  <button data-mobile="profile" onclick="go('profile')"><span>♙</span>Profile</button>
+<nav class="mobile-nav">
+  <button onclick="go('home')"><b>⌂</b>Home</button>
+  <button onclick="go('following')"><b>♡</b>Following</button>
+  <button onclick="openUpload()"><b style="color:var(--pink)">＋</b>Create</button>
+  <button onclick="go('live')"><b style="color:#ff4566">◉</b>LIVE</button>
+  <button onclick="go('profile')"><b>♙</b>Profile</button>
 </nav>
+<footer>TWOTERM © 2026 · Watch. Create. Connect.</footer>
 
-<dialog id="authModal" class="modal">
-  <div class="brand"><span class="brand-mark">T</span> TWO<span>TERM</span></div>
-  <h2 id="authHeading" style="margin-top:22px">Create your account</h2>
-  <p class="muted">Your next chapter starts here.</p>
-  <form id="authForm" class="form">
-    <label id="nameField" class="field">Display name<input id="displayName" maxlength="60" placeholder="How should we call you?"></label>
-    <label class="field">Email address<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
-    <label class="field">Password<input id="password" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters"></label>
-    <div id="ageFields">
-      <label class="field">Date of birth<input id="dob" type="date"></label>
-      <label class="checkline"><input id="ageCheck" type="checkbox"> I confirm I am 18 years or older.</label>
-    </div>
-    <button id="authSubmit" class="btn btn-primary" type="submit">Create account</button>
+<div id="authModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2 id="authTitle">Create your account</h2><button onclick="closeModal('authModal')">×</button></div>
+  <p class="small">Create an account to post and interact. Follow the platform's safety rules.</p>
+  <form id="authForm">
+    <label id="nameLabel">Display name</label><input class="field" id="displayName" placeholder="Your display name">
+    <label>Email</label><input class="field" id="email" type="email" required placeholder="you@example.com">
+    <label>Password (minimum 8 characters)</label><input class="field" id="password" type="password" minlength="8" required>
+    <div id="ageFields"><label>Date of birth</label><input class="field" id="dob" type="date" required><label><input id="ageCheck" type="checkbox"> I confirm I am 18 or older</label></div>
+    <p class="small">Age confirmation is not identity verification and does not automatically grant live access.</p>
+    <button class="primary" type="submit" id="authSubmit">Create account</button>
   </form>
-  <p id="authStatus" class="form-status"></p>
-  <button class="btn btn-quiet" id="authSwitch" onclick="toggleAuth()">Already have an account? Log in</button>
-  <button class="btn btn-quiet" onclick="closeModal('authModal')">Close</button>
-</dialog>
+  <button style="margin-top:10px" onclick="toggleAuth()">Switch login / registration</button>
+  <p id="authStatus" class="status"></p>
+</div></div>
 
-<dialog id="profileModal" class="modal">
-  <h2>Edit your profile</h2>
-  <p class="muted">Make your creator profile yours.</p>
-  <form id="profileForm" class="form">
-    <label class="field">Display name<input id="editName" maxlength="60" required></label>
-    <label class="field">Bio<textarea id="editBio" maxlength="300" placeholder="Tell people about yourself…"></textarea></label>
-    <label class="field">Website or social link<input id="editWebsite" type="url" placeholder="https://example.com"></label>
-    <button class="btn btn-primary">Save profile</button>
-  </form>
-  <p id="profileStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('profileModal')">Cancel</button>
-</dialog>
+<div id="uploadModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2>Upload a video</h2><button onclick="closeModal('uploadModal')">×</button></div>
+  <label>Video file (maximum 100 MB)</label><input class="field" id="videoFile" type="file" accept="video/*">
+  <label>Caption</label><textarea class="field" id="videoCaption" maxlength="2000" placeholder="Write a caption and hashtags…"></textarea>
+  <label>Visibility</label><select class="field" id="visibility"><option value="public">Public</option><option value="followers">Followers only</option><option value="private">Private</option></select>
+  <button class="primary" id="uploadButton" onclick="uploadVideo()">Upload and publish</button>
+  <p id="uploadStatus" class="status"></p>
+</div></div>
 
-<dialog id="uploadModal" class="modal">
-  <h2>Create a video</h2>
-  <p class="muted">Share a moment with your community.</p>
-  <form id="uploadForm" class="form">
-    <label class="field">Choose a video<input id="videoFile" type="file" accept="video/*" required></label>
-    <label class="field">Caption<textarea id="videoCaption" maxlength="2000" placeholder="Write a caption…"></textarea></label>
-    <label class="field">Preview filter
-      <select id="videoFilter" onchange="previewFilter()">
-        <option value="none">Original</option>
-        <option value="saturate(1.4) contrast(1.08)">Vivid</option>
-        <option value="grayscale(1)">Black & white</option>
-        <option value="sepia(.6)">Warm</option>
-        <option value="brightness(1.12) saturate(.85)">Soft light</option>
-      </select>
-    </label>
-    <video id="uploadPreview" class="live-preview hidden" controls playsinline></video>
-    <button class="btn btn-primary">Publish video</button>
-  </form>
-  <p id="uploadStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('uploadModal')">Close</button>
-</dialog>
+<div id="commentsModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2>Comments</h2><button onclick="closeModal('commentsModal')">×</button></div>
+  <div id="commentsList"></div>
+  <form id="commentForm"><textarea class="field" id="commentText" maxlength="2000" required placeholder="Write a comment…"></textarea><button class="primary" type="submit">Post comment</button></form>
+  <p id="commentStatus" class="status"></p>
+</div></div>
 
-<dialog id="commentModal" class="modal">
-  <h2>Comments</h2>
-  <div id="commentList" class="creator-list"></div>
-  <form id="commentForm" class="form">
-    <label class="field">Add a comment<textarea id="commentText" maxlength="1000" required placeholder="Keep it kind…"></textarea></label>
-    <button class="btn btn-primary">Post comment</button>
-  </form>
-  <p id="commentStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('commentModal')">Close</button>
-</dialog>
+<div id="liveModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2>LIVE studio</h2><button onclick="closeModal('liveModal')">×</button></div>
+  <p class="small">Broadcasting remains disabled until the secure LiveKit token function and server-side creator verification are configured.</p>
+  <p class="status">No API secret belongs in this HTML file.</p>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-/* TWOTERM client configuration. Use the Project URL and publishable key
-   from your own Supabase dashboard. Never place secret keys in this file. */
+"use strict";
+
+/* TWOTERM public client settings.
+   Never place a Supabase service-role key or LiveKit API secret here. */
 const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
-const SUPABASE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+const SUPABASE_KEY = "sb_publishable_cFrF4JmuSfQv064BoFG7A_Y8KfSnv4";
+const BUCKET = "twoterm-media";
 
-let sb=null, user=null, authMode="signup", activePost=null, feedMode="foryou";
-let uploadObjectUrl=null, liveRoom=null, cameraStream=null, searchTerm="";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentUser = null;
+let currentCommentPost = null;
+let currentFeedMode = "all";
+let feedOffset = 0;
+const PAGE_SIZE = 10;
 
-const $=id=>document.getElementById(id);
-const setText=(id,text)=>$(id).textContent=text;
-const openModal=id=>$(id).showModal();
-const closeModal=id=>$(id).close();
-const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const initials=name=>(name||"T").trim().slice(0,1).toUpperCase();
+function el(id) { return document.getElementById(id); }
+function status(id, message) {
+  const node = el(id);
+  if (node) node.textContent = message || "";
+}
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;",
+    '"':"&quot;", "'":"&#39;"
+  }[c]));
+}
+function closeModal(id) { el(id).classList.add("hidden"); }
+function openModal(id) { el(id).classList.remove("hidden"); }
 
-if(window.supabase && SUPABASE_URL.startsWith("https://") &&
-   !SUPABASE_URL.includes("PASTE_") && !SUPABASE_KEY.includes("PASTE_")){
-  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-  boot();
-}else{
-  $("feed").innerHTML='<div class="empty">Connect your Supabase Project URL and publishable key in the code to activate accounts and the video feed.</div>';
-}
+function go(page, button) {
+  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
+  const target = el(page + "Page");
+  if (target) target.classList.remove("hidden");
+  document.querySelectorAll(".nav").forEach(b => b.classList.remove("active"));
+  if (button) button.classList.add("active");
+  window.scrollTo({top:0, behavior:"smooth"});
 
-async function boot(){
-  try{
-    const {data,error}=await sb.auth.getSession();
-    if(error)throw error;
-    user=data.session?.user||null;
-    await refreshProfile();
-    await loadFeed();
-    sb.auth.onAuthStateChange((_event,session)=>{
-      user=session?.user||null;
-      setTimeout(async()=>{await refreshProfile();await loadFeed();},0);
-    });
-  }catch(e){console.error(e);$("feed").innerHTML='<div class="empty">Could not connect to Supabase. Check your Project URL and key.</div>';}
+  if (page === "home") loadFeed();
+  if (page === "following") loadFollowingFeed();
+  if (page === "profile") refreshProfile();
+  if (page === "saved") loadSaved();
 }
-
-function go(page,button){
-  const pages=["home","following","discover","profile","live","inbox","wallet"];
-  pages.forEach(p=>{const el=$(p+"Page");if(el)el.classList.toggle("hidden",p!==page);});
-  document.querySelectorAll(".navitem").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
-  document.querySelectorAll(".bottomnav button").forEach(b=>b.classList.toggle("active",b.dataset.mobile===page));
-  window.scrollTo({top:0,behavior:"smooth"});
-  if(page==="profile")refreshProfile();
-  if(page==="following")loadFollowing();
-  if(page==="discover")loadDiscover();
-}
-
-function openAuth(){
-  if(!sb)return alert("Add your Supabase URL and publishable key first.");
-  authMode="signup";updateAuthForm();openModal("authModal");
-}
-function toggleAuth(){authMode=authMode==="signup"?"login":"signup";updateAuthForm();}
-function updateAuthForm(){
-  const signup=authMode==="signup";
-  setText("authHeading",signup?"Create your account":"Welcome back");
-  setText("authSubmit",signup?"Create account":"Log in");
-  setText("authSwitch",signup?"Already have an account? Log in":"New to TWOTERM? Create an account");
-  $("nameField").classList.toggle("hidden",!signup);
-  $("ageFields").classList.toggle("hidden",!signup);
-  $("displayName").required=signup;
-  $("dob").required=signup;
-  $("password").autocomplete=signup?"new-password":"current-password";
-  setText("authStatus","");
-}
-$("authForm").addEventListener("submit",async e=>{
-  e.preventDefault();setText("authStatus","Please wait…");
-  try{
-    const email=$("email").value.trim(),password=$("password").value;
-    if(authMode==="signup"){
-      const dob=$("dob").value;
-      if(!$("ageCheck").checked)throw Error("Confirm that you are 18 or older.");
-      if(!dob)throw Error("Enter your date of birth.");
-      const birth=new Date(dob+"T00:00:00");
-      const cutoff=new Date();cutoff.setFullYear(cutoff.getFullYear()-18);
-      if(birth>cutoff)throw Error("You must be 18 or older to register.");
-      const {data,error}=await sb.auth.signUp({
-        email,password,
-        options:{emailRedirectTo:location.origin+location.pathname,
-          data:{display_name:$("displayName").value.trim(),date_of_birth:dob,age_attested:true}}
-      });
-      if(error)throw error;
-      setText("authStatus",data.session?"Account created.":"Account created. Check your email to verify your address.");
-    }else{
-      const {error}=await sb.auth.signInWithPassword({email,password});
-      if(error)throw error;
-      closeModal("authModal");
-      setText("authStatus","");
-    }
-  }catch(e){setText("authStatus",e.message||"Authentication failed.");}
-});
-
-async function logout(){
-  if(!sb)return;
-  const {error}=await sb.auth.signOut();
-  if(error)return alert(error.message);
-  user=null;await refreshProfile();go("home");
-}
-async function refreshProfile(){
-  if(!sb)return;
-  const {data,error}=await sb.auth.getUser();
-  if(error)console.warn(error.message);
-  user=data?.user||null;
-  $("topAuth").textContent=user?"My account":"Log in";
-  const meta=user?.user_metadata||{};
-  setText("profileName",meta.display_name||"Your profile");
-  setText("profileHandle",user?"@"+(user.email?.split("@")[0]||"creator"):"@creator");
-  setText("profileBio",meta.bio||"Add a bio to tell the world about yourself.");
-  $("profileAvatar").src=meta.avatar_url||avatarFallback(meta.display_name);
-  $("profileWebsite").classList.toggle("hidden",!meta.website);
-  $("profileWebsite").href=meta.website||"#";
-  if(user){await loadMyPosts();await loadCounts();}
-}
-function avatarFallback(name){
-  return "data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><linearGradient id="g"><stop stop-color="#ff397e"/><stop offset="1" stop-color="#a66bff"/></linearGradient></defs><rect width="100" height="100" rx="50" fill="url(#g)"/><text x="50" y="62" text-anchor="middle" font-size="43" fill="white" font-family="Arial">${initials(name)}</text></svg>`);
-}
-function editProfile(){
-  if(!user)return openAuth();
-  const m=user.user_metadata||{};
-  $("editName").value=m.display_name||"";
-  $("editBio").value=m.bio||"";
-  $("editWebsite").value=m.website||"";
-  setText("profileStatus","");
-  openModal("profileModal");
-}
-$("profileForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  try{
-    const website=$("editWebsite").value.trim();
-    if(website&&!/^https?:\/\//i.test(website))throw Error("Website must begin with https:// or http://");
-    const {error}=await sb.auth.updateUser({data:{display_name:$("editName").value.trim(),bio:$("editBio").value.trim(),website}});
-    if(error)throw error;
-    await refreshProfile();closeModal("profileModal");
-  }catch(e){setText("profileStatus",e.message);}
-});
-async function uploadAvatar(){
-  if(!user)return openAuth();
-  const file=$("avatarFile").files[0];if(!file)return;
-  if(!file.type.startsWith("image/"))return alert("Choose an image file.");
-  if(file.size>5*1024*1024)return alert("Please choose an image smaller than 5 MB.");
-  try{
-    const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"");
-    const path=`${user.id}/avatar-${Date.now()}.${ext}`;
-    const {error}=await sb.storage.from("twoterm-media").upload(path,file,{upsert:true,contentType:file.type});
-    if(error)throw error;
-    const {data}=sb.storage.from("twoterm-media").getPublicUrl(path);
-    const {error:updateError}=await sb.auth.updateUser({data:{avatar_url:data.publicUrl}});
-    if(updateError)throw updateError;
-    await refreshProfile();alert("Profile picture updated.");
-  }catch(e){alert("Picture upload failed: "+e.message+". Check the twoterm-media bucket and its policies.");}
-  finally{$("avatarFile").value="";}
-}
-
-function openUpload(){
-  if(!user)return openAuth();
-  $("uploadForm").reset();$("uploadPreview").classList.add("hidden");
-  setText("uploadStatus","");
+function openAuth() { openModal("authModal"); }
+function openUpload() {
+  if (!currentUser) {
+    openAuth();
+    status("authStatus", "Log in before uploading a video.");
+    return;
+  }
   openModal("uploadModal");
 }
-$("videoFile").addEventListener("change",()=>{
-  const file=$("videoFile").files[0];if(!file)return;
-  if(uploadObjectUrl)URL.revokeObjectURL(uploadObjectUrl);
-  uploadObjectUrl=URL.createObjectURL(file);
-  $("uploadPreview").src=uploadObjectUrl;
-  $("uploadPreview").classList.remove("hidden");
-  previewFilter();
-});
-function previewFilter(){$("uploadPreview").style.filter=$("videoFilter").value;}
-$("uploadForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!user)return openAuth();
-  const file=$("videoFile").files[0];if(!file)return setText("uploadStatus","Choose a video.");
-  if(!file.type.startsWith("video/"))return setText("uploadStatus","Choose a valid video file.");
-  if(file.size>100*1024*1024)return setText("uploadStatus","Video must be smaller than 100 MB.");
-  setText("uploadStatus","Uploading your video…");
-  $("uploadForm").querySelector("button").disabled=true;
-  try{
-    const ext=(file.name.split(".").pop()||"mp4").replace(/[^a-z0-9]/gi,"");
-    const path=`${user.id}/video-${Date.now()}.${ext}`;
-    const {error:upError}=await sb.storage.from("twoterm-media").upload(path,file,{contentType:file.type});
-    if(upError)throw upError;
-    const {data:urlData}=sb.storage.from("twoterm-media").getPublicUrl(path);
-    const {error}=await sb.from("app_posts").insert({
-      user_id:user.id,video_url:urlData.publicUrl,caption:$("videoCaption").value.trim()
-    });
-    if(error)throw error;
-    closeModal("uploadModal");await loadFeed();await loadMyPosts();go("home");
-  }catch(e){setText("uploadStatus","Upload failed: "+e.message);}
-  finally{$("uploadForm").querySelector("button").disabled=false;}
+function openLive() { openModal("liveModal"); }
+function setTab(mode, button) {
+  document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+  button.classList.add("active");
+  currentFeedMode = mode;
+  if (mode === "following") go("following");
+  else go("home");
+}
+function toggleAuth() {
+  const signup = el("authTitle").textContent.includes("Create");
+  el("authTitle").textContent = signup ? "Log in" : "Create your account";
+  el("authSubmit").textContent = signup ? "Log in" : "Create account";
+  el("nameLabel").classList.toggle("hidden", signup);
+  el("displayName").classList.toggle("hidden", signup);
+  el("ageFields").classList.toggle("hidden", signup);
+  el("dob").required = !signup;
+  el("ageCheck").required = !signup;
+  el("ageCheck").required = false;
+}
+
+el("authForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  status("authStatus", "Please wait…");
+  const isSignup = el("authTitle").textContent.includes("Create");
+  const email = el("email").value.trim();
+  const password = el("password").value;
+
+  try {
+    let result;
+    if (isSignup) {
+      const dob = el("dob").value;
+      if (!el("ageCheck").checked) throw Error("Confirm that you are 18 or older.");
+      if (!dob) throw Error("Enter your date of birth.");
+      const birthday = new Date(dob + "T00:00:00");
+      const cutoff = new Date();
+      cutoff.setFullYear(cutoff.getFullYear() - 18);
+      if (birthday > cutoff) throw Error("You must be at least 18 to use this creator platform.");
+
+      result = await sb.auth.signUp({
+        email, password,
+        options: { data: {
+          display_name: el("displayName").value.trim(),
+          date_of_birth: dob,
+          age_attested: true
+        }}
+      });
+    } else {
+      result = await sb.auth.signInWithPassword({email, password});
+    }
+
+    if (result.error) throw result.error;
+
+    if (isSignup && !result.data.session) {
+      status("authStatus", "Registration submitted. Check your email to confirm your account, then log in.");
+    } else {
+      closeModal("authModal");
+      status("feedStatus", "You are logged in.");
+      await refreshUser();
+      await loadFeed();
+    }
+  } catch (error) {
+    status("authStatus", error.message || "Authentication failed.");
+  }
 });
 
-async function loadFeed(target="feed",followingOnly=false){
-  if(!sb)return;
-  const box=$(target);if(!box)return;
-  box.innerHTML='<div class="empty">Loading videos…</div>';
-  let query=sb.from("app_posts").select("id,user_id,video_url,caption,created_at").order("created_at",{ascending:false}).limit(50);
-  if(followingOnly&&user){
-    const {data:follows,error:fError}=await sb.from("app_follows").select("followed_id").eq("follower_id",user.id);
-    if(fError)throw fError;
-    const ids=(follows||[]).map(x=>x.followed_id);
-    if(!ids.length){box.innerHTML='<div class="empty">Follow creators to see their videos here.</div>';return;}
-    query=query.in("user_id",ids);
-  }
-  const {data:posts,error}=await query;
-  if(error){box.innerHTML='<div class="empty">Feed setup needed: '+esc(error.message)+'</div>';return;}
-  box.innerHTML="";
-  let filtered=(posts||[]).filter(p=>(p.caption||"").toLowerCase().includes(searchTerm));
-  if(!filtered.length){box.innerHTML='<div class="empty">No videos yet. Be the first to share a moment.</div>';return;}
-  for(const p of filtered)box.append(await makePost(p));
+async function logout() {
+  const {error} = await sb.auth.signOut();
+  if (error) return alert(error.message);
+  currentUser = null;
+  location.reload();
 }
-async function makePost(post){
-  const card=document.createElement("article");card.className="video-card";card.dataset.post=post.id;
-  const meta=post.user_id===user?.id?user?.user_metadata||{}:{};
-  const name=meta.display_name||"TWOTERM creator";
-  const avatar=meta.avatar_url||avatarFallback(name);
-  const layout=document.createElement("div");layout.className="video-layout";
-  const content=document.createElement("div");
-  const stage=document.createElement("div");stage.className="video-stage";
-  const video=document.createElement("video");video.src=post.video_url;video.controls=true;video.playsInline=true;video.loop=true;video.preload="metadata";video.style.filter=$("videoFilter")?.value||"none";
-  stage.append(video);
-  const details=document.createElement("div");details.className="video-meta";
-  const creator=document.createElement("div");creator.className="creator-row";
-  const av=document.createElement("img");av.className="avatar";av.src=avatar;av.alt="Creator profile";
-  const info=document.createElement("div");info.className="creator-info";
-  const nm=document.createElement("div");nm.className="creator-name";nm.textContent=name;
-  const sub=document.createElement("div");sub.className="small";sub.textContent=new Date(post.created_at).toLocaleDateString();
-  info.append(nm,sub);
-  const follow=document.createElement("button");follow.className="follow-btn";follow.textContent="Follow";
-  follow.onclick=()=>followUser(post.user_id,follow);
-  if(post.user_id===user?.id)follow.classList.add("hidden");
-  creator.append(av,info,follow);
-  const cap=document.createElement("p");cap.className="caption";cap.textContent=post.caption||"";
-  const sound=document.createElement("div");sound.className="sound";sound.textContent="♫ Original sound · TWOTERM";
-  details.append(creator,cap,sound);
-  content.append(stage,details);
-  const actions=document.createElement("div");actions.className="video-actions";
-  const like=document.createElement("button");like.className="action";like.innerHTML='♡<span>Like</span>';like.onclick=()=>toggleLike(post.id,like);
-  const comment=document.createElement("button");comment.className="action";comment.innerHTML='▢<span>Comment</span>';comment.onclick=()=>openComments(post.id);
-  const share=document.createElement("button");share.className="action";share.innerHTML='↗<span>Share</span>';share.onclick=()=>sharePost(post.video_url);
-  actions.append(like,comment,share);
-  layout.append(content,actions);card.append(layout);
-  if(user){
-    const {data:liked}=await sb.from("app_likes").select("post_id").eq("post_id",post.id).eq("user_id",user.id).maybeSingle();
-    if(liked){like.classList.add("liked");like.firstChild.textContent="♥";}
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",post.id);
-    like.lastChild.textContent=`${count||0} likes`;
-  }else{
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",post.id);
-    like.lastChild.textContent=`${count||0} likes`;
+
+async function refreshUser() {
+  const {data, error} = await sb.auth.getUser();
+  if (error) {
+    currentUser = null;
+  } else {
+    currentUser = data.user || null;
   }
+
+  const button = el("authButton");
+  button.textContent = currentUser ? "Log out" : "Log in";
+  button.onclick = currentUser ? logout : openAuth;
+
+  if (currentUser) {
+    const display = currentUser.user_metadata?.display_name ||
+      currentUser.email?.split("@")[0] || "Creator";
+    el("profileName").textContent = display;
+    el("profileEmail").textContent = currentUser.email || "";
+    status("profileStatus", "Signed in. Profile and video details are loaded from Supabase.");
+  } else {
+    el("profileName").textContent = "Your profile";
+    el("profileEmail").textContent = "Log in to view your account.";
+  }
+}
+
+async function getProfileMap(userIds) {
+  const ids = [...new Set(userIds.filter(Boolean))];
+  if (!ids.length) return {};
+  const {data, error} = await sb.from("app_profiles")
+    .select("id,username,display_name,bio,avatar_url,follower_count,following_count")
+    .in("id", ids);
+  if (error) throw error;
+  const map = {};
+  (data || []).forEach(p => map[p.id] = p);
+  return map;
+}
+
+function creatorName(profile, userId) {
+  return profile?.display_name || profile?.username ||
+    (userId ? "Creator " + userId.slice(0, 6) : "TWOTERM creator");
+}
+
+async function getPlayableUrl(value) {
+  if (!value) return "";
+  let path = String(value);
+
+  // Accept an object path or a previously stored Supabase storage URL.
+  const publicMarker = "/storage/v1/object/public/" + BUCKET + "/";
+  const signMarker = "/storage/v1/object/sign/" + BUCKET + "/";
+  if (path.includes(signMarker)) return path;
+  if (path.includes(publicMarker)) path = path.split(publicMarker).pop();
+  else if (/^https?:\/\//i.test(path)) return path;
+
+  path = decodeURIComponent(path).replace(/^\/+/, "");
+  if (path.startsWith(BUCKET + "/")) path = path.slice(BUCKET.length + 1);
+
+  const {data, error} = await sb.storage.from(BUCKET).createSignedUrl(path, 3600);
+  if (error) throw error;
+  return data.signedUrl;
+}
+
+async function loadFeed(append = false) {
+  if (!append) {
+    feedOffset = 0;
+    el("feed").innerHTML = "";
+  }
+  status("feedStatus", "Loading videos from TWOTERM…");
+
+  try {
+    let query = sb.from("app_posts").select("*")
+      .eq("visibility", "public")
+      .order("created_at", {ascending:false})
+      .range(feedOffset, feedOffset + PAGE_SIZE - 1);
+
+    const {data:posts, error} = await query;
+    if (error) throw error;
+
+    if (!posts || posts.length === 0) {
+      status("feedStatus", feedOffset === 0
+        ? "No public videos yet. Log in and upload the first video."
+        : "You've reached the end of the feed.");
+      el("loadMore").classList.toggle("hidden", feedOffset === 0);
+      return;
+    }
+
+    const profiles = await getProfileMap(posts.map(p => p.user_id));
+    let liked = new Set(), saved = new Set(), followed = new Set();
+
+    if (currentUser) {
+      const [likes, bookmarks, follows] = await Promise.all([
+        sb.from("app_likes").select("post_id").eq("user_id", currentUser.id),
+        sb.from("app_bookmarks").select("post_id").eq("user_id", currentUser.id),
+        sb.from("app_follows").select("following_id").eq("follower_id", currentUser.id)
+      ]);
+      if (likes.error) throw likes.error;
+      if (bookmarks.error) throw bookmarks.error;
+      if (follows.error) throw follows.error;
+      liked = new Set((likes.data || []).map(x => x.post_id));
+      saved = new Set((bookmarks.data || []).map(x => x.post_id));
+      followed = new Set((follows.data || []).map(x => x.following_id));
+    }
+
+    for (const post of posts) {
+      const profile = profiles[post.user_id];
+      const videoValue = post.video_url || post.media_url;
+      let videoUrl = "";
+      try { videoUrl = await getPlayableUrl(videoValue); }
+      catch (e) { console.warn("Video URL could not be signed:", e.message); }
+
+      const card = document.createElement("article");
+      card.className = "video-card";
+      card.dataset.postId = post.id;
+      card.dataset.name = (post.caption || "").toLowerCase();
+
+      const who = creatorName(profile, post.user_id);
+      const avatar = profile?.avatar_url
+        ? `<img src="${escapeHtml(profile.avatar_url)}" alt="">`
+        : escapeHtml(who.slice(0,1).toUpperCase());
+
+      card.innerHTML = `
+        <div class="video-stage">
+          ${videoUrl
+            ? `<video controls playsinline preload="metadata" src="${escapeHtml(videoUrl)}"></video>`
+            : `<div style="padding:24px;color:#ff9ab8">Video unavailable. Check storage read permissions and the saved video path.</div>`}
+        </div>
+        <div class="video-meta">
+          <div class="creator-line">
+            <div class="avatar">${avatar}</div>
+            <div class="creator-info">
+              <div class="creator-name">${escapeHtml(who)}</div>
+              <div class="small">@${escapeHtml(profile?.username || "creator")}</div>
+            </div>
+            ${currentUser && currentUser.id !== post.user_id
+              ? `<button onclick="followUser('${post.user_id}',this)" class="${followed.has(post.user_id) ? "active" : ""}">${followed.has(post.user_id) ? "Following" : "Follow"}</button>`
+              : ""}
+          </div>
+          <p class="caption">${escapeHtml(post.caption || "")}</p>
+          <div class="small">${Number(post.views_count || 0)} views · ${escapeHtml(post.created_at ? new Date(post.created_at).toLocaleDateString() : "")}</div>
+        </div>
+        <div class="actions">
+          <button class="action ${liked.has(post.id) ? "active" : ""}" onclick="toggleLike('${post.id}',this)">♥ Like <span>${Number(post.likes_count || 0)}</span></button>
+          <button class="action" onclick="openComments('${post.id}')">💬 Comment <span>${Number(post.comments_count || 0)}</span></button>
+          <button class="action" onclick="sharePost('${post.id}')">↗ Share</button>
+          <button class="action ${saved.has(post.id) ? "active" : ""}" onclick="toggleBookmark('${post.id}',this)">🔖 Save</button>
+        </div>`;
+
+      el("feed").appendChild(card);
+    }
+
+    feedOffset += posts.length;
+    el("loadMore").classList.toggle("hidden", posts.length < PAGE_SIZE);
+    status("feedStatus", `${feedOffset} video(s) loaded.`);
+    if (currentUser) refreshProfile().catch(console.warn);
+  } catch (error) {
+    console.error(error);
+    status("feedStatus", "Could not load videos: " + error.message +
+      ". Check Supabase table permissions and RLS policies.");
+  }
+}
+
+async function toggleLike(postId, button) {
+  if (!currentUser) return openAuth();
+  button.disabled = true;
+  try {
+    const {data:existing, error:findError} = await sb.from("app_likes")
+      .select("post_id").eq("post_id", postId).eq("user_id", currentUser.id).maybeSingle();
+    if (findError) throw findError;
+
+    if (existing) {
+      const {error} = await sb.from("app_likes").delete()
+        .eq("post_id", postId).eq("user_id", currentUser.id);
+      if (error) throw error;
+    } else {
+      const {error} = await sb.from("app_likes").insert({
+        post_id:postId, user_id:currentUser.id
+      });
+      if (error) throw error;
+    }
+    await loadFeed();
+  } catch (error) {
+    alert("Like could not be saved: " + error.message);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function followUser(userId, button) {
+  if (!currentUser) return openAuth();
+  if (userId === currentUser.id) return;
+  button.disabled = true;
+
+  try {
+    const {data:existing, error:findError} = await sb.from("app_follows")
+      .select("follower_id").eq("follower_id", currentUser.id)
+      .eq("following_id", userId).maybeSingle();
+    if (findError) throw findError;
+
+    if (existing) {
+      const {error} = await sb.from("app_follows").delete()
+        .eq("follower_id", currentUser.id).eq("following_id", userId);
+      if (error) throw error;
+    } else {
+      const {error} = await sb.from("app_follows").insert({
+        follower_id:currentUser.id, following_id:userId
+      });
+      if (error) throw error;
+    }
+    await loadFeed();
+    await refreshProfile();
+  } catch (error) {
+    alert("Follow action failed: " + error.message);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function openComments(postId) {
+  currentCommentPost = postId;
+  el("commentsList").innerHTML = "Loading comments…";
+  el("commentText").value = "";
+  status("commentStatus", "");
+  openModal("commentsModal");
+
+  try {
+    const {data:comments, error} = await sb.from("app_comments")
+      .select("*").eq("post_id", postId)
+      .order("created_at", {ascending:true});
+    if (error) throw error;
+    const profiles = await getProfileMap((comments || []).map(c => c.user_id));
+    el("commentsList").innerHTML = "";
+
+    if (!comments || !comments.length) {
+      el("commentsList").textContent = "No comments yet. Start the conversation.";
+      return;
+    }
+    comments.forEach(comment => {
+      const item = document.createElement("div");
+      item.className = "comment-item";
+      const who = creatorName(profiles[comment.user_id], comment.user_id);
+      item.innerHTML = `<b>${escapeHtml(who)}</b><p>${escapeHtml(comment.content || "")}</p>
+        <span class="small">${escapeHtml(comment.created_at ? new Date(comment.created_at).toLocaleString() : "")}</span>`;
+      el("commentsList").appendChild(item);
+    });
+  } catch (error) {
+    el("commentsList").textContent = "Could not load comments: " + error.message;
+  }
+}
+
+el("commentForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!currentUser) return openAuth();
+  const content = el("commentText").value.trim();
+  if (!content || !currentCommentPost) return;
+  status("commentStatus", "Posting…");
+
+  try {
+    const {error} = await sb.from("app_comments").insert({
+      post_id:currentCommentPost,
+      user_id:currentUser.id,
+      content
+    });
+    if (error) throw error;
+    el("commentText").value = "";
+    status("commentStatus", "Comment posted.");
+    await openComments(currentCommentPost);
+    await loadFeed();
+  } catch (error) {
+    status("commentStatus", "Comment failed: " + error.message);
+  }
+});
+
+async function sharePost(postId) {
+  const url = location.href.split("#")[0] + "#post-" + postId;
+  try {
+    if (currentUser) {
+      const {error} = await sb.from("app_shares").insert({
+        post_id:postId, user_id:currentUser.id
+      });
+      if (error) throw error;
+    }
+    if (navigator.share) {
+      await navigator.share({title:"TWOTERM video", url});
+    } else if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      alert("Video link copied.");
+    } else {
+      prompt("Copy this video link:", url);
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") alert("Share action: " + error.message);
+  }
+}
+
+async function toggleBookmark(postId, button) {
+  if (!currentUser) return openAuth();
+  button.disabled = true;
+  try {
+    const {data:existing, error:findError} = await sb.from("app_bookmarks")
+      .select("post_id").eq("post_id", postId)
+      .eq("user_id", currentUser.id).maybeSingle();
+    if (findError) throw findError;
+
+    if (existing) {
+      const {error} = await sb.from("app_bookmarks").delete()
+        .eq("post_id", postId).eq("user_id", currentUser.id);
+      if (error) throw error;
+    } else {
+      const {error} = await sb.from("app_bookmarks").insert({
+        post_id:postId, user_id:currentUser.id
+      });
+      if (error) throw error;
+    }
+    await loadFeed();
+  } catch (error) {
+    alert("Bookmark failed: " + error.message);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function loadFollowingFeed() {
+  const container = el("followingFeed");
+  container.innerHTML = "Loading…";
+  if (!currentUser) {
+    container.textContent = "Log in to see videos from creators you follow.";
+    return;
+  }
+
+  try {
+    const {data:follows, error:fError} = await sb.from("app_follows")
+      .select("following_id").eq("follower_id", currentUser.id);
+    if (fError) throw fError;
+    const ids = (follows || []).map(f => f.following_id);
+    if (!ids.length) {
+      container.textContent = "You aren't following any creators yet.";
+      return;
+    }
+    const {data:posts, error} = await sb.from("app_posts").select("*")
+      .eq("visibility","public").in("user_id",ids)
+      .order("created_at",{ascending:false}).limit(30);
+    if (error) throw error;
+    container.innerHTML = "";
+    if (!posts.length) {
+      container.textContent = "Creators you follow haven't published public videos yet.";
+      return;
+    }
+    const profiles = await getProfileMap(posts.map(p => p.user_id));
+    for (const post of posts) {
+      const card = await makeSimpleCard(post, profiles[post.user_id]);
+      container.appendChild(card);
+    }
+  } catch (error) {
+    container.textContent = "Could not load following feed: " + error.message;
+  }
+}
+
+async function makeSimpleCard(post, profile) {
+  const card = document.createElement("article");
+  card.className = "video-card";
+  let url = "";
+  try { url = await getPlayableUrl(post.video_url || post.media_url); } catch (_) {}
+  card.innerHTML = `<div class="video-stage">${url
+    ? `<video controls playsinline preload="metadata" src="${escapeHtml(url)}"></video>`
+    : `<p class="small" style="padding:20px">Video unavailable. Check storage permissions.</p>`}
+    </div><div class="video-meta"><b>${escapeHtml(creatorName(profile,post.user_id))}</b>
+    <p class="caption">${escapeHtml(post.caption || "")}</p></div>
+    <div class="actions"><button class="action" onclick="toggleLike('${post.id}',this)">♥ Like</button>
+    <button class="action" onclick="openComments('${post.id}')">💬 Comment</button>
+    <button class="action" onclick="sharePost('${post.id}')">↗ Share</button></div>`;
   return card;
 }
-async function toggleLike(postId,button){
-  if(!user)return openAuth();
-  try{
-    const {data:existing,error:findError}=await sb.from("app_likes").select("post_id").eq("post_id",postId).eq("user_id",user.id).maybeSingle();
-    if(findError)throw findError;
-    if(existing){
-      const {error}=await sb.from("app_likes").delete().eq("post_id",postId).eq("user_id",user.id);if(error)throw error;
-      button.classList.remove("liked");button.firstChild.textContent="♡";
-    }else{
-      const {error}=await sb.from("app_likes").insert({post_id:postId,user_id:user.id});if(error)throw error;
-      button.classList.add("liked");button.firstChild.textContent="♥";
-    }
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",postId);
-    button.lastChild.textContent=`${count||0} likes`;
-  }catch(e){alert("Like failed: "+e.message);}
-}
-async function followUser(id,button){
-  if(!user)return openAuth();if(id===user.id)return;
-  try{
-    const {error}=await sb.from("app_follows").insert({follower_id:user.id,followed_id:id});
-    if(error&&error.code!=="23505")throw error;
-    button.textContent="Following";button.disabled=true;
-  }catch(e){alert("Follow failed: "+e.message);}
-}
-async function sharePost(url){
-  try{
-    if(navigator.share)await navigator.share({title:"TWOTERM video",url});
-    else{await navigator.clipboard.writeText(url);alert("Video link copied.");}
-  }catch(e){if(e.name!=="AbortError")prompt("Copy video link",url);}
-}
-function setFeedMode(mode,button){
-  feedMode=mode;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===button));
-  if(mode==="following"){go("following");return;}
-  loadFeed("feed",false);
-}
-function searchFeed(){searchTerm=$("searchInput").value.trim().toLowerCase();go("home");loadFeed();}
-$("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchFeed();});
-async function loadFollowing(){
-  try{await loadFeed("followingFeed",true);}
-  catch(e){$("followingFeed").innerHTML='<div class="empty">'+esc(e.message)+'</div>';}
-}
-async function loadDiscover(){await loadFeed("discoverFeed",false);}
-async function loadMyPosts(){
-  if(!user)return;
-  const box=$("profileVideos");box.innerHTML="";
-  const {data,error}=await sb.from("app_posts").select("id,video_url,caption,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(60);
-  if(error){box.innerHTML='<div class="empty">Could not load your videos.</div>';return;}
-  for(const p of data||[]){
-    const tile=document.createElement("div");tile.className="grid-video";
-    const v=document.createElement("video");v.src=p.video_url;v.controls=true;v.playsInline=true;v.preload="metadata";
-    const caption=document.createElement("p");caption.textContent=p.caption||"My video";
-    tile.append(v,caption);box.append(tile);
+
+async function loadSaved() {
+  const container = el("savedFeed");
+  container.innerHTML = "Loading saved videos…";
+  if (!currentUser) {
+    container.textContent = "Log in to view saved videos.";
+    return;
   }
-  setText("videoCount",String(data?.length||0));
-}
-async function loadCounts(){
-  if(!user)return;
-  const [followers,following]=await Promise.all([
-    sb.from("app_follows").select("*",{count:"exact",head:true}).eq("followed_id",user.id),
-    sb.from("app_follows").select("*",{count:"exact",head:true}).eq("follower_id",user.id)
-  ]);
-  setText("followerCount",String(followers.count||0));
-  setText("followingCount",String(following.count||0));
+  try {
+    const {data:saves,error:sError} = await sb.from("app_bookmarks")
+      .select("post_id").eq("user_id",currentUser.id);
+    if (sError) throw sError;
+    const ids = (saves || []).map(s => s.post_id);
+    if (!ids.length) {
+      container.textContent = "You haven't saved any videos yet.";
+      return;
+    }
+    const {data:posts,error} = await sb.from("app_posts")
+      .select("*").in("id",ids).order("created_at",{ascending:false});
+    if (error) throw error;
+    const profiles = await getProfileMap(posts.map(p => p.user_id));
+    container.innerHTML = "";
+    for (const post of posts) container.appendChild(await makeSimpleCard(post,profiles[post.user_id]));
+  } catch (error) {
+    container.textContent = "Could not load saved videos: " + error.message;
+  }
 }
 
-async function openComments(postId){
-  if(!user)return openAuth();
-  activePost=postId;$("commentList").innerHTML='<p class="muted">Loading comments…</p>';
-  openModal("commentModal");
-  const {data,error}=await sb.from("app_comments").select("id,user_id,body,created_at").eq("post_id",postId).order("created_at",{ascending:true}).limit(100);
-  const box=$("commentList");box.innerHTML="";
-  if(error){box.innerHTML='<p class="muted">Comments need the app_comments table and its policies.</p>';return;}
-  if(!data?.length){box.innerHTML='<p class="muted">Be the first to comment.</p>';return;}
-  for(const c of data){
-    const p=document.createElement("p");p.textContent=c.body;p.className="card";box.append(p);
+async function uploadVideo() {
+  if (!currentUser) return openAuth();
+  const file = el("videoFile").files[0];
+  const caption = el("videoCaption").value.trim();
+  const visibility = el("visibility").value;
+  if (!file) return status("uploadStatus","Choose a video first.");
+  if (!file.type.startsWith("video/")) return status("uploadStatus","Choose a valid video file.");
+  if (file.size > 100 * 1024 * 1024) return status("uploadStatus","Video must be smaller than 100 MB.");
+
+  const button = el("uploadButton");
+  button.disabled = true;
+  status("uploadStatus","Uploading video to Supabase Storage…");
+
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+  const path = currentUser.id + "/" + Date.now() + "_" + safeName;
+
+  try {
+    const {error:uploadError} = await sb.storage.from(BUCKET).upload(path,file,{
+      cacheControl:"3600", upsert:false, contentType:file.type
+    });
+    if (uploadError) throw uploadError;
+
+    status("uploadStatus","Saving post…");
+    const {error:postError} = await sb.from("app_posts").insert({
+      user_id:currentUser.id,
+      caption,
+      media_url:path,
+      video_url:path,
+      media_type:"video",
+      visibility
+    });
+    if (postError) {
+      // Remove the uploaded object if the post record couldn't be created.
+      await sb.storage.from(BUCKET).remove([path]);
+      throw postError;
+    }
+
+    el("videoFile").value = "";
+    el("videoCaption").value = "";
+    closeModal("uploadModal");
+    status("feedStatus","Video published successfully.");
+    await loadFeed();
+    await refreshProfile();
+    go("home");
+  } catch (error) {
+    status("uploadStatus","Upload failed: " + error.message +
+      ". Check bucket permissions and app_posts insert policy.");
+  } finally {
+    button.disabled = false;
   }
 }
-$("commentForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!user)return openAuth();
-  try{
-    const body=$("commentText").value.trim();if(!body)return;
-    const {error}=await sb.from("app_comments").insert({post_id:activePost,user_id:user.id,body});
-    if(error)throw error;
-    $("commentText").value="";await openComments(activePost);
-  }catch(e){setText("commentStatus","Comment failed: "+e.message);}
+
+async function refreshProfile() {
+  if (!currentUser) {
+    el("videoCount").textContent = "0";
+    el("followers").textContent = "0";
+    el("followingCount").textContent = "0";
+    el("profileVideos").innerHTML = "";
+    return;
+  }
+
+  try {
+    const {data:profile,error:pError} = await sb.from("app_profiles")
+      .select("*").eq("id",currentUser.id).maybeSingle();
+    if (pError) throw pError;
+
+    if (profile) {
+      el("profileName").textContent = creatorName(profile,currentUser.id);
+      el("profileBio").textContent = profile.bio || "Video creator · Welcome to TWOTERM.";
+      el("followers").textContent = Number(profile.follower_count || 0);
+      el("followingCount").textContent = Number(profile.following_count || 0);
+    }
+
+    const {count,error:vError} = await sb.from("app_posts")
+      .select("id",{count:"exact",head:true}).eq("user_id",currentUser.id);
+    if (vError) throw vError;
+    el("videoCount").textContent = count || 0;
+
+    const {data:posts,error} = await sb.from("app_posts").select("*")
+      .eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(12);
+    if (error) throw error;
+
+    el("profileVideos").innerHTML = "";
+    for (const post of (posts || [])) {
+      const tile = document.createElement("div");
+      tile.className = "grid-video";
+      let url = "";
+      try { url = await getPlayableUrl(post.video_url || post.media_url); } catch (_) {}
+      tile.innerHTML = `${url
+        ? `<video controls playsinline preload="metadata" src="${escapeHtml(url)}"></video>`
+        : `<div style="padding:10px">Video unavailable</div>`}
+        <p>${escapeHtml(post.caption || "My video")}</p>`;
+      el("profileVideos").appendChild(tile);
+    }
+  } catch (error) {
+    status("profileStatus","Profile could not be refreshed: " + error.message);
+  }
+}
+
+async function editProfile() {
+  if (!currentUser) return openAuth();
+  try {
+    const {data:profile,error} = await sb.from("app_profiles")
+      .select("username,display_name,bio").eq("id",currentUser.id).maybeSingle();
+    if (error) throw error;
+
+    const displayName = prompt("Display name:",profile?.display_name || "");
+    if (displayName === null) return;
+    const bio = prompt("Creator bio:",profile?.bio || "");
+    if (bio === null) return;
+
+    let username = profile?.username;
+    if (!username) {
+      username = (currentUser.email || "creator").split("@")[0]
+        .toLowerCase().replace(/[^a-z0-9_]/g,"").slice(0,18) +
+        "_" + currentUser.id.slice(0,6);
+    }
+
+    const {error:saveError} = await sb.from("app_profiles").upsert({
+      id:currentUser.id, username, display_name:displayName.trim(), bio:bio.trim()
+    },{onConflict:"id"});
+    if (saveError) throw saveError;
+    await refreshProfile();
+    status("profileStatus","Profile saved.");
+  } catch (error) {
+    status("profileStatus","Profile update failed: " + error.message);
+  }
+}
+
+function searchFeed() {
+  const query = el("search").value.toLowerCase().trim();
+  document.querySelectorAll("#feed .video-card").forEach(card => {
+    card.classList.toggle("hidden",!card.innerText.toLowerCase().includes(query));
+  });
+}
+el("search").addEventListener("keydown", event => {
+  if (event.key === "Enter") searchFeed();
 });
 
-async function startLive(){
-  if(!user)return openAuth();
-  setText("liveStatus","Checking secure live-stream eligibility…");
-  try{
-    const {data:{session},error}=await sb.auth.getSession();if(error)throw error;
-    if(!session)throw Error("Please log in first.");
-    const result=await sb.functions.invoke("livekit-token",{body:{title:$("liveTitle").value.trim()}});
-    if(result.error)throw result.error;
-    const d=result.data;
-    if(!d?.server_url||!d?.participant_token)throw Error("The secure LiveKit token service is not configured correctly.");
-    if(!window.LivekitClient)throw Error("LiveKit client library did not load.");
-    liveRoom=new LivekitClient.Room();
-    await liveRoom.connect(d.server_url,d.participant_token);
-    await liveRoom.localParticipant.enableCameraAndMicrophone();
-    cameraStream=new MediaStream();
-    liveRoom.localParticipant.videoTrackPublications.forEach(p=>{if(p.track?.mediaStreamTrack)cameraStream.addTrack(p.track.mediaStreamTrack);});
-    $("cameraPreview").srcObject=cameraStream;$("cameraPreview").classList.remove("hidden");
-    setText("liveStatus","Connected to LiveKit. Audience playback and live discovery must also be configured.");
-  }catch(e){setText("liveStatus",e.message||"Could not start live.");}
+async function init() {
+  await refreshUser();
+  await loadFeed();
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    currentUser = session?.user || null;
+    const button = el("authButton");
+    button.textContent = currentUser ? "Log out" : "Log in";
+    button.onclick = currentUser ? logout : openAuth;
+    await loadFeed();
+  });
 }
-async function endLive(){
-  if(liveRoom){try{await liveRoom.disconnect();}catch(e){}liveRoom=null;}
-  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
-  $("cameraPreview").srcObject=null;$("cameraPreview").classList.add("hidden");
-  setText("liveStatus","Live session ended.");
-}
+init();
 </script>
 </body>
 </html>
 
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090811">
-<title>TWOTERM — Create Your World</title>
-<meta name="description" content="Discover creators, share short videos and connect with the world on TWOTERM.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
-<style>
-:root{color-scheme:dark;--bg:#090811;--surface:#12111c;--surface2:#1b1927;--line:#302b40;--pink:#ff397e;--purple:#a66bff;--text:#faf8ff;--muted:#aaa4bd;--green:#5fe0b0}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;transition:transform .15s,opacity .15s}
-button:active{transform:scale(.97)}
-button:disabled{opacity:.5;cursor:not-allowed}
-a{color:inherit;text-decoration:none}
-.hidden{display:none!important}
-.muted,.small{color:var(--muted)}
-.small{font-size:12px}
-.brand{display:flex;align-items:center;gap:9px;font-size:22px;font-weight:950;letter-spacing:-1px}
-.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 5px 25px #ff397e35;color:#fff;font-size:19px}
-.brand span{color:#ff5c9a}
-.topbar{height:70px;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:22px;padding:0 max(22px,calc((100vw - 1440px)/2));background:#090811ed;backdrop-filter:blur(18px);border-bottom:1px solid #ffffff0c}
-.search{margin:auto;max-width:440px;flex:1;display:flex;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:15px;padding:0 13px}
-.search input{background:transparent;border:0;outline:0;color:white;width:100%;padding:12px}
-.search button{border:0;background:transparent;color:var(--muted);font-size:18px}
-.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:white;font-weight:750}
-.btn-primary{background:linear-gradient(115deg,var(--pink),#a34fff);border:0;color:white;box-shadow:0 5px 22px #ff397e20}
-.btn-quiet{background:transparent}
-.layout{max-width:1440px;margin:auto;padding:24px;display:grid;grid-template-columns:220px minmax(0,1fr) 270px;gap:25px;align-items:start}
-.sidebar,.rightbar{position:sticky;top:94px;display:grid;gap:8px}
-.navitem{width:100%;display:flex;align-items:center;gap:13px;text-align:left;border:0;border-radius:13px;padding:13px 15px;background:transparent;color:#b8b1c9;font-weight:700}
-.navitem:hover,.navitem.active{background:#21182c;color:white}
-.navitem.active{box-shadow:inset 3px 0 var(--pink)}
-.navicon{width:24px;text-align:center;font-size:20px}
-.side-heading{margin:20px 12px 8px;color:#827b94;font-size:10px;letter-spacing:1.6px;font-weight:900}
-.card{border:1px solid var(--line);background:linear-gradient(145deg,#171421,#100f19);border-radius:20px;padding:18px}
-.hero{position:relative;overflow:hidden;padding:27px;background:radial-gradient(ellipse at 85% 10%,#9b4cff33,transparent 42%),radial-gradient(ellipse at 10% 100%,#ff397e20,transparent 40%),#14111f}
-.hero h1{font-size:clamp(27px,3vw,39px);line-height:1.1;letter-spacing:-1.6px;margin:0 0 12px;max-width:540px}
-.gradient-text{background:linear-gradient(100deg,#ff69a2,#b99aff);background-clip:text;color:transparent}
-.hero p{max-width:500px;color:#c0b9ce;margin-bottom:20px}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 14px}
-.section-head h2{font-size:19px;margin:0;letter-spacing:-.4px}
-.tabs{display:flex;gap:20px;border-bottom:1px solid var(--line);margin:20px 0 18px}
-.tab{padding:0 0 12px;background:transparent;border:0;color:var(--muted);font-weight:800;position:relative}
-.tab.active{color:white}
-.tab.active:after{content:"";position:absolute;height:3px;bottom:-1px;left:0;right:0;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:5px}
-.feed{display:grid;gap:18px}
-.video-card{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:#12101a}
-.video-layout{display:grid;grid-template-columns:minmax(0,1fr) 72px}
-.video-stage{position:relative;min-height:330px;background:#08070d;overflow:hidden}
-.video-stage video{width:100%;height:100%;max-height:610px;min-height:330px;display:block;object-fit:contain;background:#08070d}
-.video-meta{padding:16px 17px 18px}
-.creator-row{display:flex;align-items:center;gap:10px}
-.avatar{width:43px;height:43px;border-radius:50%;object-fit:cover;display:grid;place-items:center;flex-shrink:0;background:linear-gradient(135deg,#ff4389,#8459ff);font-weight:900}
-.creator-info{min-width:0;flex:1}
-.creator-name{font-weight:850}
-.verified{color:#70d8ff}
-.follow-btn{background:white;color:#17111f;border:0;border-radius:9px;padding:8px 13px;font-weight:850}
-.caption{white-space:pre-wrap;overflow-wrap:anywhere;margin:13px 0}
-.sound{font-size:12px;color:#c3b7d7}
-.video-actions{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:17px;padding:0 8px 22px}
-.action{display:grid;justify-items:center;gap:4px;background:transparent;border:0;color:white;font-size:22px}
-.action span{font-size:11px;color:#d4cddd;font-weight:700}
-.action.liked{color:var(--pink)}
-.action .following{color:var(--green)}
-.empty{padding:35px 15px;text-align:center;border:1px dashed #453b57;border-radius:18px;color:var(--muted)}
-.creator-list{display:grid;gap:15px}
-.creator-item{display:flex;align-items:center;gap:10px}
-.creator-item .creator-info{flex:1;min-width:0}
-.creator-item .creator-name{font-size:12px}
-.creator-item button{border:0;background:#2b2037;color:#f4eaff;border-radius:9px;padding:8px;font-size:12px;font-weight:800}
-.feature-row{display:flex;gap:12px;align-items:center;margin-top:14px}
-.feature-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:13px;background:#29203a;font-size:19px}
-.feature-row strong{display:block;font-size:12px}
-.feature-row small{color:var(--muted);font-size:11px}
-.bottomnav{display:none}
-.page{min-width:0}
-.grid-videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.grid-video{border-radius:12px;overflow:hidden;background:#1a1724}
-.grid-video video{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-.grid-video p{padding:8px;margin:0;font-size:12px}
-.profile-cover{height:125px;border-radius:16px;background:radial-gradient(ellipse at 80% 20%,#a66bff99,transparent 40%),linear-gradient(120deg,#31162f,#171426,#222044)}
-.profile-head{display:flex;align-items:end;gap:15px;margin-top:-35px;padding:0 16px;position:relative}
-.profile-head .avatar{width:86px;height:86px;border:4px solid #12111c;font-size:26px}
-.profile-details{padding:15px 16px}
-.stats{display:flex;gap:22px;margin:18px 0}
-.stats strong{display:block;font-size:18px}
-.stats span{font-size:11px;color:var(--muted)}
-.modal{width:min(94vw,470px);max-height:88vh;overflow:auto;padding:25px;background:#15121f;color:white;border:1px solid #433650;border-radius:22px}
-.modal::backdrop{background:#030208d9;backdrop-filter:blur(5px)}
-.modal h2{margin:0 0 7px;font-size:23px;letter-spacing:-.7px}
-.form{display:grid;gap:13px;margin-top:20px}
-.field{display:grid;gap:6px;color:#c9c0d8;font-size:12px;font-weight:750}
-.field input,.field textarea,.field select{width:100%;padding:13px;background:#0d0b14;border:1px solid #3b324a;border-radius:11px;color:white;outline:none}
-.field input:focus,.field textarea:focus{border-color:#b36aff}
-.field textarea{min-height:90px;resize:vertical}
-.form-status{min-height:20px;color:#c9bfd8;font-size:12px;overflow-wrap:anywhere}
-.checkline{display:flex;align-items:center;gap:8px;color:#c9c0d8;font-size:12px}
-.checkline input{width:auto}
-.modal-footer{margin-top:15px;display:flex;gap:8px;flex-wrap:wrap}
-.discover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.discover-tile{min-height:105px;padding:15px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#27203a,#14111e);display:flex;flex-direction:column;justify-content:end}
-.discover-tile b{font-size:14px}.discover-tile small{color:var(--muted)}
-.live-preview{width:100%;max-height:340px;object-fit:cover;background:#08070d;border-radius:14px}
-.badge-live{background:#ff2e58;color:white;border-radius:6px;font-size:10px;font-weight:900;padding:3px 6px}
-@media(max-width:1100px){.layout{grid-template-columns:190px minmax(0,1fr)}.rightbar{display:none}}
-@media(max-width:700px){
- .topbar{height:60px;padding:0 13px;gap:10px}.brand{font-size:19px}.brand-mark{width:30px;height:30px}.search{max-width:none}.search input{padding:10px 5px}.topbar>.btn{padding:9px}
- .layout{display:block;padding:12px 10px 88px}.sidebar,.rightbar{display:none}
- .hero{padding:22px 19px;border-radius:18px}.hero h1{font-size:30px}
- .video-card{border-radius:17px}.video-layout{grid-template-columns:minmax(0,1fr) 57px}
- .video-stage{min-height:260px}.video-stage video{min-height:260px;max-height:66vh}
- .video-actions{gap:16px;padding-bottom:18px}.action{font-size:21px}
- .video-meta{padding:13px}.section-head{margin-top:20px}
- .bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;justify-content:space-around;gap:2px;padding:8px 4px calc(8px + env(safe-area-inset-bottom));background:#0d0b14f5;backdrop-filter:blur(18px);border-top:1px solid #ffffff12}
- .bottomnav button{display:grid;justify-items:center;gap:3px;flex:1;border:0;background:transparent;color:#9991aa;font-size:10px;padding:3px}
- .bottomnav button span{font-size:21px;line-height:1.2}.bottomnav button.active{color:#ff5b9b}
- .bottomnav .create{font-size:23px;color:white;background:linear-gradient(120deg,var(--pink),var(--purple));border-radius:9px;max-width:44px;margin:0 6px}
- .discover-grid{grid-template-columns:repeat(2,1fr)}.grid-videos{gap:7px}
-}
-</style>
-</head>
-<body>
-<header class="topbar">
-  <a class="brand" href="#" onclick="go('home');return false"><span class="brand-mark">T</span> TWO<span>TERM</span></a>
-  <label class="search"><span>⌕</span><input id="searchInput" placeholder="Search creators and videos" aria-label="Search"><button onclick="searchFeed()" aria-label="Search">↵</button></label>
-  <button id="topAuth" class="btn btn-primary" onclick="openAuth()">Log in</button>
-</header>
-
-<div class="layout">
-  <aside class="sidebar">
-    <button class="navitem active" data-page="home" onclick="go('home',this)"><span class="navicon">⌂</span> For You</button>
-    <button class="navitem" data-page="following" onclick="go('following',this)"><span class="navicon">♡</span> Following</button>
-    <button class="navitem" data-page="discover" onclick="go('discover',this)"><span class="navicon">⌕</span> Discover</button>
-    <button class="navitem" data-page="live" onclick="go('live',this)"><span class="navicon">◉</span> LIVE Studio</button>
-    <button class="navitem" data-page="inbox" onclick="go('inbox',this)"><span class="navicon">✉</span> Notifications</button>
-    <button class="navitem" data-page="profile" onclick="go('profile',this)"><span class="navicon">♙</span> My profile</button>
-    <button class="navitem" onclick="openUpload()"><span class="navicon">⊕</span> Create video</button>
-    <div class="side-heading">YOUR CREATOR JOURNEY</div>
-    <div class="card">
-      <div style="font-weight:850">Your voice matters.</div>
-      <p class="small">Create original videos, meet your audience and build your community.</p>
-      <button class="btn btn-primary" style="width:100%" onclick="openAuth()">Join TWOTERM</button>
-    </div>
-    <div class="side-heading">COMMUNITY</div>
-    <p class="small" style="padding:0 12px">Safety · Privacy · Community guidelines</p>
-  </aside>
-
-  <main class="page">
-    <section id="homePage">
-      <div class="card hero">
-        <div class="small" style="letter-spacing:2px;font-weight:900;color:#ff91b9;margin-bottom:9px">YOUR WORLD. YOUR STAGE.</div>
-        <h1>Every creator has a story.<br><span class="gradient-text">What's yours?</span></h1>
-        <p>Discover fresh perspectives, share your best moments and connect with a world of creators.</p>
-        <div class="row" style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="openUpload()">＋ Create a video</button>
-          <button class="btn" onclick="go('discover')">Explore creators ↗</button>
-        </div>
-      </div>
-      <div class="tabs">
-        <button class="tab active" onclick="setFeedMode('foryou',this)">For You</button>
-        <button class="tab" onclick="setFeedMode('following',this)">Following</button>
-        <button class="tab" onclick="setFeedMode('trending',this)">Trending</button>
-      </div>
-      <div id="feed" class="feed"><div class="empty">Connecting to TWOTERM…</div></div>
-    </section>
-
-    <section id="followingPage" class="hidden">
-      <div class="section-head"><h2>Following</h2></div>
-      <div id="followingFeed" class="feed"><div class="empty">Log in and follow creators to build your feed.</div></div>
-    </section>
-
-    <section id="discoverPage" class="hidden">
-      <div class="section-head"><h2>Discover your next favourite</h2></div>
-      <div class="discover-grid">
-        <div class="discover-tile"><b>🎵 Music</b><small>Sounds and performances</small></div>
-        <div class="discover-tile"><b>😂 Comedy</b><small>Moments that make you laugh</small></div>
-        <div class="discover-tile"><b>⚽ Sports</b><small>Skills and highlights</small></div>
-        <div class="discover-tile"><b>🎮 Gaming</b><small>Play, watch and connect</small></div>
-        <div class="discover-tile"><b>🌍 Lifestyle</b><small>Life from every angle</small></div>
-        <div class="discover-tile"><b>✨ Creativity</b><small>Original ideas</small></div>
-      </div>
-      <div class="section-head"><h2>Explore videos</h2></div>
-      <div id="discoverFeed" class="feed"></div>
-    </section>
-
-    <section id="profilePage" class="hidden">
-      <div class="card">
-        <div class="profile-cover"></div>
-        <div class="profile-head">
-          <img id="profileAvatar" class="avatar" alt="Profile picture" src="">
-          <div style="padding-bottom:6px;flex:1"><div id="profileName" style="font-size:20px;font-weight:900">Your profile</div><div id="profileHandle" class="small">@creator</div></div>
-          <button class="btn" onclick="editProfile()">Edit profile</button>
-        </div>
-        <div class="profile-details">
-          <p id="profileBio" class="muted">Add a bio to tell the world about yourself.</p>
-          <a id="profileWebsite" class="hidden" href="#" target="_blank" rel="noopener">Visit my website ↗</a>
-          <div class="stats">
-            <div><strong id="videoCount">0</strong><span>Videos</span></div>
-            <div><strong id="followingCount">0</strong><span>Following</span></div>
-            <div><strong id="followerCount">0</strong><span>Followers</span></div>
-          </div>
-          <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="document.getElementById('avatarFile').click()">Change picture</button>
-            <button class="btn" onclick="openUpload()">＋ Post video</button>
-            <button class="btn" onclick="logout()">Log out</button>
-          </div>
-          <input id="avatarFile" type="file" accept="image/*" class="hidden" onchange="uploadAvatar()">
-        </div>
-      </div>
-      <div class="section-head"><h2>Your videos</h2></div>
-      <div id="profileVideos" class="grid-videos"></div>
-    </section>
-
-    <section id="livePage" class="hidden">
-      <div class="card hero">
-        <span class="badge-live">LIVE STUDIO</span>
-        <h1 style="margin-top:15px">Your audience is waiting.</h1>
-        <p>Start a live session when your creator account is approved and you meet the platform's eligibility requirements.</p>
-      </div>
-      <div class="card" style="margin-top:15px">
-        <label class="field">Live stream title<input id="liveTitle" maxlength="100" placeholder="Give your live a title"></label>
-        <video id="cameraPreview" class="live-preview hidden" autoplay playsinline muted style="margin-top:15px"></video>
-        <p id="liveStatus" class="form-status">Live streaming needs a secure LiveKit token function and server-side eligibility checks.</p>
-        <div class="row" style="display:flex;gap:9px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="startLive()">◉ Check eligibility & go live</button>
-          <button class="btn" onclick="endLive()">End live</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="inboxPage" class="hidden">
-      <div class="section-head"><h2>Notifications</h2></div>
-      <div class="empty">Your notifications will appear here when the notification service is connected.</div>
-    </section>
-
-    <section id="walletPage" class="hidden">
-      <div class="card hero"><h1>Creator wallet</h1><p>Gifts and withdrawals require a verified payment provider and secure server-side records.</p><div class="empty">No real-money balance is available in this demo.</div></div>
-    </section>
-  </main>
-
-  <aside class="rightbar">
-    <div class="card">
-      <div class="section-head" style="margin:0 0 15px"><h2>Creator spotlight</h2><span>✦</span></div>
-      <div class="creator-list">
-        <div class="creator-item"><div class="avatar">L</div><div class="creator-info"><div class="creator-name">Luna Rose</div><div class="small">Music & lifestyle</div></div><span class="verified">✓</span></div>
-        <div class="creator-item"><div class="avatar">K</div><div class="creator-info"><div class="creator-name">Kai Rivers</div><div class="small">Creator inspiration</div></div><span class="verified">✓</span></div>
-        <div class="creator-item"><div class="avatar">M</div><div class="creator-info"><div class="creator-name">Mira Jade</div><div class="small">Daily stories</div></div><span class="verified">✓</span></div>
-      </div>
-      <p class="small" style="margin:15px 0 0">Sample creator profiles. These are design examples, not registered accounts.</p>
-    </div>
-    <div class="card">
-      <div style="font-weight:900">Built for creators</div>
-      <div class="feature-row"><div class="feature-icon">🎬</div><div><strong>Short-form video</strong><small>Share your perspective</small></div></div>
-      <div class="feature-row"><div class="feature-icon">💬</div><div><strong>Real community</strong><small>Meet your audience</small></div></div>
-      <div class="feature-row"><div class="feature-icon">💎</div><div><strong>Creator rewards</strong><small>Payments require setup</small></div></div>
-    </div>
-    <p class="small">TWOTERM © 2026<br>Adults 18+ · Safety · Privacy</p>
-  </aside>
-</div>
-
-<nav class="bottomnav">
-  <button class="active" data-mobile="home" onclick="go('home')"><span>⌂</span>Home</button>
-  <button data-mobile="discover" onclick="go('discover')"><span>⌕</span>Discover</button>
-  <button class="create" onclick="openUpload()" aria-label="Create video">＋</button>
-  <button data-mobile="live" onclick="go('live')"><span>◉</span>Live</button>
-  <button data-mobile="profile" onclick="go('profile')"><span>♙</span>Profile</button>
-</nav>
-
-<dialog id="authModal" class="modal">
-  <div class="brand"><span class="brand-mark">T</span> TWO<span>TERM</span></div>
-  <h2 id="authHeading" style="margin-top:22px">Create your account</h2>
-  <p class="muted">Your next chapter starts here.</p>
-  <form id="authForm" class="form">
-    <label id="nameField" class="field">Display name<input id="displayName" maxlength="60" placeholder="How should we call you?"></label>
-    <label class="field">Email address<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
-    <label class="field">Password<input id="password" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters"></label>
-    <div id="ageFields">
-      <label class="field">Date of birth<input id="dob" type="date"></label>
-      <label class="checkline"><input id="ageCheck" type="checkbox"> I confirm I am 18 years or older.</label>
-    </div>
-    <button id="authSubmit" class="btn btn-primary" type="submit">Create account</button>
-  </form>
-  <p id="authStatus" class="form-status"></p>
-  <button class="btn btn-quiet" id="authSwitch" onclick="toggleAuth()">Already have an account? Log in</button>
-  <button class="btn btn-quiet" onclick="closeModal('authModal')">Close</button>
-</dialog>
-
-<dialog id="profileModal" class="modal">
-  <h2>Edit your profile</h2>
-  <p class="muted">Make your creator profile yours.</p>
-  <form id="profileForm" class="form">
-    <label class="field">Display name<input id="editName" maxlength="60" required></label>
-    <label class="field">Bio<textarea id="editBio" maxlength="300" placeholder="Tell people about yourself…"></textarea></label>
-    <label class="field">Website or social link<input id="editWebsite" type="url" placeholder="https://example.com"></label>
-    <button class="btn btn-primary">Save profile</button>
-  </form>
-  <p id="profileStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('profileModal')">Cancel</button>
-</dialog>
-
-<dialog id="uploadModal" class="modal">
-  <h2>Create a video</h2>
-  <p class="muted">Share a moment with your community.</p>
-  <form id="uploadForm" class="form">
-    <label class="field">Choose a video<input id="videoFile" type="file" accept="video/*" required></label>
-    <label class="field">Caption<textarea id="videoCaption" maxlength="2000" placeholder="Write a caption…"></textarea></label>
-    <label class="field">Preview filter
-      <select id="videoFilter" onchange="previewFilter()">
-        <option value="none">Original</option>
-        <option value="saturate(1.4) contrast(1.08)">Vivid</option>
-        <option value="grayscale(1)">Black & white</option>
-        <option value="sepia(.6)">Warm</option>
-        <option value="brightness(1.12) saturate(.85)">Soft light</option>
-      </select>
-    </label>
-    <video id="uploadPreview" class="live-preview hidden" controls playsinline></video>
-    <button class="btn btn-primary">Publish video</button>
-  </form>
-  <p id="uploadStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('uploadModal')">Close</button>
-</dialog>
-
-<dialog id="commentModal" class="modal">
-  <h2>Comments</h2>
-  <div id="commentList" class="creator-list"></div>
-  <form id="commentForm" class="form">
-    <label class="field">Add a comment<textarea id="commentText" maxlength="1000" required placeholder="Keep it kind…"></textarea></label>
-    <button class="btn btn-primary">Post comment</button>
-  </form>
-  <p id="commentStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('commentModal')">Close</button>
-</dialog>
-
-<script>
-/* TWOTERM client configuration. Use the Project URL and publishable key
-   from your own Supabase dashboard. Never place secret keys in this file. */
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL";
-const SUPABASE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY";
-
-let sb=null, user=null, authMode="signup", activePost=null, feedMode="foryou";
-let uploadObjectUrl=null, liveRoom=null, cameraStream=null, searchTerm="";
-
-const $=id=>document.getElementById(id);
-const setText=(id,text)=>$(id).textContent=text;
-const openModal=id=>$(id).showModal();
-const closeModal=id=>$(id).close();
-const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const initials=name=>(name||"T").trim().slice(0,1).toUpperCase();
-
-if(window.supabase && SUPABASE_URL.startsWith("https://") &&
-   !SUPABASE_URL.includes("PASTE_") && !SUPABASE_KEY.includes("PASTE_")){
-  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-  boot();
-}else{
-  $("feed").innerHTML='<div class="empty">Connect your Supabase Project URL and publishable key in the code to activate accounts and the video feed.</div>';
-}
-
-async function boot(){
-  try{
-    const {data,error}=await sb.auth.getSession();
-    if(error)throw error;
-    user=data.session?.user||null;
-    await refreshProfile();
-    await loadFeed();
-    sb.auth.onAuthStateChange((_event,session)=>{
-      user=session?.user||null;
-      setTimeout(async()=>{await refreshProfile();await loadFeed();},0);
-    });
-  }catch(e){console.error(e);$("feed").innerHTML='<div class="empty">Could not connect to Supabase. Check your Project URL and key.</div>';}
-}
-
-function go(page,button){
-  const pages=["home","following","discover","profile","live","inbox","wallet"];
-  pages.forEach(p=>{const el=$(p+"Page");if(el)el.classList.toggle("hidden",p!==page);});
-  document.querySelectorAll(".navitem").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
-  document.querySelectorAll(".bottomnav button").forEach(b=>b.classList.toggle("active",b.dataset.mobile===page));
-  window.scrollTo({top:0,behavior:"smooth"});
-  if(page==="profile")refreshProfile();
-  if(page==="following")loadFollowing();
-  if(page==="discover")loadDiscover();
-}
-
-function openAuth(){
-  if(!sb)return alert("Add your Supabase URL and publishable key first.");
-  authMode="signup";updateAuthForm();openModal("authModal");
-}
-function toggleAuth(){authMode=authMode==="signup"?"login":"signup";updateAuthForm();}
-function updateAuthForm(){
-  const signup=authMode==="signup";
-  setText("authHeading",signup?"Create your account":"Welcome back");
-  setText("authSubmit",signup?"Create account":"Log in");
-  setText("authSwitch",signup?"Already have an account? Log in":"New to TWOTERM? Create an account");
-  $("nameField").classList.toggle("hidden",!signup);
-  $("ageFields").classList.toggle("hidden",!signup);
-  $("displayName").required=signup;
-  $("dob").required=signup;
-  $("password").autocomplete=signup?"new-password":"current-password";
-  setText("authStatus","");
-}
-$("authForm").addEventListener("submit",async e=>{
-  e.preventDefault();setText("authStatus","Please wait…");
-  try{
-    const email=$("email").value.trim(),password=$("password").value;
-    if(authMode==="signup"){
-      const dob=$("dob").value;
-      if(!$("ageCheck").checked)throw Error("Confirm that you are 18 or older.");
-      if(!dob)throw Error("Enter your date of birth.");
-      const birth=new Date(dob+"T00:00:00");
-      const cutoff=new Date();cutoff.setFullYear(cutoff.getFullYear()-18);
-      if(birth>cutoff)throw Error("You must be 18 or older to register.");
-      const {data,error}=await sb.auth.signUp({
-        email,password,
-        options:{emailRedirectTo:location.origin+location.pathname,
-          data:{display_name:$("displayName").value.trim(),date_of_birth:dob,age_attested:true}}
-      });
-      if(error)throw error;
-      setText("authStatus",data.session?"Account created.":"Account created. Check your email to verify your address.");
-    }else{
-      const {error}=await sb.auth.signInWithPassword({email,password});
-      if(error)throw error;
-      closeModal("authModal");
-      setText("authStatus","");
-    }
-  }catch(e){setText("authStatus",e.message||"Authentication failed.");}
-});
-
-async function logout(){
-  if(!sb)return;
-  const {error}=await sb.auth.signOut();
-  if(error)return alert(error.message);
-  user=null;await refreshProfile();go("home");
-}
-async function refreshProfile(){
-  if(!sb)return;
-  const {data,error}=await sb.auth.getUser();
-  if(error)console.warn(error.message);
-  user=data?.user||null;
-  $("topAuth").textContent=user?"My account":"Log in";
-  const meta=user?.user_metadata||{};
-  setText("profileName",meta.display_name||"Your profile");
-  setText("profileHandle",user?"@"+(user.email?.split("@")[0]||"creator"):"@creator");
-  setText("profileBio",meta.bio||"Add a bio to tell the world about yourself.");
-  $("profileAvatar").src=meta.avatar_url||avatarFallback(meta.display_name);
-  $("profileWebsite").classList.toggle("hidden",!meta.website);
-  $("profileWebsite").href=meta.website||"#";
-  if(user){await loadMyPosts();await loadCounts();}
-}
-function avatarFallback(name){
-  return "data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><linearGradient id="g"><stop stop-color="#ff397e"/><stop offset="1" stop-color="#a66bff"/></linearGradient></defs><rect width="100" height="100" rx="50" fill="url(#g)"/><text x="50" y="62" text-anchor="middle" font-size="43" fill="white" font-family="Arial">${initials(name)}</text></svg>`);
-}
-function editProfile(){
-  if(!user)return openAuth();
-  const m=user.user_metadata||{};
-  $("editName").value=m.display_name||"";
-  $("editBio").value=m.bio||"";
-  $("editWebsite").value=m.website||"";
-  setText("profileStatus","");
-  openModal("profileModal");
-}
-$("profileForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  try{
-    const website=$("editWebsite").value.trim();
-    if(website&&!/^https?:\/\//i.test(website))throw Error("Website must begin with https:// or http://");
-    const {error}=await sb.auth.updateUser({data:{display_name:$("editName").value.trim(),bio:$("editBio").value.trim(),website}});
-    if(error)throw error;
-    await refreshProfile();closeModal("profileModal");
-  }catch(e){setText("profileStatus",e.message);}
-});
-async function uploadAvatar(){
-  if(!user)return openAuth();
-  const file=$("avatarFile").files[0];if(!file)return;
-  if(!file.type.startsWith("image/"))return alert("Choose an image file.");
-  if(file.size>5*1024*1024)return alert("Please choose an image smaller than 5 MB.");
-  try{
-    const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"");
-    const path=`${user.id}/avatar-${Date.now()}.${ext}`;
-    const {error}=await sb.storage.from("twoterm-media").upload(path,file,{upsert:true,contentType:file.type});
-    if(error)throw error;
-    const {data}=sb.storage.from("twoterm-media").getPublicUrl(path);
-    const {error:updateError}=await sb.auth.updateUser({data:{avatar_url:data.publicUrl}});
-    if(updateError)throw updateError;
-    await refreshProfile();alert("Profile picture updated.");
-  }catch(e){alert("Picture upload failed: "+e.message+". Check the twoterm-media bucket and its policies.");}
-  finally{$("avatarFile").value="";}
-}
-
-function openUpload(){
-  if(!user)return openAuth();
-  $("uploadForm").reset();$("uploadPreview").classList.add("hidden");
-  setText("uploadStatus","");
-  openModal("uploadModal");
-}
-$("videoFile").addEventListener("change",()=>{
-  const file=$("videoFile").files[0];if(!file)return;
-  if(uploadObjectUrl)URL.revokeObjectURL(uploadObjectUrl);
-  uploadObjectUrl=URL.createObjectURL(file);
-  $("uploadPreview").src=uploadObjectUrl;
-  $("uploadPreview").classList.remove("hidden");
-  previewFilter();
-});
-function previewFilter(){$("uploadPreview").style.filter=$("videoFilter").value;}
-$("uploadForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!user)return openAuth();
-  const file=$("videoFile").files[0];if(!file)return setText("uploadStatus","Choose a video.");
-  if(!file.type.startsWith("video/"))return setText("uploadStatus","Choose a valid video file.");
-  if(file.size>100*1024*1024)return setText("uploadStatus","Video must be smaller than 100 MB.");
-  setText("uploadStatus","Uploading your video…");
-  $("uploadForm").querySelector("button").disabled=true;
-  try{
-    const ext=(file.name.split(".").pop()||"mp4").replace(/[^a-z0-9]/gi,"");
-    const path=`${user.id}/video-${Date.now()}.${ext}`;
-    const {error:upError}=await sb.storage.from("twoterm-media").upload(path,file,{contentType:file.type});
-    if(upError)throw upError;
-    const {data:urlData}=sb.storage.from("twoterm-media").getPublicUrl(path);
-    const {error}=await sb.from("app_posts").insert({
-      user_id:user.id,video_url:urlData.publicUrl,caption:$("videoCaption").value.trim()
-    });
-    if(error)throw error;
-    closeModal("uploadModal");await loadFeed();await loadMyPosts();go("home");
-  }catch(e){setText("uploadStatus","Upload failed: "+e.message);}
-  finally{$("uploadForm").querySelector("button").disabled=false;}
-});
-
-async function loadFeed(target="feed",followingOnly=false){
-  if(!sb)return;
-  const box=$(target);if(!box)return;
-  box.innerHTML='<div class="empty">Loading videos…</div>';
-  let query=sb.from("app_posts").select("id,user_id,video_url,caption,created_at").order("created_at",{ascending:false}).limit(50);
-  if(followingOnly&&user){
-    const {data:follows,error:fError}=await sb.from("app_follows").select("followed_id").eq("follower_id",user.id);
-    if(fError)throw fError;
-    const ids=(follows||[]).map(x=>x.followed_id);
-    if(!ids.length){box.innerHTML='<div class="empty">Follow creators to see their videos here.</div>';return;}
-    query=query.in("user_id",ids);
-  }
-  const {data:posts,error}=await query;
-  if(error){box.innerHTML='<div class="empty">Feed setup needed: '+esc(error.message)+'</div>';return;}
-  box.innerHTML="";
-  let filtered=(posts||[]).filter(p=>(p.caption||"").toLowerCase().includes(searchTerm));
-  if(!filtered.length){box.innerHTML='<div class="empty">No videos yet. Be the first to share a moment.</div>';return;}
-  for(const p of filtered)box.append(await makePost(p));
-}
-async function makePost(post){
-  const card=document.createElement("article");card.className="video-card";card.dataset.post=post.id;
-  const meta=post.user_id===user?.id?user?.user_metadata||{}:{};
-  const name=meta.display_name||"TWOTERM creator";
-  const avatar=meta.avatar_url||avatarFallback(name);
-  const layout=document.createElement("div");layout.className="video-layout";
-  const content=document.createElement("div");
-  const stage=document.createElement("div");stage.className="video-stage";
-  const video=document.createElement("video");video.src=post.video_url;video.controls=true;video.playsInline=true;video.loop=true;video.preload="metadata";video.style.filter=$("videoFilter")?.value||"none";
-  stage.append(video);
-  const details=document.createElement("div");details.className="video-meta";
-  const creator=document.createElement("div");creator.className="creator-row";
-  const av=document.createElement("img");av.className="avatar";av.src=avatar;av.alt="Creator profile";
-  const info=document.createElement("div");info.className="creator-info";
-  const nm=document.createElement("div");nm.className="creator-name";nm.textContent=name;
-  const sub=document.createElement("div");sub.className="small";sub.textContent=new Date(post.created_at).toLocaleDateString();
-  info.append(nm,sub);
-  const follow=document.createElement("button");follow.className="follow-btn";follow.textContent="Follow";
-  follow.onclick=()=>followUser(post.user_id,follow);
-  if(post.user_id===user?.id)follow.classList.add("hidden");
-  creator.append(av,info,follow);
-  const cap=document.createElement("p");cap.className="caption";cap.textContent=post.caption||"";
-  const sound=document.createElement("div");sound.className="sound";sound.textContent="♫ Original sound · TWOTERM";
-  details.append(creator,cap,sound);
-  content.append(stage,details);
-  const actions=document.createElement("div");actions.className="video-actions";
-  const like=document.createElement("button");like.className="action";like.innerHTML='♡<span>Like</span>';like.onclick=()=>toggleLike(post.id,like);
-  const comment=document.createElement("button");comment.className="action";comment.innerHTML='▢<span>Comment</span>';comment.onclick=()=>openComments(post.id);
-  const share=document.createElement("button");share.className="action";share.innerHTML='↗<span>Share</span>';share.onclick=()=>sharePost(post.video_url);
-  actions.append(like,comment,share);
-  layout.append(content,actions);card.append(layout);
-  if(user){
-    const {data:liked}=await sb.from("app_likes").select("post_id").eq("post_id",post.id).eq("user_id",user.id).maybeSingle();
-    if(liked){like.classList.add("liked");like.firstChild.textContent="♥";}
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",post.id);
-    like.lastChild.textContent=`${count||0} likes`;
-  }else{
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",post.id);
-    like.lastChild.textContent=`${count||0} likes`;
-  }
-  return card;
-}
-async function toggleLike(postId,button){
-  if(!user)return openAuth();
-  try{
-    const {data:existing,error:findError}=await sb.from("app_likes").select("post_id").eq("post_id",postId).eq("user_id",user.id).maybeSingle();
-    if(findError)throw findError;
-    if(existing){
-      const {error}=await sb.from("app_likes").delete().eq("post_id",postId).eq("user_id",user.id);if(error)throw error;
-      button.classList.remove("liked");button.firstChild.textContent="♡";
-    }else{
-      const {error}=await sb.from("app_likes").insert({post_id:postId,user_id:user.id});if(error)throw error;
-      button.classList.add("liked");button.firstChild.textContent="♥";
-    }
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",postId);
-    button.lastChild.textContent=`${count||0} likes`;
-  }catch(e){alert("Like failed: "+e.message);}
-}
-async function followUser(id,button){
-  if(!user)return openAuth();if(id===user.id)return;
-  try{
-    const {error}=await sb.from("app_follows").insert({follower_id:user.id,followed_id:id});
-    if(error&&error.code!=="23505")throw error;
-    button.textContent="Following";button.disabled=true;
-  }catch(e){alert("Follow failed: "+e.message);}
-}
-async function sharePost(url){
-  try{
-    if(navigator.share)await navigator.share({title:"TWOTERM video",url});
-    else{await navigator.clipboard.writeText(url);alert("Video link copied.");}
-  }catch(e){if(e.name!=="AbortError")prompt("Copy video link",url);}
-}
-function setFeedMode(mode,button){
-  feedMode=mode;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===button));
-  if(mode==="following"){go("following");return;}
-  loadFeed("feed",false);
-}
-function searchFeed(){searchTerm=$("searchInput").value.trim().toLowerCase();go("home");loadFeed();}
-$("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchFeed();});
-async function loadFollowing(){
-  try{await loadFeed("followingFeed",true);}
-  catch(e){$("followingFeed").innerHTML='<div class="empty">'+esc(e.message)+'</div>';}
-}
-async function loadDiscover(){await loadFeed("discoverFeed",false);}
-async function loadMyPosts(){
-  if(!user)return;
-  const box=$("profileVideos");box.innerHTML="";
-  const {data,error}=await sb.from("app_posts").select("id,video_url,caption,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(60);
-  if(error){box.innerHTML='<div class="empty">Could not load your videos.</div>';return;}
-  for(const p of data||[]){
-    const tile=document.createElement("div");tile.className="grid-video";
-    const v=document.createElement("video");v.src=p.video_url;v.controls=true;v.playsInline=true;v.preload="metadata";
-    const caption=document.createElement("p");caption.textContent=p.caption||"My video";
-    tile.append(v,caption);box.append(tile);
-  }
-  setText("videoCount",String(data?.length||0));
-}
-async function loadCounts(){
-  if(!user)return;
-  const [followers,following]=await Promise.all([
-    sb.from("app_follows").select("*",{count:"exact",head:true}).eq("followed_id",user.id),
-    sb.from("app_follows").select("*",{count:"exact",head:true}).eq("follower_id",user.id)
-  ]);
-  setText("followerCount",String(followers.count||0));
-  setText("followingCount",String(following.count||0));
-}
-
-async function openComments(postId){
-  if(!user)return openAuth();
-  activePost=postId;$("commentList").innerHTML='<p class="muted">Loading comments…</p>';
-  openModal("commentModal");
-  const {data,error}=await sb.from("app_comments").select("id,user_id,body,created_at").eq("post_id",postId).order("created_at",{ascending:true}).limit(100);
-  const box=$("commentList");box.innerHTML="";
-  if(error){box.innerHTML='<p class="muted">Comments need the app_comments table and its policies.</p>';return;}
-  if(!data?.length){box.innerHTML='<p class="muted">Be the first to comment.</p>';return;}
-  for(const c of data){
-    const p=document.createElement("p");p.textContent=c.body;p.className="card";box.append(p);
-  }
-}
-$("commentForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!user)return openAuth();
-  try{
-    const body=$("commentText").value.trim();if(!body)return;
-    const {error}=await sb.from("app_comments").insert({post_id:activePost,user_id:user.id,body});
-    if(error)throw error;
-    $("commentText").value="";await openComments(activePost);
-  }catch(e){setText("commentStatus","Comment failed: "+e.message);}
-});
-
-async function startLive(){
-  if(!user)return openAuth();
-  setText("liveStatus","Checking secure live-stream eligibility…");
-  try{
-    const {data:{session},error}=await sb.auth.getSession();if(error)throw error;
-    if(!session)throw Error("Please log in first.");
-    const result=await sb.functions.invoke("livekit-token",{body:{title:$("liveTitle").value.trim()}});
-    if(result.error)throw result.error;
-    const d=result.data;
-    if(!d?.server_url||!d?.participant_token)throw Error("The secure LiveKit token service is not configured correctly.");
-    if(!window.LivekitClient)throw Error("LiveKit client library did not load.");
-    liveRoom=new LivekitClient.Room();
-    await liveRoom.connect(d.server_url,d.participant_token);
-    await liveRoom.localParticipant.enableCameraAndMicrophone();
-    cameraStream=new MediaStream();
-    liveRoom.localParticipant.videoTrackPublications.forEach(p=>{if(p.track?.mediaStreamTrack)cameraStream.addTrack(p.track.mediaStreamTrack);});
-    $("cameraPreview").srcObject=cameraStream;$("cameraPreview").classList.remove("hidden");
-    setText("liveStatus","Connected to LiveKit. Audience playback and live discovery must also be configured.");
-  }catch(e){setText("liveStatus",e.message||"Could not start live.");}
-}
-async function endLive(){
-  if(liveRoom){try{await liveRoom.disconnect();}catch(e){}liveRoom=null;}
-  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
-  $("cameraPreview").srcObject=null;$("cameraPreview").classList.add("hidden");
-  setText("liveStatus","Live session ended.");
-}
-</script>
-</body>
-</html>
-
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090811">
-<title>TWOTERM — Create Your World</title>
-<meta name="description" content="Discover creators, share short videos and connect with the world on TWOTERM.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
-<style>
-:root{color-scheme:dark;--bg:#090811;--surface:#12111c;--surface2:#1b1927;--line:#302b40;--pink:#ff397e;--purple:#a66bff;--text:#faf8ff;--muted:#aaa4bd;--green:#5fe0b0}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer;transition:transform .15s,opacity .15s}
-button:active{transform:scale(.97)}
-button:disabled{opacity:.5;cursor:not-allowed}
-a{color:inherit;text-decoration:none}
-.hidden{display:none!important}
-.muted,.small{color:var(--muted)}
-.small{font-size:12px}
-.brand{display:flex;align-items:center;gap:9px;font-size:22px;font-weight:950;letter-spacing:-1px}
-.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 5px 25px #ff397e35;color:#fff;font-size:19px}
-.brand span{color:#ff5c9a}
-.topbar{height:70px;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:22px;padding:0 max(22px,calc((100vw - 1440px)/2));background:#090811ed;backdrop-filter:blur(18px);border-bottom:1px solid #ffffff0c}
-.search{margin:auto;max-width:440px;flex:1;display:flex;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:15px;padding:0 13px}
-.search input{background:transparent;border:0;outline:0;color:white;width:100%;padding:12px}
-.search button{border:0;background:transparent;color:var(--muted);font-size:18px}
-.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface2);color:white;font-weight:750}
-.btn-primary{background:linear-gradient(115deg,var(--pink),#a34fff);border:0;color:white;box-shadow:0 5px 22px #ff397e20}
-.btn-quiet{background:transparent}
-.layout{max-width:1440px;margin:auto;padding:24px;display:grid;grid-template-columns:220px minmax(0,1fr) 270px;gap:25px;align-items:start}
-.sidebar,.rightbar{position:sticky;top:94px;display:grid;gap:8px}
-.navitem{width:100%;display:flex;align-items:center;gap:13px;text-align:left;border:0;border-radius:13px;padding:13px 15px;background:transparent;color:#b8b1c9;font-weight:700}
-.navitem:hover,.navitem.active{background:#21182c;color:white}
-.navitem.active{box-shadow:inset 3px 0 var(--pink)}
-.navicon{width:24px;text-align:center;font-size:20px}
-.side-heading{margin:20px 12px 8px;color:#827b94;font-size:10px;letter-spacing:1.6px;font-weight:900}
-.card{border:1px solid var(--line);background:linear-gradient(145deg,#171421,#100f19);border-radius:20px;padding:18px}
-.hero{position:relative;overflow:hidden;padding:27px;background:radial-gradient(ellipse at 85% 10%,#9b4cff33,transparent 42%),radial-gradient(ellipse at 10% 100%,#ff397e20,transparent 40%),#14111f}
-.hero h1{font-size:clamp(27px,3vw,39px);line-height:1.1;letter-spacing:-1.6px;margin:0 0 12px;max-width:540px}
-.gradient-text{background:linear-gradient(100deg,#ff69a2,#b99aff);background-clip:text;color:transparent}
-.hero p{max-width:500px;color:#c0b9ce;margin-bottom:20px}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 14px}
-.section-head h2{font-size:19px;margin:0;letter-spacing:-.4px}
-.tabs{display:flex;gap:20px;border-bottom:1px solid var(--line);margin:20px 0 18px}
-.tab{padding:0 0 12px;background:transparent;border:0;color:var(--muted);font-weight:800;position:relative}
-.tab.active{color:white}
-.tab.active:after{content:"";position:absolute;height:3px;bottom:-1px;left:0;right:0;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:5px}
-.feed{display:grid;gap:18px}
-.video-card{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:#12101a}
-.video-layout{display:grid;grid-template-columns:minmax(0,1fr) 72px}
-.video-stage{position:relative;min-height:330px;background:#08070d;overflow:hidden}
-.video-stage video{width:100%;height:100%;max-height:610px;min-height:330px;display:block;object-fit:contain;background:#08070d}
-.video-meta{padding:16px 17px 18px}
-.creator-row{display:flex;align-items:center;gap:10px}
-.avatar{width:43px;height:43px;border-radius:50%;object-fit:cover;display:grid;place-items:center;flex-shrink:0;background:linear-gradient(135deg,#ff4389,#8459ff);font-weight:900}
-.creator-info{min-width:0;flex:1}
-.creator-name{font-weight:850}
-.verified{color:#70d8ff}
-.follow-btn{background:white;color:#17111f;border:0;border-radius:9px;padding:8px 13px;font-weight:850}
-.caption{white-space:pre-wrap;overflow-wrap:anywhere;margin:13px 0}
-.sound{font-size:12px;color:#c3b7d7}
-.video-actions{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:17px;padding:0 8px 22px}
-.action{display:grid;justify-items:center;gap:4px;background:transparent;border:0;color:white;font-size:22px}
-.action span{font-size:11px;color:#d4cddd;font-weight:700}
-.action.liked{color:var(--pink)}
-.action .following{color:var(--green)}
-.empty{padding:35px 15px;text-align:center;border:1px dashed #453b57;border-radius:18px;color:var(--muted)}
-.creator-list{display:grid;gap:15px}
-.creator-item{display:flex;align-items:center;gap:10px}
-.creator-item .creator-info{flex:1;min-width:0}
-.creator-item .creator-name{font-size:12px}
-.creator-item button{border:0;background:#2b2037;color:#f4eaff;border-radius:9px;padding:8px;font-size:12px;font-weight:800}
-.feature-row{display:flex;gap:12px;align-items:center;margin-top:14px}
-.feature-icon{width:39px;height:39px;display:grid;place-items:center;border-radius:13px;background:#29203a;font-size:19px}
-.feature-row strong{display:block;font-size:12px}
-.feature-row small{color:var(--muted);font-size:11px}
-.bottomnav{display:none}
-.page{min-width:0}
-.grid-videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.grid-video{border-radius:12px;overflow:hidden;background:#1a1724}
-.grid-video video{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
-.grid-video p{padding:8px;margin:0;font-size:12px}
-.profile-cover{height:125px;border-radius:16px;background:radial-gradient(ellipse at 80% 20%,#a66bff99,transparent 40%),linear-gradient(120deg,#31162f,#171426,#222044)}
-.profile-head{display:flex;align-items:end;gap:15px;margin-top:-35px;padding:0 16px;position:relative}
-.profile-head .avatar{width:86px;height:86px;border:4px solid #12111c;font-size:26px}
-.profile-details{padding:15px 16px}
-.stats{display:flex;gap:22px;margin:18px 0}
-.stats strong{display:block;font-size:18px}
-.stats span{font-size:11px;color:var(--muted)}
-.modal{width:min(94vw,470px);max-height:88vh;overflow:auto;padding:25px;background:#15121f;color:white;border:1px solid #433650;border-radius:22px}
-.modal::backdrop{background:#030208d9;backdrop-filter:blur(5px)}
-.modal h2{margin:0 0 7px;font-size:23px;letter-spacing:-.7px}
-.form{display:grid;gap:13px;margin-top:20px}
-.field{display:grid;gap:6px;color:#c9c0d8;font-size:12px;font-weight:750}
-.field input,.field textarea,.field select{width:100%;padding:13px;background:#0d0b14;border:1px solid #3b324a;border-radius:11px;color:white;outline:none}
-.field input:focus,.field textarea:focus{border-color:#b36aff}
-.field textarea{min-height:90px;resize:vertical}
-.form-status{min-height:20px;color:#c9bfd8;font-size:12px;overflow-wrap:anywhere}
-.checkline{display:flex;align-items:center;gap:8px;color:#c9c0d8;font-size:12px}
-.checkline input{width:auto}
-.modal-footer{margin-top:15px;display:flex;gap:8px;flex-wrap:wrap}
-.discover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.discover-tile{min-height:105px;padding:15px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(145deg,#27203a,#14111e);display:flex;flex-direction:column;justify-content:end}
-.discover-tile b{font-size:14px}.discover-tile small{color:var(--muted)}
-.live-preview{width:100%;max-height:340px;object-fit:cover;background:#08070d;border-radius:14px}
-.badge-live{background:#ff2e58;color:white;border-radius:6px;font-size:10px;font-weight:900;padding:3px 6px}
-@media(max-width:1100px){.layout{grid-template-columns:190px minmax(0,1fr)}.rightbar{display:none}}
-@media(max-width:700px){
- .topbar{height:60px;padding:0 13px;gap:10px}.brand{font-size:19px}.brand-mark{width:30px;height:30px}.search{max-width:none}.search input{padding:10px 5px}.topbar>.btn{padding:9px}
- .layout{display:block;padding:12px 10px 88px}.sidebar,.rightbar{display:none}
- .hero{padding:22px 19px;border-radius:18px}.hero h1{font-size:30px}
- .video-card{border-radius:17px}.video-layout{grid-template-columns:minmax(0,1fr) 57px}
- .video-stage{min-height:260px}.video-stage video{min-height:260px;max-height:66vh}
- .video-actions{gap:16px;padding-bottom:18px}.action{font-size:21px}
- .video-meta{padding:13px}.section-head{margin-top:20px}
- .bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:30;justify-content:space-around;gap:2px;padding:8px 4px calc(8px + env(safe-area-inset-bottom));background:#0d0b14f5;backdrop-filter:blur(18px);border-top:1px solid #ffffff12}
- .bottomnav button{display:grid;justify-items:center;gap:3px;flex:1;border:0;background:transparent;color:#9991aa;font-size:10px;padding:3px}
- .bottomnav button span{font-size:21px;line-height:1.2}.bottomnav button.active{color:#ff5b9b}
- .bottomnav .create{font-size:23px;color:white;background:linear-gradient(120deg,var(--pink),var(--purple));border-radius:9px;max-width:44px;margin:0 6px}
- .discover-grid{grid-template-columns:repeat(2,1fr)}.grid-videos{gap:7px}
-}
-</style>
-</head>
-<body>
-<header class="topbar">
-  <a class="brand" href="#" onclick="go('home');return false"><span class="brand-mark">T</span> TWO<span>TERM</span></a>
-  <label class="search"><span>⌕</span><input id="searchInput" placeholder="Search creators and videos" aria-label="Search"><button onclick="searchFeed()" aria-label="Search">↵</button></label>
-  <button id="topAuth" class="btn btn-primary" onclick="openAuth()">Log in</button>
-</header>
-
-<div class="layout">
-  <aside class="sidebar">
-    <button class="navitem active" data-page="home" onclick="go('home',this)"><span class="navicon">⌂</span> For You</button>
-    <button class="navitem" data-page="following" onclick="go('following',this)"><span class="navicon">♡</span> Following</button>
-    <button class="navitem" data-page="discover" onclick="go('discover',this)"><span class="navicon">⌕</span> Discover</button>
-    <button class="navitem" data-page="live" onclick="go('live',this)"><span class="navicon">◉</span> LIVE Studio</button>
-    <button class="navitem" data-page="inbox" onclick="go('inbox',this)"><span class="navicon">✉</span> Notifications</button>
-    <button class="navitem" data-page="profile" onclick="go('profile',this)"><span class="navicon">♙</span> My profile</button>
-    <button class="navitem" onclick="openUpload()"><span class="navicon">⊕</span> Create video</button>
-    <div class="side-heading">YOUR CREATOR JOURNEY</div>
-    <div class="card">
-      <div style="font-weight:850">Your voice matters.</div>
-      <p class="small">Create original videos, meet your audience and build your community.</p>
-      <button class="btn btn-primary" style="width:100%" onclick="openAuth()">Join TWOTERM</button>
-    </div>
-    <div class="side-heading">COMMUNITY</div>
-    <p class="small" style="padding:0 12px">Safety · Privacy · Community guidelines</p>
-  </aside>
-
-  <main class="page">
-    <section id="homePage">
-      <div class="card hero">
-        <div class="small" style="letter-spacing:2px;font-weight:900;color:#ff91b9;margin-bottom:9px">YOUR WORLD. YOUR STAGE.</div>
-        <h1>Every creator has a story.<br><span class="gradient-text">What's yours?</span></h1>
-        <p>Discover fresh perspectives, share your best moments and connect with a world of creators.</p>
-        <div class="row" style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="openUpload()">＋ Create a video</button>
-          <button class="btn" onclick="go('discover')">Explore creators ↗</button>
-        </div>
-      </div>
-      <div class="tabs">
-        <button class="tab active" onclick="setFeedMode('foryou',this)">For You</button>
-        <button class="tab" onclick="setFeedMode('following',this)">Following</button>
-        <button class="tab" onclick="setFeedMode('trending',this)">Trending</button>
-      </div>
-      <div id="feed" class="feed"><div class="empty">Connecting to TWOTERM…</div></div>
-    </section>
-
-    <section id="followingPage" class="hidden">
-      <div class="section-head"><h2>Following</h2></div>
-      <div id="followingFeed" class="feed"><div class="empty">Log in and follow creators to build your feed.</div></div>
-    </section>
-
-    <section id="discoverPage" class="hidden">
-      <div class="section-head"><h2>Discover your next favourite</h2></div>
-      <div class="discover-grid">
-        <div class="discover-tile"><b>🎵 Music</b><small>Sounds and performances</small></div>
-        <div class="discover-tile"><b>😂 Comedy</b><small>Moments that make you laugh</small></div>
-        <div class="discover-tile"><b>⚽ Sports</b><small>Skills and highlights</small></div>
-        <div class="discover-tile"><b>🎮 Gaming</b><small>Play, watch and connect</small></div>
-        <div class="discover-tile"><b>🌍 Lifestyle</b><small>Life from every angle</small></div>
-        <div class="discover-tile"><b>✨ Creativity</b><small>Original ideas</small></div>
-      </div>
-      <div class="section-head"><h2>Explore videos</h2></div>
-      <div id="discoverFeed" class="feed"></div>
-    </section>
-
-    <section id="profilePage" class="hidden">
-      <div class="card">
-        <div class="profile-cover"></div>
-        <div class="profile-head">
-          <img id="profileAvatar" class="avatar" alt="Profile picture" src="">
-          <div style="padding-bottom:6px;flex:1"><div id="profileName" style="font-size:20px;font-weight:900">Your profile</div><div id="profileHandle" class="small">@creator</div></div>
-          <button class="btn" onclick="editProfile()">Edit profile</button>
-        </div>
-        <div class="profile-details">
-          <p id="profileBio" class="muted">Add a bio to tell the world about yourself.</p>
-          <a id="profileWebsite" class="hidden" href="#" target="_blank" rel="noopener">Visit my website ↗</a>
-          <div class="stats">
-            <div><strong id="videoCount">0</strong><span>Videos</span></div>
-            <div><strong id="followingCount">0</strong><span>Following</span></div>
-            <div><strong id="followerCount">0</strong><span>Followers</span></div>
-          </div>
-          <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="document.getElementById('avatarFile').click()">Change picture</button>
-            <button class="btn" onclick="openUpload()">＋ Post video</button>
-            <button class="btn" onclick="logout()">Log out</button>
-          </div>
-          <input id="avatarFile" type="file" accept="image/*" class="hidden" onchange="uploadAvatar()">
-        </div>
-      </div>
-      <div class="section-head"><h2>Your videos</h2></div>
-      <div id="profileVideos" class="grid-videos"></div>
-    </section>
-
-    <section id="livePage" class="hidden">
-      <div class="card hero">
-        <span class="badge-live">LIVE STUDIO</span>
-        <h1 style="margin-top:15px">Your audience is waiting.</h1>
-        <p>Start a live session when your creator account is approved and you meet the platform's eligibility requirements.</p>
-      </div>
-      <div class="card" style="margin-top:15px">
-        <label class="field">Live stream title<input id="liveTitle" maxlength="100" placeholder="Give your live a title"></label>
-        <video id="cameraPreview" class="live-preview hidden" autoplay playsinline muted style="margin-top:15px"></video>
-        <p id="liveStatus" class="form-status">Live streaming needs a secure LiveKit token function and server-side eligibility checks.</p>
-        <div class="row" style="display:flex;gap:9px;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="startLive()">◉ Check eligibility & go live</button>
-          <button class="btn" onclick="endLive()">End live</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="inboxPage" class="hidden">
-      <div class="section-head"><h2>Notifications</h2></div>
-      <div class="empty">Your notifications will appear here when the notification service is connected.</div>
-    </section>
-
-    <section id="walletPage" class="hidden">
-      <div class="card hero"><h1>Creator wallet</h1><p>Gifts and withdrawals require a verified payment provider and secure server-side records.</p><div class="empty">No real-money balance is available in this demo.</div></div>
-    </section>
-  </main>
-
-  <aside class="rightbar">
-    <div class="card">
-      <div class="section-head" style="margin:0 0 15px"><h2>Creator spotlight</h2><span>✦</span></div>
-      <div class="creator-list">
-        <div class="creator-item"><div class="avatar">L</div><div class="creator-info"><div class="creator-name">Luna Rose</div><div class="small">Music & lifestyle</div></div><span class="verified">✓</span></div>
-        <div class="creator-item"><div class="avatar">K</div><div class="creator-info"><div class="creator-name">Kai Rivers</div><div class="small">Creator inspiration</div></div><span class="verified">✓</span></div>
-        <div class="creator-item"><div class="avatar">M</div><div class="creator-info"><div class="creator-name">Mira Jade</div><div class="small">Daily stories</div></div><span class="verified">✓</span></div>
-      </div>
-      <p class="small" style="margin:15px 0 0">Sample creator profiles. These are design examples, not registered accounts.</p>
-    </div>
-    <div class="card">
-      <div style="font-weight:900">Built for creators</div>
-      <div class="feature-row"><div class="feature-icon">🎬</div><div><strong>Short-form video</strong><small>Share your perspective</small></div></div>
-      <div class="feature-row"><div class="feature-icon">💬</div><div><strong>Real community</strong><small>Meet your audience</small></div></div>
-      <div class="feature-row"><div class="feature-icon">💎</div><div><strong>Creator rewards</strong><small>Payments require setup</small></div></div>
-    </div>
-    <p class="small">TWOTERM © 2026<br>Adults 18+ · Safety · Privacy</p>
-  </aside>
-</div>
-
-<nav class="bottomnav">
-  <button class="active" data-mobile="home" onclick="go('home')"><span>⌂</span>Home</button>
-  <button data-mobile="discover" onclick="go('discover')"><span>⌕</span>Discover</button>
-  <button class="create" onclick="openUpload()" aria-label="Create video">＋</button>
-  <button data-mobile="live" onclick="go('live')"><span>◉</span>Live</button>
-  <button data-mobile="profile" onclick="go('profile')"><span>♙</span>Profile</button>
-</nav>
-
-<dialog id="authModal" class="modal">
-  <div class="brand"><span class="brand-mark">T</span> TWO<span>TERM</span></div>
-  <h2 id="authHeading" style="margin-top:22px">Create your account</h2>
-  <p class="muted">Your next chapter starts here.</p>
-  <form id="authForm" class="form">
-    <label id="nameField" class="field">Display name<input id="displayName" maxlength="60" placeholder="How should we call you?"></label>
-    <label class="field">Email address<input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></label>
-    <label class="field">Password<input id="password" type="password" minlength="8" autocomplete="current-password" required placeholder="At least 8 characters"></label>
-    <div id="ageFields">
-      <label class="field">Date of birth<input id="dob" type="date"></label>
-      <label class="checkline"><input id="ageCheck" type="checkbox"> I confirm I am 18 years or older.</label>
-    </div>
-    <button id="authSubmit" class="btn btn-primary" type="submit">Create account</button>
-  </form>
-  <p id="authStatus" class="form-status"></p>
-  <button class="btn btn-quiet" id="authSwitch" onclick="toggleAuth()">Already have an account? Log in</button>
-  <button class="btn btn-quiet" onclick="closeModal('authModal')">Close</button>
-</dialog>
-
-<dialog id="profileModal" class="modal">
-  <h2>Edit your profile</h2>
-  <p class="muted">Make your creator profile yours.</p>
-  <form id="profileForm" class="form">
-    <label class="field">Display name<input id="editName" maxlength="60" required></label>
-    <label class="field">Bio<textarea id="editBio" maxlength="300" placeholder="Tell people about yourself…"></textarea></label>
-    <label class="field">Website or social link<input id="editWebsite" type="url" placeholder="https://example.com"></label>
-    <button class="btn btn-primary">Save profile</button>
-  </form>
-  <p id="profileStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('profileModal')">Cancel</button>
-</dialog>
-
-<dialog id="uploadModal" class="modal">
-  <h2>Create a video</h2>
-  <p class="muted">Share a moment with your community.</p>
-  <form id="uploadForm" class="form">
-    <label class="field">Choose a video<input id="videoFile" type="file" accept="video/*" required></label>
-    <label class="field">Caption<textarea id="videoCaption" maxlength="2000" placeholder="Write a caption…"></textarea></label>
-    <label class="field">Preview filter
-      <select id="videoFilter" onchange="previewFilter()">
-        <option value="none">Original</option>
-        <option value="saturate(1.4) contrast(1.08)">Vivid</option>
-        <option value="grayscale(1)">Black & white</option>
-        <option value="sepia(.6)">Warm</option>
-        <option value="brightness(1.12) saturate(.85)">Soft light</option>
-      </select>
-    </label>
-    <video id="uploadPreview" class="live-preview hidden" controls playsinline></video>
-    <button class="btn btn-primary">Publish video</button>
-  </form>
-  <p id="uploadStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('uploadModal')">Close</button>
-</dialog>
-
-<dialog id="commentModal" class="modal">
-  <h2>Comments</h2>
-  <div id="commentList" class="creator-list"></div>
-  <form id="commentForm" class="form">
-    <label class="field">Add a comment<textarea id="commentText" maxlength="1000" required placeholder="Keep it kind…"></textarea></label>
-    <button class="btn btn-primary">Post comment</button>
-  </form>
-  <p id="commentStatus" class="form-status"></p>
-  <button class="btn btn-quiet" onclick="closeModal('commentModal')">Close</button>
-</dialog>
-
-<script>
-/* TWOTERM client configuration. Use the Project URL and publishable key
-   from your own Supabase dashboard. Never place secret keys in this file. */
-const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL";
-const SUPABASE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY";
-
-let sb=null, user=null, authMode="signup", activePost=null, feedMode="foryou";
-let uploadObjectUrl=null, liveRoom=null, cameraStream=null, searchTerm="";
-
-const $=id=>document.getElementById(id);
-const setText=(id,text)=>$(id).textContent=text;
-const openModal=id=>$(id).showModal();
-const closeModal=id=>$(id).close();
-const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const initials=name=>(name||"T").trim().slice(0,1).toUpperCase();
-
-if(window.supabase && SUPABASE_URL.startsWith("https://") &&
-   !SUPABASE_URL.includes("PASTE_") && !SUPABASE_KEY.includes("PASTE_")){
-  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-  boot();
-}else{
-  $("feed").innerHTML='<div class="empty">Connect your Supabase Project URL and publishable key in the code to activate accounts and the video feed.</div>';
-}
-
-async function boot(){
-  try{
-    const {data,error}=await sb.auth.getSession();
-    if(error)throw error;
-    user=data.session?.user||null;
-    await refreshProfile();
-    await loadFeed();
-    sb.auth.onAuthStateChange((_event,session)=>{
-      user=session?.user||null;
-      setTimeout(async()=>{await refreshProfile();await loadFeed();},0);
-    });
-  }catch(e){console.error(e);$("feed").innerHTML='<div class="empty">Could not connect to Supabase. Check your Project URL and key.</div>';}
-}
-
-function go(page,button){
-  const pages=["home","following","discover","profile","live","inbox","wallet"];
-  pages.forEach(p=>{const el=$(p+"Page");if(el)el.classList.toggle("hidden",p!==page);});
-  document.querySelectorAll(".navitem").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
-  document.querySelectorAll(".bottomnav button").forEach(b=>b.classList.toggle("active",b.dataset.mobile===page));
-  window.scrollTo({top:0,behavior:"smooth"});
-  if(page==="profile")refreshProfile();
-  if(page==="following")loadFollowing();
-  if(page==="discover")loadDiscover();
-}
-
-function openAuth(){
-  if(!sb)return alert("Add your Supabase URL and publishable key first.");
-  authMode="signup";updateAuthForm();openModal("authModal");
-}
-function toggleAuth(){authMode=authMode==="signup"?"login":"signup";updateAuthForm();}
-function updateAuthForm(){
-  const signup=authMode==="signup";
-  setText("authHeading",signup?"Create your account":"Welcome back");
-  setText("authSubmit",signup?"Create account":"Log in");
-  setText("authSwitch",signup?"Already have an account? Log in":"New to TWOTERM? Create an account");
-  $("nameField").classList.toggle("hidden",!signup);
-  $("ageFields").classList.toggle("hidden",!signup);
-  $("displayName").required=signup;
-  $("dob").required=signup;
-  $("password").autocomplete=signup?"new-password":"current-password";
-  setText("authStatus","");
-}
-$("authForm").addEventListener("submit",async e=>{
-  e.preventDefault();setText("authStatus","Please wait…");
-  try{
-    const email=$("email").value.trim(),password=$("password").value;
-    if(authMode==="signup"){
-      const dob=$("dob").value;
-      if(!$("ageCheck").checked)throw Error("Confirm that you are 18 or older.");
-      if(!dob)throw Error("Enter your date of birth.");
-      const birth=new Date(dob+"T00:00:00");
-      const cutoff=new Date();cutoff.setFullYear(cutoff.getFullYear()-18);
-      if(birth>cutoff)throw Error("You must be 18 or older to register.");
-      const {data,error}=await sb.auth.signUp({
-        email,password,
-        options:{emailRedirectTo:location.origin+location.pathname,
-          data:{display_name:$("displayName").value.trim(),date_of_birth:dob,age_attested:true}}
-      });
-      if(error)throw error;
-      setText("authStatus",data.session?"Account created.":"Account created. Check your email to verify your address.");
-    }else{
-      const {error}=await sb.auth.signInWithPassword({email,password});
-      if(error)throw error;
-      closeModal("authModal");
-      setText("authStatus","");
-    }
-  }catch(e){setText("authStatus",e.message||"Authentication failed.");}
-});
-
-async function logout(){
-  if(!sb)return;
-  const {error}=await sb.auth.signOut();
-  if(error)return alert(error.message);
-  user=null;await refreshProfile();go("home");
-}
-async function refreshProfile(){
-  if(!sb)return;
-  const {data,error}=await sb.auth.getUser();
-  if(error)console.warn(error.message);
-  user=data?.user||null;
-  $("topAuth").textContent=user?"My account":"Log in";
-  const meta=user?.user_metadata||{};
-  setText("profileName",meta.display_name||"Your profile");
-  setText("profileHandle",user?"@"+(user.email?.split("@")[0]||"creator"):"@creator");
-  setText("profileBio",meta.bio||"Add a bio to tell the world about yourself.");
-  $("profileAvatar").src=meta.avatar_url||avatarFallback(meta.display_name);
-  $("profileWebsite").classList.toggle("hidden",!meta.website);
-  $("profileWebsite").href=meta.website||"#";
-  if(user){await loadMyPosts();await loadCounts();}
-}
-function avatarFallback(name){
-  return "data:image/svg+xml,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><linearGradient id="g"><stop stop-color="#ff397e"/><stop offset="1" stop-color="#a66bff"/></linearGradient></defs><rect width="100" height="100" rx="50" fill="url(#g)"/><text x="50" y="62" text-anchor="middle" font-size="43" fill="white" font-family="Arial">${initials(name)}</text></svg>`);
-}
-function editProfile(){
-  if(!user)return openAuth();
-  const m=user.user_metadata||{};
-  $("editName").value=m.display_name||"";
-  $("editBio").value=m.bio||"";
-  $("editWebsite").value=m.website||"";
-  setText("profileStatus","");
-  openModal("profileModal");
-}
-$("profileForm").addEventListener("submit",async e=>{
-  e.preventDefault();
-  try{
-    const website=$("editWebsite").value.trim();
-    if(website&&!/^https?:\/\//i.test(website))throw Error("Website must begin with https:// or http://");
-    const {error}=await sb.auth.updateUser({data:{display_name:$("editName").value.trim(),bio:$("editBio").value.trim(),website}});
-    if(error)throw error;
-    await refreshProfile();closeModal("profileModal");
-  }catch(e){setText("profileStatus",e.message);}
-});
-async function uploadAvatar(){
-  if(!user)return openAuth();
-  const file=$("avatarFile").files[0];if(!file)return;
-  if(!file.type.startsWith("image/"))return alert("Choose an image file.");
-  if(file.size>5*1024*1024)return alert("Please choose an image smaller than 5 MB.");
-  try{
-    const ext=(file.name.split(".").pop()||"jpg").replace(/[^a-z0-9]/gi,"");
-    const path=`${user.id}/avatar-${Date.now()}.${ext}`;
-    const {error}=await sb.storage.from("twoterm-media").upload(path,file,{upsert:true,contentType:file.type});
-    if(error)throw error;
-    const {data}=sb.storage.from("twoterm-media").getPublicUrl(path);
-    const {error:updateError}=await sb.auth.updateUser({data:{avatar_url:data.publicUrl}});
-    if(updateError)throw updateError;
-    await refreshProfile();alert("Profile picture updated.");
-  }catch(e){alert("Picture upload failed: "+e.message+". Check the twoterm-media bucket and its policies.");}
-  finally{$("avatarFile").value="";}
-}
-
-function openUpload(){
-  if(!user)return openAuth();
-  $("uploadForm").reset();$("uploadPreview").classList.add("hidden");
-  setText("uploadStatus","");
-  openModal("uploadModal");
-}
-$("videoFile").addEventListener("change",()=>{
-  const file=$("videoFile").files[0];if(!file)return;
-  if(uploadObjectUrl)URL.revokeObjectURL(uploadObjectUrl);
-  uploadObjectUrl=URL.createObjectURL(file);
-  $("uploadPreview").src=uploadObjectUrl;
-  $("uploadPreview").classList.remove("hidden");
-  previewFilter();
-});
-function previewFilter(){$("uploadPreview").style.filter=$("videoFilter").value;}
-$("uploadForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!user)return openAuth();
-  const file=$("videoFile").files[0];if(!file)return setText("uploadStatus","Choose a video.");
-  if(!file.type.startsWith("video/"))return setText("uploadStatus","Choose a valid video file.");
-  if(file.size>100*1024*1024)return setText("uploadStatus","Video must be smaller than 100 MB.");
-  setText("uploadStatus","Uploading your video…");
-  $("uploadForm").querySelector("button").disabled=true;
-  try{
-    const ext=(file.name.split(".").pop()||"mp4").replace(/[^a-z0-9]/gi,"");
-    const path=`${user.id}/video-${Date.now()}.${ext}`;
-    const {error:upError}=await sb.storage.from("twoterm-media").upload(path,file,{contentType:file.type});
-    if(upError)throw upError;
-    const {data:urlData}=sb.storage.from("twoterm-media").getPublicUrl(path);
-    const {error}=await sb.from("app_posts").insert({
-      user_id:user.id,video_url:urlData.publicUrl,caption:$("videoCaption").value.trim()
-    });
-    if(error)throw error;
-    closeModal("uploadModal");await loadFeed();await loadMyPosts();go("home");
-  }catch(e){setText("uploadStatus","Upload failed: "+e.message);}
-  finally{$("uploadForm").querySelector("button").disabled=false;}
-});
-
-async function loadFeed(target="feed",followingOnly=false){
-  if(!sb)return;
-  const box=$(target);if(!box)return;
-  box.innerHTML='<div class="empty">Loading videos…</div>';
-  let query=sb.from("app_posts").select("id,user_id,video_url,caption,created_at").order("created_at",{ascending:false}).limit(50);
-  if(followingOnly&&user){
-    const {data:follows,error:fError}=await sb.from("app_follows").select("followed_id").eq("follower_id",user.id);
-    if(fError)throw fError;
-    const ids=(follows||[]).map(x=>x.followed_id);
-    if(!ids.length){box.innerHTML='<div class="empty">Follow creators to see their videos here.</div>';return;}
-    query=query.in("user_id",ids);
-  }
-  const {data:posts,error}=await query;
-  if(error){box.innerHTML='<div class="empty">Feed setup needed: '+esc(error.message)+'</div>';return;}
-  box.innerHTML="";
-  let filtered=(posts||[]).filter(p=>(p.caption||"").toLowerCase().includes(searchTerm));
-  if(!filtered.length){box.innerHTML='<div class="empty">No videos yet. Be the first to share a moment.</div>';return;}
-  for(const p of filtered)box.append(await makePost(p));
-}
-async function makePost(post){
-  const card=document.createElement("article");card.className="video-card";card.dataset.post=post.id;
-  const meta=post.user_id===user?.id?user?.user_metadata||{}:{};
-  const name=meta.display_name||"TWOTERM creator";
-  const avatar=meta.avatar_url||avatarFallback(name);
-  const layout=document.createElement("div");layout.className="video-layout";
-  const content=document.createElement("div");
-  const stage=document.createElement("div");stage.className="video-stage";
-  const video=document.createElement("video");video.src=post.video_url;video.controls=true;video.playsInline=true;video.loop=true;video.preload="metadata";video.style.filter=$("videoFilter")?.value||"none";
-  stage.append(video);
-  const details=document.createElement("div");details.className="video-meta";
-  const creator=document.createElement("div");creator.className="creator-row";
-  const av=document.createElement("img");av.className="avatar";av.src=avatar;av.alt="Creator profile";
-  const info=document.createElement("div");info.className="creator-info";
-  const nm=document.createElement("div");nm.className="creator-name";nm.textContent=name;
-  const sub=document.createElement("div");sub.className="small";sub.textContent=new Date(post.created_at).toLocaleDateString();
-  info.append(nm,sub);
-  const follow=document.createElement("button");follow.className="follow-btn";follow.textContent="Follow";
-  follow.onclick=()=>followUser(post.user_id,follow);
-  if(post.user_id===user?.id)follow.classList.add("hidden");
-  creator.append(av,info,follow);
-  const cap=document.createElement("p");cap.className="caption";cap.textContent=post.caption||"";
-  const sound=document.createElement("div");sound.className="sound";sound.textContent="♫ Original sound · TWOTERM";
-  details.append(creator,cap,sound);
-  content.append(stage,details);
-  const actions=document.createElement("div");actions.className="video-actions";
-  const like=document.createElement("button");like.className="action";like.innerHTML='♡<span>Like</span>';like.onclick=()=>toggleLike(post.id,like);
-  const comment=document.createElement("button");comment.className="action";comment.innerHTML='▢<span>Comment</span>';comment.onclick=()=>openComments(post.id);
-  const share=document.createElement("button");share.className="action";share.innerHTML='↗<span>Share</span>';share.onclick=()=>sharePost(post.video_url);
-  actions.append(like,comment,share);
-  layout.append(content,actions);card.append(layout);
-  if(user){
-    const {data:liked}=await sb.from("app_likes").select("post_id").eq("post_id",post.id).eq("user_id",user.id).maybeSingle();
-    if(liked){like.classList.add("liked");like.firstChild.textContent="♥";}
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",post.id);
-    like.lastChild.textContent=`${count||0} likes`;
-  }else{
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",post.id);
-    like.lastChild.textContent=`${count||0} likes`;
-  }
-  return card;
-}
-async function toggleLike(postId,button){
-  if(!user)return openAuth();
-  try{
-    const {data:existing,error:findError}=await sb.from("app_likes").select("post_id").eq("post_id",postId).eq("user_id",user.id).maybeSingle();
-    if(findError)throw findError;
-    if(existing){
-      const {error}=await sb.from("app_likes").delete().eq("post_id",postId).eq("user_id",user.id);if(error)throw error;
-      button.classList.remove("liked");button.firstChild.textContent="♡";
-    }else{
-      const {error}=await sb.from("app_likes").insert({post_id:postId,user_id:user.id});if(error)throw error;
-      button.classList.add("liked");button.firstChild.textContent="♥";
-    }
-    const {count}=await sb.from("app_likes").select("*",{count:"exact",head:true}).eq("post_id",postId);
-    button.lastChild.textContent=`${count||0} likes`;
-  }catch(e){alert("Like failed: "+e.message);}
-}
-async function followUser(id,button){
-  if(!user)return openAuth();if(id===user.id)return;
-  try{
-    const {error}=await sb.from("app_follows").insert({follower_id:user.id,followed_id:id});
-    if(error&&error.code!=="23505")throw error;
-    button.textContent="Following";button.disabled=true;
-  }catch(e){alert("Follow failed: "+e.message);}
-}
-async function sharePost(url){
-  try{
-    if(navigator.share)await navigator.share({title:"TWOTERM video",url});
-    else{await navigator.clipboard.writeText(url);alert("Video link copied.");}
-  }catch(e){if(e.name!=="AbortError")prompt("Copy video link",url);}
-}
-function setFeedMode(mode,button){
-  feedMode=mode;document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b===button));
-  if(mode==="following"){go("following");return;}
-  loadFeed("feed",false);
-}
-function searchFeed(){searchTerm=$("searchInput").value.trim().toLowerCase();go("home");loadFeed();}
-$("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchFeed();});
-async function loadFollowing(){
-  try{await loadFeed("followingFeed",true);}
-  catch(e){$("followingFeed").innerHTML='<div class="empty">'+esc(e.message)+'</div>';}
-}
-async function loadDiscover(){await loadFeed("discoverFeed",false);}
-async function loadMyPosts(){
-  if(!user)return;
-  const box=$("profileVideos");box.innerHTML="";
-  const {data,error}=await sb.from("app_posts").select("id,video_url,caption,created_at").eq("user_id",user.id).order("created_at",{ascending:false}).limit(60);
-  if(error){box.innerHTML='<div class="empty">Could not load your videos.</div>';return;}
-  for(const p of data||[]){
-    const tile=document.createElement("div");tile.className="grid-video";
-    const v=document.createElement("video");v.src=p.video_url;v.controls=true;v.playsInline=true;v.preload="metadata";
-    const caption=document.createElement("p");caption.textContent=p.caption||"My video";
-    tile.append(v,caption);box.append(tile);
-  }
-  setText("videoCount",String(data?.length||0));
-}
-async function loadCounts(){
-  if(!user)return;
-  const [followers,following]=await Promise.all([
-    sb.from("app_follows").select("*",{count:"exact",head:true}).eq("followed_id",user.id),
-    sb.from("app_follows").select("*",{count:"exact",head:true}).eq("follower_id",user.id)
-  ]);
-  setText("followerCount",String(followers.count||0));
-  setText("followingCount",String(following.count||0));
-}
-
-async function openComments(postId){
-  if(!user)return openAuth();
-  activePost=postId;$("commentList").innerHTML='<p class="muted">Loading comments…</p>';
-  openModal("commentModal");
-  const {data,error}=await sb.from("app_comments").select("id,user_id,body,created_at").eq("post_id",postId).order("created_at",{ascending:true}).limit(100);
-  const box=$("commentList");box.innerHTML="";
-  if(error){box.innerHTML='<p class="muted">Comments need the app_comments table and its policies.</p>';return;}
-  if(!data?.length){box.innerHTML='<p class="muted">Be the first to comment.</p>';return;}
-  for(const c of data){
-    const p=document.createElement("p");p.textContent=c.body;p.className="card";box.append(p);
-  }
-}
-$("commentForm").addEventListener("submit",async e=>{
-  e.preventDefault();if(!user)return openAuth();
-  try{
-    const body=$("commentText").value.trim();if(!body)return;
-    const {error}=await sb.from("app_comments").insert({post_id:activePost,user_id:user.id,body});
-    if(error)throw error;
-    $("commentText").value="";await openComments(activePost);
-  }catch(e){setText("commentStatus","Comment failed: "+e.message);}
-});
-
-async function startLive(){
-  if(!user)return openAuth();
-  setText("liveStatus","Checking secure live-stream eligibility…");
-  try{
-    const {data:{session},error}=await sb.auth.getSession();if(error)throw error;
-    if(!session)throw Error("Please log in first.");
-    const result=await sb.functions.invoke("livekit-token",{body:{title:$("liveTitle").value.trim()}});
-    if(result.error)throw result.error;
-    const d=result.data;
-    if(!d?.server_url||!d?.participant_token)throw Error("The secure LiveKit token service is not configured correctly.");
-    if(!window.LivekitClient)throw Error("LiveKit client library did not load.");
-    liveRoom=new LivekitClient.Room();
-    await liveRoom.connect(d.server_url,d.participant_token);
-    await liveRoom.localParticipant.enableCameraAndMicrophone();
-    cameraStream=new MediaStream();
-    liveRoom.localParticipant.videoTrackPublications.forEach(p=>{if(p.track?.mediaStreamTrack)cameraStream.addTrack(p.track.mediaStreamTrack);});
-    $("cameraPreview").srcObject=cameraStream;$("cameraPreview").classList.remove("hidden");
-    setText("liveStatus","Connected to LiveKit. Audience playback and live discovery must also be configured.");
-  }catch(e){setText("liveStatus",e.message||"Could not start live.");}
-}
-async function endLive(){
-  if(liveRoom){try{await liveRoom.disconnect();}catch(e){}liveRoom=null;}
-  if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null;}
-  $("cameraPreview").srcObject=null;$("cameraPreview").classList.add("hidden");
-  setText("liveStatus","Live session ended.");
-}
-</script>
-</body>
-</html>
