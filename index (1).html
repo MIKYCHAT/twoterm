@@ -1,0 +1,707 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101014">
+<meta name="description" content="TWOTERM is a place to watch videos, discover creators, and share your own moments.">
+<title>TWOTERM — Watch. Create. Connect.</title>
+<style>
+:root{--bg:#101014;--surface:#18181f;--surface2:#24242d;--line:#303039;--pink:#ff356f;--cyan:#25e4db;--text:#f8f8fc;--muted:#a5a5b3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif}
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;background:var(--surface2);color:white;font-weight:700}
+button:hover{filter:brightness(1.15)}
+.primary{background:var(--pink);color:white}
+.livebtn{background:#e52d50;color:white}
+.muted{color:var(--muted)}
+header{height:66px;position:sticky;top:0;z-index:10;background:#111115f5;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:20px}
+.logo{font-size:27px;letter-spacing:-1.5px;font-weight:1000;white-space:nowrap}
+.logo span{color:var(--pink)}
+.searchbox{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:10px;width:min(380px,35vw);overflow:hidden}
+.searchbox input{background:transparent;color:white;border:0;outline:0;padding:12px;width:100%}
+.searchbox button{border-radius:0;background:transparent;border-left:1px solid var(--line)}
+.header-right{display:flex;align-items:center;gap:9px}
+.layout{max-width:1500px;margin:auto;display:grid;grid-template-columns:220px minmax(0,700px) 270px;gap:25px;padding:20px}
+.sidebar,.rightbar{position:sticky;top:86px;height:max-content}
+.nav{width:100%;display:flex;align-items:center;gap:13px;text-align:left;background:transparent;padding:14px 12px;font-size:15px;color:#dedee7;margin-bottom:4px}
+.nav .ico{font-size:22px;width:25px;text-align:center}
+.nav.active,.nav:hover{background:var(--surface2);color:var(--pink)}
+.side-title{font-size:12px;color:var(--muted);padding:18px 12px 8px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:15px}
+.panel h3{margin:0 0 10px;font-size:15px}
+.small{font-size:12px;color:var(--muted);line-height:1.6}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:17px}
+.section-head h2{font-size:21px;margin:0}
+.tabs{display:flex;gap:23px;overflow:auto;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab{background:transparent;color:var(--muted);border-radius:0;padding:12px 2px;white-space:nowrap}
+.tab.active{color:white;border-bottom:3px solid var(--pink)}
+.stories{display:flex;gap:16px;overflow:auto;padding:2px 0 19px;margin-bottom:5px}
+.story{min-width:66px;text-align:center;background:transparent;padding:0;color:white}
+.story-avatar{width:58px;height:58px;border-radius:50%;margin:0 auto 7px;padding:3px;background:linear-gradient(140deg,var(--pink),#a15aff,var(--cyan))}
+.story-avatar span{height:100%;width:100%;border-radius:50%;background:#26232e;display:grid;place-items:center;font-size:22px}
+.story small{font-size:11px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.video-card{border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden;margin-bottom:22px}
+.video-stage{height:min(70vh,670px);min-height:340px;background:#050507;position:relative}
+.video-stage video{width:100%;height:100%;display:block;object-fit:contain;background:#050507}
+.video-meta{padding:15px 15px 8px}
+.creator-line{display:flex;align-items:center;gap:10px}
+.mini-avatar{width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ff377a,#8256ed);font-weight:900}
+.creator-info{flex:1;min-width:0}
+.creator-name{font-weight:800;font-size:14px}
+.caption{font-size:14px;line-height:1.55;margin:10px 0;overflow-wrap:anywhere}
+.music{color:var(--muted);font-size:12px;margin-top:7px}
+.video-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:0 15px 15px}
+.action{background:var(--surface2);font-size:12px}
+.action.liked{color:var(--pink)}
+.tag{display:inline-block;padding:5px 8px;border-radius:20px;background:#3b2333;color:#ff8fb0;font-size:11px}
+.profile-cover{height:115px;background:linear-gradient(120deg,#602c87,#d02b66,#253e75);border-radius:12px;margin-bottom:-38px}
+.profile-avatar{width:84px;height:84px;border:4px solid var(--surface);border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),#8d56ff);font-size:28px;font-weight:900;position:relative;margin-left:18px}
+.profile-content{padding:12px 5px 5px}
+.stats{display:flex;gap:22px;margin:18px 0}
+.stat strong{font-size:18px;display:block}
+.stat span{font-size:12px;color:var(--muted)}
+.field{display:block;width:100%;padding:12px;margin:7px 0 13px;border-radius:8px;border:1px solid var(--line);background:#111116;color:white}
+textarea.field{min-height:90px;resize:vertical}
+label{font-size:12px;color:var(--muted)}
+.grid-videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.grid-video{background:var(--surface2);border-radius:8px;overflow:hidden;min-width:0}
+.grid-video video{width:100%;aspect-ratio:3/4;object-fit:contain;background:#000;display:block}
+.grid-video p{font-size:12px;padding:7px;margin:0}
+.discover-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.discover-tile{background:linear-gradient(140deg,#3b2459,#1f3543);border-radius:12px;min-height:120px;padding:14px;display:flex;flex-direction:column;justify-content:flex-end}
+.modal{position:fixed;inset:0;background:#000b;z-index:30;display:flex;align-items:center;justify-content:center;padding:15px}
+.modal.hidden,.page.hidden{display:none!important}
+.modal-box{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:22px;width:min(470px,100%);max-height:90vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}
+.modal-head h2{font-size:20px;margin:0}
+.close{font-size:20px;padding:6px 12px}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row>*{flex:1}
+.notice{background:#292333;border-radius:9px;padding:12px;margin:12px 0;color:#ddd2ee;font-size:12px;line-height:1.6}
+.status{color:#d2c0ff;font-size:12px;line-height:1.6;overflow-wrap:anywhere;margin-top:10px}
+.live-preview{width:100%;max-height:55vh;object-fit:contain;background:#000;border-radius:10px}
+.creator-preview{width:100%;max-height:58vh;min-height:230px;aspect-ratio:9/16;object-fit:contain;background:#050507;border-radius:12px;display:block;margin:8px 0}
+.creator-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.creator-tools button{min-height:42px}
+.rec-indicator{font-size:12px;color:#ff7a9a;font-weight:800;min-height:18px}
+@media(max-width:420px){.modal{padding:7px}.modal-box{padding:14px;max-height:94vh}.creator-preview{min-height:190px}}
+.wallet-number{font-size:27px;font-weight:900;margin:10px 0}
+footer{text-align:center;color:#777;padding:25px;font-size:12px}
+.mobile-nav{display:none}
+@media(max-width:1120px){.layout{grid-template-columns:190px minmax(0,700px)}.rightbar{display:none}}
+@media(max-width:700px){
+ header{height:60px;padding:0 10px;gap:8px}.logo{font-size:22px}.searchbox{width:auto;flex:1}.searchbox input{min-width:0;padding:10px}.searchbox button{display:none}.header-right{gap:4px}.header-right button{font-size:11px;padding:9px 8px}
+ .layout{display:block;padding:10px 9px 85px}.sidebar{display:none}.video-stage{height:65vh;min-height:300px}.video-card{border-radius:10px}.video-actions{gap:6px}.action{padding:9px;font-size:11px}
+ .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:15;background:#15151af7;border-top:1px solid var(--line);justify-content:space-around;padding:8px 3px calc(8px + env(safe-area-inset-bottom))}
+ .mobile-nav button{background:transparent;padding:5px 3px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:4px}
+ .mobile-nav b{font-size:21px}.discover-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* TWOTERM visual polish: our own identity, creator-first and mobile-ready */
+:root{--pink:#ff356f;--cyan:#25e4db;--bg:#0b0b10;--surface:#15151d;--surface2:#23232d;--line:#343440}
+button{transition:transform .14s ease,filter .14s ease,background .14s ease}
+button:active{transform:scale(.97)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.video-card{box-shadow:0 10px 30px #0002}
+.video-stage{position:relative;overflow:hidden}
+.video-stage video{object-fit:contain}
+.video-actions .action{min-height:38px}
+.nav.active{border-left:3px solid var(--pink)}
+.searchbox:focus-within{border-color:var(--pink);box-shadow:0 0 0 3px #ff356f1a}
+.modal-box{box-shadow:0 25px 80px #0009}
+button:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.empty-state{padding:24px;text-align:center;color:var(--muted)}
+@media(max-width:700px){
+ body{padding-bottom:env(safe-area-inset-bottom)}
+ .layout{padding-top:8px}
+ .video-stage{height:62vh;min-height:300px;max-height:720px}
+ .video-card{margin-bottom:16px}
+ .video-meta{padding:12px 12px 7px}
+ .video-actions{padding:0 12px 12px}
+ .mobile-nav{box-shadow:0 -8px 30px #0005}
+}
+
+/* Polished creation menu and profile stats */
+.header-right button{white-space:nowrap}
+.stats{align-items:stretch;gap:12px;flex-wrap:wrap}
+.stat-button{padding:0;background:transparent;text-align:left;min-width:58px;color:inherit}
+.stat-button strong{font-size:18px;display:block}
+.stat-button span{font-size:12px;color:var(--muted)}
+.create-option{width:100%;display:flex;align-items:center;gap:14px;text-align:left;margin:10px 0;padding:15px;background:var(--surface2);border:1px solid var(--line);border-radius:12px}
+.create-option>span:first-child{font-size:25px;width:38px;text-align:center}
+.create-option b,.create-option small{display:block}
+.create-option small{color:var(--muted);font-size:12px;font-weight:400;margin-top:5px;line-height:1.5}
+.create-option:hover{border-color:var(--pink);background:#2a202c}
+@media(max-width:700px){.header-right button{padding:8px 7px}.header-right button:nth-child(2){display:none}.header-right button:nth-child(3){display:none}.mobile-nav button{flex:1}.stats{gap:16px}}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">TWO<span>TERM</span></div>
+  <div class="searchbox"><input id="search" placeholder="Search videos, people..." aria-label="Search"><button onclick="searchContent()">⌕</button></div>
+  <div class="header-right">
+    <button class="primary" onclick="openCreateMenu()">＋ Create</button>
+    <button onclick="go('wallet')" title="Creator wallet">◇ Wallet</button>
+    <button onclick="openNotifications()" title="Inbox and notifications">✉ Inbox</button>
+    <button id="authButton" onclick="openAuth()">Log in</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <button class="nav active" onclick="go('home',this)"><span class="ico">⌂</span> For You</button>
+    <button class="nav" onclick="go('following',this)"><span class="ico">♡</span> Following</button>
+    <button class="nav" onclick="go('discover',this)"><span class="ico">⌕</span> Discover</button>
+    <button class="nav" onclick="go('live',this)"><span class="ico">◉</span> LIVE</button>
+    <button class="nav" onclick="go('profile',this)"><span class="ico">♙</span> Profile</button>
+    <button class="nav" onclick="openUpload()"><span class="ico">＋</span> Upload video</button>
+    <button class="nav" onclick="go('inbox',this)"><span class="ico">✉</span> Inbox</button>
+    <button class="nav" onclick="go('wallet',this)"><span class="ico">◇</span> Creator wallet</button>
+    <div class="side-title">YOUR ACCOUNT</div>
+    <div class="panel small">Create an account to begin your TWOTERM creator journey.</div>
+    <div class="side-title">COMPANY</div>
+    <p class="small">Safety · Community rules · Privacy · About TWOTERM</p>
+  </aside>
+
+  <main>
+    <section id="homePage" class="page">
+      <div class="stories">
+        <button class="story" onclick="openUpload()"><div class="story-avatar"><span>＋</span></div><small>Add video</small></button>
+        <button class="story" onclick="go('live')"><div class="story-avatar"><span>🔴</span></div><small>Live now</small></button>
+        <button class="story" onclick="filterTopic('music')"><div class="story-avatar"><span>🎵</span></div><small>Music</small></button>
+        <button class="story" onclick="filterTopic('comedy')"><div class="story-avatar"><span>😂</span></div><small>Comedy</small></button>
+        <button class="story" onclick="filterTopic('sports')"><div class="story-avatar"><span>⚽</span></div><small>Sports</small></button>
+        <button class="story" onclick="setTab('trending',document.querySelectorAll('.tab')[2])"><div class="story-avatar"><span>🌍</span></div><small>Trending</small></button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="setTab('foryou',this)">For You</button>
+        <button class="tab" onclick="setTab('following',this)">Following</button>
+        <button class="tab" onclick="setTab('trending',this)">Trending</button>
+      </div>
+
+      <div id="feed"><div class="panel"><p class="small">Loading videos…</p></div></div>
+    </section>
+
+    <section id="followingPage" class="page hidden">
+      <div class="section-head"><h2>Following</h2></div>
+      <div id="followingFeed"><div class="panel"><p class="small">Videos from creators you follow will appear here.</p></div></div>
+    </section>
+
+    <section id="discoverPage" class="page hidden">
+      <div class="section-head"><h2>Discover</h2></div>
+      <div class="discover-grid">
+        <button class="discover-tile" style="border:0;color:white;text-align:left;cursor:pointer" onclick="filterTopic('music')"><b>🎵 Music</b><span class="small">Discover sounds</span></button>
+        <button class="discover-tile" style="border:0;color:white;text-align:left;cursor:pointer" onclick="filterTopic('comedy')"><b>😂 Comedy</b><span class="small">Funny moments</span></button>
+        <button class="discover-tile" style="border:0;color:white;text-align:left;cursor:pointer" onclick="filterTopic('sports')"><b>⚽ Sports</b><span class="small">Game highlights</span></button>
+        <button class="discover-tile" style="border:0;color:white;text-align:left;cursor:pointer" onclick="filterTopic('lifestyle')"><b>🍳 Lifestyle</b><span class="small">Daily inspiration</span></button>
+        <button class="discover-tile" style="border:0;color:white;text-align:left;cursor:pointer" onclick="filterTopic('gaming')"><b>🎮 Gaming</b><span class="small">Play and compete</span></button>
+        <button class="discover-tile" style="border:0;color:white;text-align:left;cursor:pointer" onclick="filterTopic('trending')"><b>🌍 Trending</b><span class="small">What’s popular</span></button>
+      </div>
+    </section>
+
+    <section id="profilePage" class="page hidden">
+      <div class="panel">
+        <div class="profile-cover"></div>
+        <div class="profile-avatar" id="avatar">T</div>
+        <div class="profile-content">
+          <h2 id="profileName">Your creator profile</h2>
+          <p class="small" id="profileEmail">Sign in to connect your account</p>
+          <p id="bio">Video creator · Welcome to my TWOTERM profile.</p>
+          <div class="stats"><div class="stat"><strong id="videoCount">0</strong><span>Videos</span></div><div class="stat"><button class="stat-button" onclick="openFollowList('followers')"><strong id="followers">0</strong><span>Followers</span></button></div><div class="stat"><button class="stat-button" onclick="openFollowList('following')"><strong id="followingCount">0</strong><span>Following</span></button></div></div>
+          <button class="primary" onclick="editProfile()">Edit profile</button>
+          <button onclick="checkVerification()">Creator verification</button>
+          <p id="verifyStatus" class="status">Live access: verification service not connected.</p>
+        </div>
+      </div>
+      <div class="panel"><h3>Videos</h3><div id="profileVideos" class="grid-videos"><p class="small">Your uploaded videos will appear here.</p></div></div>
+    </section>
+
+    <section id="livePage" class="page hidden">
+      <div class="section-head"><h2>TWOTERM LIVE</h2><span class="tag">18+ VERIFIED CREATORS</span></div>
+      <div class="panel"><h3>Go live and connect with your audience</h3><p class="small">Live broadcasting requires an authenticated account, verified adult creator status, and a secure LiveKit connection.</p><br><button class="livebtn" onclick="openLive()">🔴 Open LIVE studio</button></div>
+      <div class="panel"><h3>Live discovery</h3><p class="small">Live rooms will be listed here once the backend records active streams.</p></div>
+    </section>
+
+    <section id="inboxPage" class="page hidden">
+      <div class="section-head"><h2>Inbox</h2></div>
+      <div class="panel"><h3>Notifications</h3><p id="notificationStatus" class="small">New followers, comments, and tips will appear here after a notifications backend is connected.</p><div class="row"><button class="primary" onclick="go('home')">Watch videos</button><button onclick="go('wallet')">Creator wallet</button></div></div>
+    </section>
+
+    <section id="walletPage" class="page hidden">
+      <div class="section-head"><h2>Creator wallet</h2><span class="tag">DEMO</span></div>
+      <div class="panel"><p class="small">Available balance</p><div class="wallet-number" id="balance">KSh 0.00</div><p class="small">This is a demo balance, not real money.</p><hr style="border-color:var(--line);margin:18px 0"><div class="row"><button class="primary" onclick="tip()">💎 Send tip (demo)</button><button onclick="withdraw()">Request withdrawal</button></div><p class="status" id="walletStatus">Payment provider not connected.</p></div>
+      <div class="panel"><h3>Transaction history</h3><p class="small">No real transactions yet.</p></div>
+    </section>
+  </main>
+
+  <aside class="rightbar">
+    <div class="panel"><h3>🚀 Start creating</h3><p class="small">Share your talent and let new people discover you.</p><br><button class="primary" onclick="openUpload()">Upload video</button></div>
+    <div class="panel"><h3>Suggested creators</h3><p class="small">Follow interesting creators and discover their content.</p><p>✨ @kai_rivers</p><p>🎵 @mira_jade</p><p>🌍 @alex_skye</p></div>
+    <div class="panel"><h3>Safety & trust</h3><p class="small">Respect other users. Report harmful content. Never share passwords or private information.</p></div>
+  </aside>
+</div>
+
+<nav class="mobile-nav">
+  <button onclick="go('home')"><b>⌂</b>Home</button>
+  <button onclick="go('discover')"><b>⌕</b>Discover</button>
+  <button class="create-nav" onclick="openCreateMenu()"><b style="color:var(--pink)">＋</b>Create</button>
+  <button onclick="openNotifications()"><b>✉</b>Inbox</button>
+  <button onclick="go('profile')"><b>♙</b>Profile</button>
+</nav>
+
+<footer>TWOTERM © 2026 · Watch. Create. Connect.</footer>
+
+<div id="authModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2 id="authTitle">Create your account</h2><button class="close" onclick="closeModal('authModal')">×</button></div>
+  <p class="small">Join TWOTERM to create your profile. Live access requires separate verification.</p>
+  <form id="authForm">
+    <label id="nameLabel">Display name</label><input class="field" id="displayName" placeholder="Your name">
+    <label>Email</label><input class="field" id="email" type="email" required placeholder="you@example.com">
+    <label>Password (at least 8 characters)</label><input class="field" id="password" type="password" minlength="8" required>
+    <div id="ageFields"><label>Date of birth</label><input class="field" id="dob" type="date" required><label><input id="ageCheck" type="checkbox" style="width:auto"> I confirm I am 18 or older</label></div>
+    <div class="notice">Age confirmation is not identity verification and does not automatically grant live access.</div>
+    <button class="primary" type="submit" id="authSubmit">Create account</button>
+  </form>
+  <button style="margin-top:10px" onclick="toggleAuth()">Switch between login and registration</button>
+  <p id="authStatus" class="status"></p>
+</div></div>
+
+<div id="createMenuModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2>Create on TWOTERM</h2><button class="close" onclick="closeModal('createMenuModal')">×</button></div>
+  <p class="small">Choose how you want to share with your audience.</p>
+  <button class="create-option" onclick="createUpload()"><span>⬆️</span><span><b>Upload a video</b><small>Choose a video already on your device</small></span></button>
+  <button class="create-option" onclick="createRecord()"><span>📷</span><span><b>Record a video</b><small>Use your camera and publish your clip</small></span></button>
+  <button class="create-option" onclick="createLive()"><span>🔴</span><span><b>Go LIVE</b><small>For eligible, verified adult creators</small></span></button>
+  <p class="small">Camera and LIVE access require browser permission and a secure connection. LIVE eligibility is checked by your backend.</p>
+</div></div>
+
+<div id="uploadModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2>TWOTERM Creator Studio</h2><button class="close" onclick="closeCreatorStudio()">×</button></div>
+  <p class="small">Record right here, review your clip, or choose a video from your phone.</p>
+  <video id="creatorPreview" class="creator-preview" autoplay muted playsinline></video>
+  <div id="recordStatus" class="rec-indicator">Ready to create</div>
+  <div class="creator-tools">
+    <button class="primary" id="cameraStartBtn" onclick="startCreatorCamera()">📷 Open camera</button>
+    <button onclick="switchCreatorCamera()" id="cameraSwitchBtn">🔄 Switch camera</button>
+    <button class="livebtn" id="recordStartBtn" onclick="startRecording()">● Start recording</button>
+    <button onclick="stopRecording()" id="recordStopBtn" disabled>■ Stop recording</button>
+  </div>
+  <div class="row"><button onclick="retakeRecording()">↻ Retake</button><button onclick="stopCreatorCamera()">Turn camera off</button></div>
+  <label style="display:block;margin-top:14px">Or choose a video (maximum 100 MB)</label><input class="field" type="file" id="videoFile" accept="video/*" onchange="previewChosenVideo(event)">
+  <label>Caption</label><textarea class="field" id="videoCaption" maxlength="2200" placeholder="Describe your video, add hashtags…"></textarea>
+  <p class="small">Your video is published to the TWOTERM feed through your existing Supabase storage bucket and app_posts table. You must be signed in.</p>
+  <button class="primary" id="publishVideoBtn" onclick="uploadPreview()">Publish video</button><p id="uploadStatus" class="status" aria-live="polite"></p>
+</div></div>
+
+<div id="liveModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2>🔴 LIVE studio</h2><button class="close" onclick="closeLive()">×</button></div>
+  <p class="small">Live is restricted to verified creators aged 18+. A server-side eligibility check must succeed before streaming starts.</p>
+  <label>Live title</label><input class="field" id="liveTitle" placeholder="Give your live a title">
+  <video id="cameraPreview" class="live-preview hidden" autoplay playsinline muted></video>
+  <p id="liveStatus" class="status">Ready to check your live eligibility.</p>
+  <div class="row"><button class="livebtn" onclick="startLive()">Start live</button><button onclick="endLive()">End live</button></div>
+</div></div>
+
+<div id="tipModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2>💎 Send a tip</h2><button class="close" onclick="closeModal('tipModal')">×</button></div>
+  <p class="small">Demo only: no money will be charged or transferred.</p>
+  <label>Amount in KSh</label><input class="field" id="tipAmount" type="number" min="1" max="100000" placeholder="100">
+  <button class="primary" onclick="sendTipDemo()">Continue</button><p id="tipStatus" class="status"></p>
+</div></div>
+
+<div id="followListModal" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2 id="followListTitle">Creators</h2><button class="close" onclick="closeModal('followListModal')">×</button></div>
+  <div id="followListContent"><p class="small">Loading creators…</p></div>
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+<script>
+const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+const SUPABASE_KEY = "sb_publishable_cFrF4JmuSfQv064BoFG7A_Y8KfSnv4";
+const MEDIA_BUCKET = "twoterm-media";
+let sb = null, authMode = "signup", liveRoom = null, cameraStream = null;
+let objectURLs = [], currentUser = null, cachedPosts = [], currentTab = "foryou";
+
+if (window.supabase && SUPABASE_URL.startsWith("https://") && !SUPABASE_KEY.includes("YOUR_")) {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  refreshUser();
+  sb.auth.onAuthStateChange((_event, session) => {
+    currentUser = session?.user || null;
+    refreshUser();
+    loadFeed();
+  });
+}
+
+function closeModal(id){const el=document.getElementById(id);if(el)el.classList.add("hidden")}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){["authModal","uploadModal","liveModal","tipModal"].forEach(closeModal);stopCreatorCamera();}});
+document.querySelectorAll(".modal").forEach(modal=>modal.addEventListener("click",e=>{if(e.target===modal){if(modal.id==="uploadModal")closeCreatorStudio();else if(modal.id==="liveModal")closeLive();else closeModal(modal.id)}}));
+function openModal(id){document.getElementById(id).classList.remove("hidden")}
+function setStatus(id, message){const el=document.getElementById(id);if(el)el.textContent=message}
+function escapeText(value){return String(value ?? "")}
+function initials(name){return escapeText(name).trim().charAt(0).toUpperCase() || "T"}
+function go(page,button){
+  if(page==="following")currentTab="following";else if(page==="home"&&currentTab==="following")currentTab="foryou";
+  const ids=["home","following","discover","profile","live","inbox","wallet"];
+  ids.forEach(x=>document.getElementById(x+"Page").classList.toggle("hidden",x!==page));
+  document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
+  if(button)button.classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+  if(page==="following"||page==="home")loadFeed();
+}
+function setTab(name,button){
+  currentTab=name;
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  if(button)button.classList.add("active");
+  if(name==="following")go("following");else go("home");
+  loadFeed();
+}
+function filterTopic(topic){
+  go("home");
+  const input=document.getElementById("search");
+  input.value=topic==="trending"?"":topic;
+  searchContent();
+  if(topic==="trending"){
+    const cards=[...document.querySelectorAll("#feed .video-card")];
+    cards.sort((a,b)=>Number(b.dataset.likes||0)-Number(a.dataset.likes||0)).forEach(c=>document.getElementById("feed").appendChild(c));
+  }
+  const feed=document.getElementById("feed");
+  if(feed && !feed.querySelector(".video-card")){
+    const old=feed.querySelector(".topic-empty");if(old)old.remove();
+    const note=document.createElement("div");note.className="panel topic-empty";note.innerHTML='<p class="small">No matching videos yet. Try another topic or clear the search box.</p>';feed.appendChild(note);
+  }
+}
+function searchContent(){
+  const q=document.getElementById("search").value.toLowerCase().trim();
+  document.querySelectorAll("#feed .video-card").forEach(c=>c.classList.toggle("hidden",!!q&&!((c.dataset.name||"")+" "+c.innerText.toLowerCase()).includes(q)));
+  const empty=document.querySelector("#feed .search-empty");if(empty)empty.remove();
+  const visible=[...document.querySelectorAll("#feed .video-card")].some(c=>!c.classList.contains("hidden"));
+  if(q&&!visible){const note=document.createElement("div");note.className="panel search-empty";note.innerHTML='<p class="small">No videos or creators matched that search.</p><button onclick="document.getElementById(\'search\').value=\'\';searchContent()">Clear search</button>';document.getElementById("feed").appendChild(note)}
+}
+document.getElementById("search").addEventListener("keydown",e=>{if(e.key==="Enter")searchContent()});
+
+async function refreshUser(){
+  if(!sb)return;
+  const {data,error}=await sb.auth.getSession();if(error){console.warn(error);return}
+  currentUser=data.session?.user||null;
+  const b=document.getElementById("authButton");
+  b.textContent=currentUser?"Log out":"Log in";b.onclick=currentUser?logout:openAuth;
+  if(currentUser){
+    const name=currentUser.user_metadata?.display_name||currentUser.email?.split("@")[0]||"Creator";
+    document.getElementById("profileName").textContent=name;
+    document.getElementById("profileEmail").textContent=currentUser.email||"Signed in";
+    document.getElementById("avatar").textContent=initials(name);
+    setStatus("authStatus","Signed in.");
+    await loadMyProfile();
+    document.getElementById("videoCount").textContent=String(cachedPosts.filter(p=>p.user_id===currentUser.id).length);
+  }else{
+    document.getElementById("profileName").textContent="Your creator profile";
+    document.getElementById("profileEmail").textContent="Sign in to connect your account";
+  }
+}
+async function loadMyProfile(){
+  if(!sb||!currentUser)return;
+  const {data,error}=await sb.from("app_profiles").select("id,username,display_name,bio,follower_count,following_count").eq("id",currentUser.id).maybeSingle();
+  if(error){console.warn("Profile load:",error.message);return}
+  if(data){
+    document.getElementById("profileName").textContent=data.display_name||data.username||currentUser.email?.split("@")[0]||"Creator";
+    document.getElementById("bio").textContent=data.bio||"Video creator · Welcome to my TWOTERM profile.";
+    document.getElementById("followers").textContent=data.follower_count||0;
+    document.getElementById("followingCount").textContent=data.following_count||0;
+  }
+}
+async function logout(){if(sb){const {error}=await sb.auth.signOut();if(error)alert(error.message);else{currentUser=null;location.reload()}}}
+function openAuth(){openModal("authModal")}
+function openCreateMenu(){if(!currentUser){openAuth();setStatus("authStatus","Log in or create an account before creating videos or going live.");return}openModal("createMenuModal")}
+function createUpload(){closeModal("createMenuModal");openUpload()}
+function createRecord(){closeModal("createMenuModal");openUpload();setTimeout(()=>startCreatorCamera(),180)}
+function createLive(){closeModal("createMenuModal");openLive()}
+function openNotifications(){go("inbox");setStatus("notificationStatus","Inbox opened. Real-time alerts will appear here after a notifications table and event triggers are connected.")}
+function toggleAuth(){
+  authMode=authMode==="signup"?"login":"signup";
+  document.getElementById("authTitle").textContent=authMode==="signup"?"Create your account":"Log in";
+  document.getElementById("authSubmit").textContent=authMode==="signup"?"Create account":"Log in";
+  document.getElementById("nameLabel").classList.toggle("hidden",authMode==="login");
+  document.getElementById("displayName").classList.toggle("hidden",authMode==="login");
+  document.getElementById("ageFields").classList.toggle("hidden",authMode==="login");
+  document.getElementById("dob").required=authMode==="signup";
+  document.getElementById("ageCheck").required=authMode==="signup";
+}
+document.getElementById("authForm").addEventListener("submit",async e=>{
+  e.preventDefault();const out=document.getElementById("authStatus");
+  if(!sb){out.textContent="Supabase is not connected. Check the project URL and publishable key.";return}
+  const email=document.getElementById("email").value.trim(),password=document.getElementById("password").value;
+  try{
+    let r;
+    if(authMode==="signup"){
+      const dob=document.getElementById("dob").value;
+      if(!document.getElementById("ageCheck").checked)throw Error("Confirm that you are 18 or older.");
+      if(!dob)throw Error("Enter your date of birth.");
+      const birthday=new Date(dob+"T00:00:00"),cutoff=new Date();cutoff.setFullYear(cutoff.getFullYear()-18);
+      if(birthday>cutoff)throw Error("You must be at least 18 to register.");
+      r=await sb.auth.signUp({email,password,options:{data:{display_name:document.getElementById("displayName").value.trim(),date_of_birth:dob,age_attested:true}}});
+    }else r=await sb.auth.signInWithPassword({email,password});
+    if(r.error)throw r.error;
+    if(authMode==="login"&&r.data?.session){closeModal("authModal");go("home");}
+    out.textContent=authMode==="signup"?"Registration submitted. Check your email if confirmation is required.":"Logged in.";
+    await refreshUser();await loadFeed();
+  }catch(err){out.textContent=err.message||"Account request failed."}
+});
+
+function mediaObjectPath(value){
+  if(!value)return null;
+  if(/^https?:\/\//i.test(value)){
+    const marker=`/storage/v1/object/`;
+    const idx=value.indexOf(marker);
+    if(idx>=0){
+      const tail=value.slice(idx+marker.length).replace(/^(public|sign|authenticated)\//,"");
+      const bucketPrefix=MEDIA_BUCKET+"/";
+      if(tail.startsWith(bucketPrefix))return decodeURIComponent(tail.slice(bucketPrefix.length).split("?")[0]);
+    }
+    return null;
+  }
+  return value.replace(/^\/+/,"");
+}
+async function playableUrl(post){
+  const raw=post.video_url||post.media_url;
+  if(!raw)return null;
+  if(/^https?:\/\//i.test(raw)){
+    if(raw.includes("/storage/v1/object/sign/"))return raw;
+    if(raw.includes("/storage/v1/object/public/"))return raw;
+    const path=mediaObjectPath(raw);if(!path)return raw;
+    const {data,error}=await sb.storage.from(MEDIA_BUCKET).createSignedUrl(path,3600);
+    if(error)throw error;return data.signedUrl;
+  }
+  const {data,error}=await sb.storage.from(MEDIA_BUCKET).createSignedUrl(mediaObjectPath(raw),3600);
+  if(error)throw error;return data.signedUrl;
+}
+async function loadFeed(){
+  const feed=document.getElementById(currentTab==="following"?"followingFeed":"feed");
+  if(!feed)return;
+  if(!sb){feed.innerHTML='<div class="panel"><p>Supabase is not connected.</p></div>';return}
+  feed.innerHTML='<div class="panel"><p class="small">Loading videos…</p></div>';
+  try{
+    let q=sb.from("app_posts").select("id,user_id,caption,video_url,media_url,media_type,thumbnail_url,visibility,likes_count,comments_count,shares_count,views_count,created_at").order("created_at",{ascending:false}).limit(50);
+    q=q.eq("visibility","public");
+    const {data:posts,error}=await q;if(error)throw error;
+    cachedPosts=posts||[];
+    if(!cachedPosts.length){feed.innerHTML='<div class="panel"><h3>No published videos yet</h3><p class="small">Sign in, choose Create, and upload your first video. If you already uploaded videos, check that their visibility is set to public.</p></div>';document.getElementById("videoCount").textContent="0";return}
+    const ids=[...new Set(cachedPosts.map(p=>p.user_id).filter(Boolean))];
+    let profileMap={};
+    if(ids.length){const {data:profiles,error:pe}=await sb.from("app_profiles").select("id,username,display_name,avatar_url,is_verified,follower_count").in("id",ids);if(!pe)(profiles||[]).forEach(p=>profileMap[p.id]=p)}
+    feed.innerHTML="";
+    for(const post of cachedPosts){
+      if(currentTab==="following" && !await isFollowing(post.user_id))continue;
+      const profile=profileMap[post.user_id]||{};
+      const card=await makePostCard(post,profile);
+      feed.appendChild(card);
+    }
+    if(!feed.children.length)feed.innerHTML='<div class="panel"><p class="small">No videos from followed creators yet.</p></div>';
+    document.getElementById("videoCount").textContent=String(cachedPosts.filter(p=>p.user_id===currentUser?.id).length);
+  }catch(err){console.error(err);feed.innerHTML=`<div class="panel"><h3>Could not load videos</h3><p class="small">${escapeText(err.message||"Supabase request failed")}</p><p class="small">This can be caused by a table permission (RLS) or storage read policy.</p></div>`}
+}
+async function isFollowing(userId){
+  if(!currentUser||!userId||userId===currentUser.id)return false;
+  const {data,error}=await sb.from("app_follows").select("follower_id").eq("follower_id",currentUser.id).eq("following_id",userId).maybeSingle();
+  return !error&&!!data;
+}
+async function hasLiked(postId){
+  if(!currentUser)return false;
+  const {data,error}=await sb.from("app_likes").select("post_id").eq("post_id",postId).eq("user_id",currentUser.id).maybeSingle();
+  return !error&&!!data;
+}
+async function makePostCard(post,profile){
+  const card=document.createElement("article");card.className="video-card";card.dataset.name=((post.caption||"")+" "+(profile.username||"")+" "+(profile.display_name||"")).toLowerCase();card.dataset.likes=String(Number(post.likes_count||0));
+  const stage=document.createElement("div");stage.className="video-stage";
+  const video=document.createElement("video");video.controls=true;video.playsInline=true;video.muted=true;video.loop=true;video.preload="metadata";
+  const raw=post.video_url||post.media_url;let videoReady=false;
+  if(raw){try{video.src=await playableUrl(post);videoReady=true}catch(err){console.warn("Video URL failed:",err.message);stage.innerHTML='<p class="small" style="padding:18px">Video is saved, but playback access is blocked. Check the twoterm-media storage read policy.</p>'}}
+  if(videoReady)stage.appendChild(video);
+  const meta=document.createElement("div");meta.className="video-meta";
+  const line=document.createElement("div");line.className="creator-line";
+  const av=document.createElement("div");av.className="mini-avatar";av.textContent=initials(profile.display_name||profile.username||"C");
+  const info=document.createElement("div");info.className="creator-info";
+  const name=document.createElement("div");name.className="creator-name";name.textContent="@"+(profile.username||profile.display_name||"creator");
+  const sub=document.createElement("span");sub.className="small";sub.textContent=profile.is_verified?"Verified creator":"TWOTERM creator";
+  info.append(name,sub);line.append(av,info);
+  if(currentUser&&post.user_id!==currentUser.id){const follow=document.createElement("button");follow.textContent=await isFollowing(post.user_id)?"Following":"Follow";follow.onclick=()=>toggleFollow(post.user_id,follow);line.append(follow)}
+  meta.append(line);
+  const cap=document.createElement("p");cap.className="caption";cap.textContent=post.caption||"Video";meta.append(cap);
+  const small=document.createElement("div");small.className="music";small.textContent=`▶ ${Number(post.views_count||0)} views`;meta.append(small);
+  const actions=document.createElement("div");actions.className="video-actions";
+  const likeBtn=document.createElement("button");likeBtn.className="action";const liked=await hasLiked(post.id);if(liked)likeBtn.classList.add("liked");likeBtn.innerHTML=`${liked?"♥":"♡"} Like <span>${Number(post.likes_count||0)}</span>`;likeBtn.onclick=()=>toggleLike(post,likeBtn);actions.append(likeBtn);
+  const commentBtn=document.createElement("button");commentBtn.className="action";commentBtn.textContent=`💬 Comment ${Number(post.comments_count||0)}`;commentBtn.onclick=()=>addComment(post,commentBtn);actions.append(commentBtn);
+  const giftBtn=document.createElement("button");giftBtn.className="action";giftBtn.textContent="🎁 Gift";giftBtn.title="Send a virtual gift (demo only)";giftBtn.onclick=()=>openGift(post,profile);actions.append(giftBtn);
+  const shareBtn=document.createElement("button");shareBtn.className="action";shareBtn.textContent=`↗ Share ${Number(post.shares_count||0)}`;shareBtn.onclick=()=>sharePost(post,shareBtn);actions.append(shareBtn);
+  const bookmarkBtn=document.createElement("button");bookmarkBtn.className="action";bookmarkBtn.textContent="🔖 Save";bookmarkBtn.onclick=()=>bookmarkPost(post,bookmarkBtn);actions.append(bookmarkBtn);
+  card.append(stage,meta,actions);
+  if(video.src){let counted=false;video.addEventListener("play",async()=>{if(counted)return;counted=true;if(sb){const {data:{session}}=await sb.auth.getSession();if(session){await sb.from("app_post_views").insert({post_id:post.id,user_id:session.user.id}).then(({error})=>{if(error)console.debug("View count not recorded",error.message)})}}})}
+  return card;
+}
+async function requireLogin(){if(!sb){alert("Supabase is not connected.");return false}const {data:{session}}=await sb.auth.getSession();if(!session){openAuth();setStatus("authStatus","Please log in to use this feature.");return false}currentUser=session.user;return true}
+async function toggleLike(post,btn){
+  if(!await requireLogin())return;
+  btn.disabled=true;
+  try{
+    const {data:existing,error:checkError}=await sb.from("app_likes").select("post_id").eq("post_id",post.id).eq("user_id",currentUser.id).maybeSingle();if(checkError)throw checkError;
+    if(existing){const {error}=await sb.from("app_likes").delete().eq("post_id",post.id).eq("user_id",currentUser.id);if(error)throw error;btn.classList.remove("liked");btn.innerHTML=`♡ Like <span>${Math.max(0,Number(btn.querySelector("span").textContent)-1)}</span>`}
+    else{const {error}=await sb.from("app_likes").insert({post_id:post.id,user_id:currentUser.id});if(error)throw error;btn.classList.add("liked");btn.innerHTML=`♥ Like <span>${Number(btn.querySelector("span").textContent)+1}</span>`}
+  }catch(err){alert("Like could not be saved: "+(err.message||"check app_likes RLS policy"))}finally{btn.disabled=false}
+}
+async function toggleFollow(userId,btn){
+  if(!await requireLogin())return;if(userId===currentUser.id)return;
+  btn.disabled=true;
+  try{
+    const {data:existing,error:checkError}=await sb.from("app_follows").select("follower_id").eq("follower_id",currentUser.id).eq("following_id",userId).maybeSingle();if(checkError)throw checkError;
+    if(existing){const {error}=await sb.from("app_follows").delete().eq("follower_id",currentUser.id).eq("following_id",userId);if(error)throw error;btn.textContent="Follow"}
+    else{const {error}=await sb.from("app_follows").insert({follower_id:currentUser.id,following_id:userId});if(error)throw error;btn.textContent="Following"}
+    await loadMyProfile();
+  }catch(err){alert("Follow could not be saved: "+(err.message||"check app_follows RLS policy"))}finally{btn.disabled=false}
+}
+async function addComment(post,btn){
+  if(!await requireLogin())return;
+  const value=prompt("Write your comment:");if(!value||!value.trim())return;
+  try{const {error}=await sb.from("app_comments").insert({post_id:post.id,user_id:currentUser.id,content:value.trim()});if(error)throw error;btn.textContent=`💬 Comment ${Number(post.comments_count||0)+1}`;alert("Comment saved.")}
+  catch(err){alert("Comment could not be saved: "+(err.message||"check app_comments RLS policy"))}
+}
+async function sharePost(post,btn){
+  const url=new URL(location.href);url.searchParams.set("video",post.id);const shareUrl=url.toString();
+  if(currentUser){try{const {error}=await sb.from("app_shares").insert({post_id:post.id,user_id:currentUser.id});if(error)throw error;const parts=btn.textContent.split(" ");const n=Number(parts[2]||post.shares_count||0);btn.textContent=`↗ Share ${n+1}`}catch(err){console.warn("Share tracking failed:",err.message)}}
+  try{if(navigator.share)await navigator.share({title:"TWOTERM video",text:post.caption||"Watch this video on TWOTERM",url:shareUrl});else if(navigator.clipboard){await navigator.clipboard.writeText(shareUrl);alert("Video link copied.")}else prompt("Copy this video link",shareUrl)}catch(err){if(err.name!=="AbortError")prompt("Copy this video link",shareUrl)}
+}
+async function bookmarkPost(post,btn){
+  if(!await requireLogin())return;
+  try{const {data:existing,error:ce}=await sb.from("app_bookmarks").select("post_id").eq("post_id",post.id).eq("user_id",currentUser.id).maybeSingle();if(ce)throw ce;
+    if(existing){const {error}=await sb.from("app_bookmarks").delete().eq("post_id",post.id).eq("user_id",currentUser.id);if(error)throw error;btn.textContent="🔖 Save"}
+    else{const {error}=await sb.from("app_bookmarks").insert({post_id:post.id,user_id:currentUser.id});if(error)throw error;btn.textContent="🔖 Saved"}
+  }catch(err){alert("Save failed: "+(err.message||"check app_bookmarks RLS policy"))}
+}
+function editProfile(){
+  if(!currentUser){openAuth();return}
+  const name=prompt("Creator display name",document.getElementById("profileName").textContent);if(name===null||!name.trim())return;
+  const bio=prompt("Write your bio",document.getElementById("bio").textContent);if(bio===null)return;
+  saveProfile(name.trim(),bio.trim());
+}
+async function saveProfile(name,bio){
+  try{const {error}=await sb.from("app_profiles").upsert({id:currentUser.id,display_name:name,bio},{onConflict:"id"});if(error)throw error;document.getElementById("profileName").textContent=name;document.getElementById("bio").textContent=bio;alert("Profile saved.")}
+  catch(err){alert("Profile could not be saved: "+(err.message||"check app_profiles RLS policy"))}
+}
+function checkVerification(){setStatus("verifyStatus","Creator verification must be completed by a secure server. Live access remains blocked until your creator status is verified.")}
+let creatorStream=null,creatorRecorder=null,recordedVideoBlob=null,recordedVideoType="video/webm",creatorFacingMode="user",creatorObjectUrl=null;
+function openUpload(){if(!currentUser){openAuth();return}openModal("uploadModal");setStatus("recordStatus","Ready to create");}
+async function startCreatorCamera(){
+  const out=document.getElementById("recordStatus");
+  if(!navigator.mediaDevices?.getUserMedia){out.textContent="Camera recording is not supported by this browser. Try updating Chrome or use Choose video.";return}
+  try{
+    stopCreatorCamera();
+    creatorStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:creatorFacingMode,width:{ideal:720},height:{ideal:1280}},audio:true});
+    const v=document.getElementById("creatorPreview");v.srcObject=creatorStream;v.muted=true;v.controls=false;await v.play().catch(()=>{});
+    out.textContent="Camera ready — press Start recording.";
+  }catch(err){const reason=err.name==="NotAllowedError"?"Permission denied. Allow camera and microphone for this website in your browser settings.":err.name==="NotFoundError"?"No camera or microphone was found on this device.":err.name==="NotReadableError"?"The camera may be in use by another app. Close other camera apps and retry.":(err.message||"Check camera permissions and try again.");out.textContent="Could not open camera: "+reason;}
+}
+async function switchCreatorCamera(){
+  creatorFacingMode=creatorFacingMode==="user"?"environment":"user";
+  if(creatorStream)await startCreatorCamera();else setStatus("recordStatus",creatorFacingMode==="user"?"Front camera selected. Open camera to start.":"Rear camera selected. Open camera to start.");
+}
+function startRecording(){
+  const out=document.getElementById("recordStatus");
+  if(!creatorStream){out.textContent="Open the camera first.";return}
+  if(!window.MediaRecorder){out.textContent="Recording is not supported in this browser. Choose a video from your phone instead.";return}
+  try{
+    const types=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm","video/mp4"];
+    recordedVideoType=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+    creatorRecorder=new MediaRecorder(creatorStream,recordedVideoType?{mimeType:recordedVideoType}:undefined);
+    const chunks=[];
+    creatorRecorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    creatorRecorder.onerror=e=>{out.textContent="Recording error: "+(e.error?.message||"please try again")};
+    creatorRecorder.onstop=()=>{
+      recordedVideoBlob=new Blob(chunks,{type:creatorRecorder.mimeType||recordedVideoType||"video/webm"});
+      if(creatorObjectUrl)URL.revokeObjectURL(creatorObjectUrl);
+      creatorObjectUrl=URL.createObjectURL(recordedVideoBlob);
+      const v=document.getElementById("creatorPreview");v.srcObject=null;v.src=creatorObjectUrl;v.controls=true;v.muted=false;v.play().catch(()=>{});
+      document.getElementById("videoFile").value="";out.textContent=`Clip ready (${(recordedVideoBlob.size/1024/1024).toFixed(1)} MB). Review it, add a caption, then publish.`;
+      document.getElementById("recordStartBtn").disabled=false;document.getElementById("recordStopBtn").disabled=true;
+    };
+    creatorRecorder.start(1000);out.textContent="🔴 Recording… press Stop when finished.";
+    document.getElementById("recordStartBtn").disabled=true;document.getElementById("recordStopBtn").disabled=false;
+  }catch(err){out.textContent="Could not start recording: "+(err.message||"try again")}
+}
+function stopRecording(){if(creatorRecorder&&creatorRecorder.state!=="inactive")creatorRecorder.stop()}
+function retakeRecording(){
+  if(creatorRecorder&&creatorRecorder.state!=="inactive")creatorRecorder.stop();
+  recordedVideoBlob=null;const v=document.getElementById("creatorPreview");v.pause();v.removeAttribute("src");v.srcObject=creatorStream;v.controls=false;v.muted=true;if(creatorStream)v.play().catch(()=>{});
+  document.getElementById("videoFile").value="";document.getElementById("recordStartBtn").disabled=false;document.getElementById("recordStopBtn").disabled=true;setStatus("recordStatus","Ready for another take.");
+}
+function previewChosenVideo(event){
+  const f=event.target.files?.[0];if(!f)return;
+  if(!f.type.startsWith("video/")){setStatus("uploadStatus","Please choose a video file.");event.target.value="";return}
+  recordedVideoBlob=null;const v=document.getElementById("creatorPreview");v.srcObject=null;if(creatorObjectUrl)URL.revokeObjectURL(creatorObjectUrl);creatorObjectUrl=URL.createObjectURL(f);v.src=creatorObjectUrl;v.controls=true;v.muted=false;v.play().catch(()=>{});setStatus("recordStatus","Video selected — preview it and publish when ready.");
+}
+function stopCreatorCamera(){
+  if(creatorStream){creatorStream.getTracks().forEach(t=>t.stop());creatorStream=null;}
+  const v=document.getElementById("creatorPreview");
+  if(v && v.srcObject){v.pause();v.srcObject=null;}
+  const stop=document.getElementById("recordStopBtn");if(stop)stop.disabled=true;
+}
+function closeCreatorStudio(){if(creatorRecorder&&creatorRecorder.state!=="inactive")creatorRecorder.stop();stopCreatorCamera();closeModal("uploadModal")}
+async function uploadPreview(){
+  const selected=document.getElementById("videoFile").files[0];
+  const f=selected||(recordedVideoBlob?new File([recordedVideoBlob],`twoterm-recording.${(recordedVideoBlob.type||"").includes("mp4")?"mp4":"webm"}`,{type:recordedVideoBlob.type||"video/webm"}):null),out=document.getElementById("uploadStatus"),caption=document.getElementById("videoCaption").value.trim();
+  if(!await requireLogin()){out.textContent="Please log in first.";return}
+  if(!f){out.textContent="Choose a video first.";return}if(!f.type.startsWith("video/")){out.textContent="Choose a video file.";return}if(f.size>100*1024*1024){out.textContent="Choose a video under 100 MB.";return}
+  out.textContent="Uploading video to Supabase…";
+  try{
+    const ext=(f.name.split(".").pop()||"mp4").toLowerCase().replace(/[^a-z0-9]/g,"")||"mp4";
+    const path=`${currentUser.id}/${crypto.randomUUID()}.${ext}`;
+    const {error:uploadError}=await sb.storage.from(MEDIA_BUCKET).upload(path,f,{contentType:f.type||"video/mp4",upsert:false});if(uploadError)throw uploadError;
+    const {data:post,error:postError}=await sb.from("app_posts").insert({user_id:currentUser.id,caption,video_url:path,media_url:path,media_type:"video",visibility:"public"}).select("id").single();
+    if(postError){await sb.storage.from(MEDIA_BUCKET).remove([path]);throw postError}
+    out.textContent="Video uploaded and published.";document.getElementById("videoFile").value="";document.getElementById("videoCaption").value="";recordedVideoBlob=null;stopCreatorCamera();if(creatorObjectUrl){URL.revokeObjectURL(creatorObjectUrl);creatorObjectUrl=null}closeModal("uploadModal");go("home");await loadFeed();
+  }catch(err){console.error(err);out.textContent="Upload failed: "+(err.message||"check storage/table permissions");}
+}
+function openLive(){openModal("liveModal")}
+async function startLive(){
+  const out=document.getElementById("liveStatus");if(!sb){out.textContent="Live unavailable until Supabase is configured.";return}
+  try{const {data:{session},error}=await sb.auth.getSession();if(error)throw error;if(!session)throw Error("Log in first.");
+    const r=await sb.functions.invoke("livekit-token",{body:{room_name:"twoterm-live",title:document.getElementById("liveTitle").value}});if(r.error)throw r.error;
+    const d=r.data;if(!d?.server_url||!d?.participant_token)throw Error("Secure LiveKit token not returned. Creator verification may be incomplete.");
+    if(!window.LivekitClient)throw Error("LiveKit client library did not load.");liveRoom=new LivekitClient.Room();await liveRoom.connect(d.server_url,d.participant_token);await liveRoom.localParticipant.enableCameraAndMicrophone();
+    cameraStream=new MediaStream();liveRoom.localParticipant.videoTrackPublications.forEach(p=>{if(p.track?.mediaStreamTrack)cameraStream.addTrack(p.track.mediaStreamTrack)});
+    const v=document.getElementById("cameraPreview");v.srcObject=cameraStream;v.classList.remove("hidden");out.textContent="Connected to LiveKit. Viewer discovery and playback still need backend configuration.";
+  }catch(err){out.textContent=err.message||"Unable to start live."}
+}
+async function endLive(){if(liveRoom){try{await liveRoom.disconnect()}catch(e){}liveRoom=null}if(cameraStream){cameraStream.getTracks().forEach(t=>t.stop());cameraStream=null}const v=document.getElementById("cameraPreview");v.srcObject=null;v.classList.add("hidden");setStatus("liveStatus","Live session ended.")}
+function closeLive(){endLive();closeModal("liveModal")}
+let selectedGiftPost=null,selectedGiftCreator="";
+function tip(){selectedGiftPost=null;selectedGiftCreator="";document.querySelector("#tipModal .modal-head h2").textContent="💎 Send a tip";setStatus("tipStatus","");openModal("tipModal")}
+function openGift(post,profile){selectedGiftPost=post;selectedGiftCreator=profile.display_name||profile.username||"this creator";document.querySelector("#tipModal .modal-head h2").textContent="🎁 Gift "+selectedGiftCreator;setStatus("tipStatus","Demo only. No payment will be made and no creator balance will change.");openModal("tipModal")}
+function sendTipDemo(){const a=Number(document.getElementById("tipAmount").value);setStatus("tipStatus",a>0&&a<=100000?`Demo only: KSh ${a.toLocaleString()} was NOT charged or sent to ${selectedGiftCreator||"a creator"}. Real gifts require a secure payment integration.`:"Enter an amount between KSh 1 and KSh 100,000.")}
+async function openFollowList(kind){
+  if(!currentUser){openAuth();setStatus("authStatus","Log in to view follower lists.");return}
+  openModal("followListModal");document.getElementById("followListTitle").textContent=kind==="followers"?"Your followers":"People you follow";
+  const box=document.getElementById("followListContent");box.replaceChildren();const loading=document.createElement("p");loading.className="small";loading.textContent="Loading creators…";box.append(loading);
+  try{
+    let query=sb.from("app_follows").select(kind==="followers"?"follower_id":"following_id");
+    query=kind==="followers"?query.eq("following_id",currentUser.id):query.eq("follower_id",currentUser.id);
+    const {data,error}=await query.limit(100);if(error)throw error;
+    const ids=[...new Set((data||[]).map(row=>kind==="followers"?row.follower_id:row.following_id).filter(Boolean))];box.replaceChildren();
+    if(!ids.length){const empty=document.createElement("p");empty.className="small";empty.textContent="No "+(kind==="followers"?"followers":"following")+" to show yet.";box.append(empty);return}
+    const {data:profiles,error:profileError}=await sb.from("app_profiles").select("id,username,display_name,is_verified").in("id",ids);if(profileError)throw profileError;
+    const byId=Object.fromEntries((profiles||[]).map(p=>[p.id,p]));
+    ids.forEach(id=>{const p=byId[id]||{};const row=document.createElement("div");row.className="creator-line";row.style.padding="12px 0";row.style.borderBottom="1px solid var(--line)";const avatar=document.createElement("div");avatar.className="mini-avatar";avatar.textContent=initials(p.display_name||p.username||"C");const info=document.createElement("div");info.className="creator-info";const name=document.createElement("div");name.className="creator-name";name.textContent=p.display_name||p.username||"TWOTERM creator";const handle=document.createElement("div");handle.className="small";handle.textContent=(p.username?"@"+p.username:"Creator")+(p.is_verified?" · Verified":"");info.append(name,handle);row.append(avatar,info);box.append(row)});
+  }catch(err){box.replaceChildren();const message=document.createElement("p");message.className="small";message.textContent="Could not load this list: "+(err.message||"check app_follows permissions.");box.append(message)}
+}
+function withdraw(){setStatus("walletStatus","Real withdrawals require a secured backend balance check, payment provider and approval workflow. No money can be withdrawn from this demo.")}
+window.addEventListener("beforeunload",()=>{if(liveRoom)liveRoom.disconnect();stopCreatorCamera();if(creatorObjectUrl)URL.revokeObjectURL(creatorObjectUrl);objectURLs.forEach(URL.revokeObjectURL)});
+loadFeed();
+
+</script>
+</body>
+</html>
+
