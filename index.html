@@ -413,7 +413,18 @@ document.getElementById("authForm").addEventListener("submit",async e=>{
       if(birthday>cutoff)throw Error("You must be at least 18 to register.");
       r=await sb.auth.signUp({email,password,options:{data:{display_name:document.getElementById("displayName").value.trim(),date_of_birth:dob,age_attested:true}}});
     }else r=await sb.auth.signInWithPassword({email,password});
-    if(r.error)throw r.error;
+    if(r.error)throw r.error;// Show the main app after successful login
+const loginSection = document.getElementById("loginSection");
+const videoFeed = document.getElementById("videoFeed");
+
+if (loginSection) {
+  loginSection.style.display = "none";
+}
+
+if (videoFeed) {
+  videoFeed.style.display = "block";
+  videoFeed.scrollIntoView({ behavior: "smooth" });
+ }
     out.textContent=authMode==="signup"?"Registration submitted. Check your email if confirmation is required.":"Logged in.";
     await refreshUser();await loadFeed();
   }catch(err){out.textContent=err.message||"Account request failed."}
