@@ -302,7 +302,7 @@ let sb = null, authMode = "signup", liveRoom = null, cameraStream = null;
 let objectURLs = [], currentUser = null, cachedPosts = [], currentTab = "foryou";
 
 if (window.supabase && SUPABASE_URL.startsWith("https://") && !SUPABASE_KEY.includes("YOUR_")) {
-  sb = window.supabase.createClient(https://rhysucxztnjlskodkads.supabase.co/rest/v1/);
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   refreshUser();
   sb.auth.onAuthStateChange((_event, session) => {
     currentUser = session?.user || null;
