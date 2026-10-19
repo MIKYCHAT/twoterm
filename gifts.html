@@ -1,0 +1,607 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100b20">
+  <title>TWOTERM Gifts & Earnings</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #100b20;
+      --panel: #1b1430;
+      --panel2: #251b40;
+      --pink: #ff3d9a;
+      --purple: #a855f7;
+      --text: #fff;
+      --muted: #bcb2d0;
+      --border: #392a55;
+      --green: #42e8a5;
+      --red: #ff7189;
+      --gold: #ffd166;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(ellipse at top, #291342, var(--bg) 65%);
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    button, input, select { font: inherit; }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+
+    .primary {
+      color: white;
+      background: linear-gradient(110deg, var(--pink), var(--purple));
+    }
+
+    .secondary {
+      background: var(--panel2);
+      color: white;
+      border: 1px solid var(--border);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 5%;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(16, 11, 32, .95);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand { font-size: 22px; font-weight: 900; }
+    .brand span { color: var(--pink); }
+
+    main { width: min(1100px, 92%); margin: 28px auto 60px; }
+
+    h1 { font-size: clamp(30px, 5vw, 44px); margin: 8px 0; }
+    h2 { font-size: 20px; margin: 0 0 15px; }
+
+    .eyebrow {
+      color: #f4a2d0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .muted { color: var(--muted); line-height: 1.6; }
+
+    .card {
+      background: rgba(27, 20, 48, .96);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 22px 0;
+    }
+
+    .stat {
+      background: #120d23;
+      border: 1px solid var(--border);
+      padding: 16px;
+      border-radius: 14px;
+      min-width: 0;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: clamp(18px, 3vw, 26px);
+      margin: 8px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .stat small { color: var(--muted); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .gift {
+      background: #120d23;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 15px 10px;
+      text-align: center;
+    }
+
+    .gift-icon { font-size: 38px; margin: 7px 0; }
+    .gift h3 { margin: 8px 0 5px; font-size: 15px; }
+    .gift p { margin: 5px 0 12px; color: var(--gold); font-weight: 800; }
+    .gift button { width: 100%; padding: 10px 7px; }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .row > * { flex: 1; }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin: 14px 0 7px;
+    }
+
+    input, select {
+      width: 100%;
+      color: white;
+      background: #100b20;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 13px;
+      outline: none;
+    }
+
+    input:focus, select:focus { border-color: var(--purple); }
+
+    select option { background: #1b1430; }
+
+    .status {
+      background: #120d23;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .status.error { color: #ff9eaf; }
+    .status.ok { color: var(--green); }
+
+    .notice {
+      border-left: 3px solid var(--gold);
+      padding: 10px 13px;
+      background: #241d2d;
+      color: #eadfc8;
+      font-size: 13px;
+      line-height: 1.6;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; min-width: 550px; }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th { color: var(--muted); font-weight: 600; }
+    td { overflow-wrap: anywhere; }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 8px;
+      background: var(--panel2);
+      font-size: 11px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 13px 4%; }
+      main { width: 94%; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card { padding: 15px; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="brand">TWO<span>TERM</span></div>
+  <div class="row" style="flex:0 0 auto">
+    <button class="secondary" id="homeBtn">Home</button>
+    <button class="secondary" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<main>
+  <div class="eyebrow">Creator monetization</div>
+  <h1>Gifts & Earnings 💎</h1>
+  <p class="muted">
+    Explore virtual gifts, review your creator earnings, and manage payout
+    requests. Real transactions require server-verified payments.
+  </p>
+
+  <div id="authStatus" class="status">Checking your TWOTERM login...</div>
+
+  <div class="notice" style="margin-top:15px">
+    <strong>Demo mode:</strong> Gift prices and sample earnings below are
+    examples, not real money. This page does not charge a payment method,
+    credit a creator, or transfer funds. Do not use a demo balance to make
+    financial decisions.
+  </div>
+
+  <section class="stats">
+    <div class="stat">
+      <small>Available balance</small>
+      <strong id="availableBalance">KSh 0.00</strong>
+      <small>Verified balance only</small>
+    </div>
+    <div class="stat">
+      <small>Pending earnings</small>
+      <strong id="pendingBalance">KSh 0.00</strong>
+      <small>Awaiting settlement</small>
+    </div>
+    <div class="stat">
+      <small>Total earnings</small>
+      <strong id="totalEarnings">KSh 0.00</strong>
+      <small>Confirmed transactions</small>
+    </div>
+    <div class="stat">
+      <small>Withdrawals</small>
+      <strong id="withdrawalTotal">KSh 0.00</strong>
+      <small>Paid withdrawals</small>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🎁 Virtual gift catalog</h2>
+    <p class="muted">
+      Choose a gift to review its example price. Real gift sending will be
+      enabled after payment verification and creator crediting are connected.
+    </p>
+    <div class="grid" id="giftCatalog"></div>
+  </section>
+
+  <section class="card">
+    <h2>Gift confirmation</h2>
+    <p class="muted" id="selectedGift">Choose a gift from the catalog first.</p>
+
+    <label for="creatorId">Creator user ID</label>
+    <input id="creatorId" placeholder="Paste the creator's user ID">
+
+    <label for="giftQuantity">Quantity</label>
+    <select id="giftQuantity">
+      <option value="1">1 gift</option>
+      <option value="2">2 gifts</option>
+      <option value="5">5 gifts</option>
+      <option value="10">10 gifts</option>
+    </select>
+
+    <div class="actions">
+      <button id="confirmGiftBtn" class="primary" disabled>Review gift</button>
+    </div>
+    <div id="giftStatus" class="status" style="margin-top:12px">
+      No gift selected.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>💰 Earnings history</h2>
+    <p class="muted">
+      This list displays only transactions loaded from a verified backend.
+      No financial records are fabricated by this page.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="earningsRows">
+          <tr><td colspan="4">No verified earnings have been loaded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>🏦 Request a withdrawal</h2>
+    <p class="muted">
+      Submit a request only when the real wallet backend has confirmed that
+      your balance is eligible. This form will not transfer money by itself.
+    </p>
+
+    <label for="payoutMethod">Payout method</label>
+    <select id="payoutMethod">
+      <option value="mpesa">M-Pesa</option>
+      <option value="bank">Bank transfer</option>
+    </select>
+
+    <label for="payoutAccount">Payout destination</label>
+    <input id="payoutAccount" autocomplete="off"
+      placeholder="Enter the required payout details">
+
+    <label for="withdrawAmount">Amount (KSh)</label>
+    <input id="withdrawAmount" type="number" min="1" step="1"
+      placeholder="Enter amount">
+
+    <div class="actions">
+      <button class="primary" id="withdrawBtn">Review withdrawal request</button>
+    </div>
+
+    <div id="withdrawStatus" class="status" style="margin-top:12px">
+      No withdrawal request submitted.
+    </div>
+
+    <p class="muted" style="font-size:12px">
+      Minimum withdrawal, fees, verification, identity checks, and payout
+      eligibility must be configured and disclosed before real payouts launch.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>⚙️ Monetization & compliance</h2>
+    <ul class="muted">
+      <li>Display gift prices and platform commission before purchase.</li>
+      <li>Use a payment provider and verify payment callbacks on the server.</li>
+      <li>Maintain an auditable earnings ledger with reversals and disputes.</li>
+      <li>Check creator eligibility and payout details securely.</li>
+      <li>Never accept a browser-calculated balance as proof of payment.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>© TWOTERM — Connect. Stream. Earn.</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  const $ = id => document.getElementById(id);
+  let currentUser = null;
+  let selectedGift = null;
+
+  // Example catalog only. Prices do not represent an active payment system.
+  const gifts = [
+    { id: "rose", name: "Rose", icon: "🌹", price: 10 },
+    { id: "heart", name: "Heart", icon: "💖", price: 25 },
+    { id: "coffee", name: "Coffee", icon: "☕", price: 50 },
+    { id: "crown", name: "Crown", icon: "👑", price: 100 },
+    { id: "diamond", name: "Diamond", icon: "💎", price: 250 },
+    { id: "rocket", name: "Rocket", icon: "🚀", price: 500 },
+    { id: "lion", name: "Lion", icon: "🦁", price: 1000 },
+    { id: "universe", name: "Universe", icon: "🌌", price: 2500 }
+  ];
+
+  function status(id, message, kind = "") {
+    const element = $(id);
+    element.textContent = message;
+    element.className = "status" + (kind ? " " + kind : "");
+  }
+
+  function formatKES(amount) {
+    return "KSh " + Number(amount).toLocaleString("en-KE", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function renderCatalog() {
+    const catalog = $("giftCatalog");
+    catalog.replaceChildren();
+
+    gifts.forEach(gift => {
+      const card = document.createElement("article");
+      card.className = "gift";
+
+      const icon = document.createElement("div");
+      icon.className = "gift-icon";
+      icon.textContent = gift.icon;
+
+      const name = document.createElement("h3");
+      name.textContent = gift.name;
+
+      const price = document.createElement("p");
+      price.textContent = formatKES(gift.price);
+
+      const button = document.createElement("button");
+      button.className = "secondary";
+      button.textContent = "Choose gift";
+      button.addEventListener("click", () => chooseGift(gift.id));
+
+      card.append(icon, name, price, button);
+      catalog.appendChild(card);
+    });
+  }
+
+  function chooseGift(giftId) {
+    selectedGift = gifts.find(gift => gift.id === giftId);
+    if (!selectedGift) return;
+
+    $("confirmGiftBtn").disabled = false;
+    updateGiftQuote();
+    status("giftStatus", "Gift selected. Review the details before proceeding.");
+  }
+
+  function updateGiftQuote() {
+    if (!selectedGift) return;
+
+    const quantity = Number($("giftQuantity").value);
+    const total = selectedGift.price * quantity;
+
+    $("selectedGift").textContent =
+      selectedGift.icon + " " + selectedGift.name +
+      " × " + quantity + " — example total " + formatKES(total) +
+      ". This is not a charge or a completed purchase.";
+  }
+
+  async function checkLogin() {
+    try {
+      const { data, error } = await db.auth.getSession();
+      if (error) throw error;
+
+      currentUser = data.session?.user || null;
+
+      if (!currentUser) {
+        status(
+          "authStatus",
+          "You are not logged in. Log in through TWOTERM to use account features.",
+          "error"
+        );
+        return false;
+      }
+
+      status(
+        "authStatus",
+        "Signed in as " + (currentUser.email || currentUser.id) +
+        ". Wallet values remain unverified until connected to the backend.",
+        "ok"
+      );
+      return true;
+    } catch (error) {
+      status("authStatus", "Could not check login: " + error.message, "error");
+      return false;
+    }
+  }
+
+  async function reviewGift() {
+    const signedIn = await checkLogin();
+    if (!signedIn) {
+      status("giftStatus", "Please log in before continuing.", "error");
+      return;
+    }
+
+    if (!selectedGift) {
+      status("giftStatus", "Select a gift first.", "error");
+      return;
+    }
+
+    const creatorId = $("creatorId").value.trim();
+    if (!creatorId) {
+      status("giftStatus", "Enter the creator's user ID.", "error");
+      return;
+    }
+
+    if (creatorId === currentUser.id) {
+      status("giftStatus", "You cannot send a gift to yourself.", "error");
+      return;
+    }
+
+    const quantity = Number($("giftQuantity").value);
+    const total = selectedGift.price * quantity;
+
+    const confirmed = window.confirm(
+      "DEMO GIFT REVIEW\n\n" +
+      selectedGift.icon + " " + selectedGift.name + "\n" +
+      "Quantity: " + quantity + "\n" +
+      "Example total: " + formatKES(total) + "\n\n" +
+      "No payment system is connected yet. This will NOT charge you or send a gift. Continue to see the setup status?"
+    );
+
+    if (!confirmed) return;
+
+    status(
+      "giftStatus",
+      "No payment was made and no gift was sent. The secure payment and gift ledger backend must be connected before this action can complete."
+    );
+  }
+
+  async function reviewWithdrawal() {
+    const signedIn = await checkLogin();
+    if (!signedIn) {
+      status("withdrawStatus", "Please log in before continuing.", "error");
+      return;
+    }
+
+    const method = $("payoutMethod").value;
+    const destination = $("payoutAccount").value.trim();
+    const amount = Number($("withdrawAmount").value);
+
+    if (!destination) {
+      status("withdrawStatus", "Enter the required payout destination.", "error");
+      return;
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      status("withdrawStatus", "Enter a valid withdrawal amount.", "error");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "WITHDRAWAL REQUEST REVIEW\n\n" +
+      "Method: " + (method === "mpesa" ? "M-Pesa" : "Bank transfer") + "\n" +
+      "Amount: " + formatKES(amount) + "\n\n" +
+      "This is a preview only. No money will be transferred and no request will be recorded. Continue?"
+    );
+
+    if (!confirmed) return;
+
+    status(
+      "withdrawStatus",
+      "Preview complete. No withdrawal request was stored. A server-side wallet check, withdrawal table, payout verification, and approval workflow are required to submit a real request."
+    );
+  }
+
+  $("giftQuantity").addEventListener("change", updateGiftQuote);
+  $("confirmGiftBtn").addEventListener("click", reviewGift);
+  $("withdrawBtn").addEventListener("click", reviewWithdrawal);
+
+  $("homeBtn").addEventListener("click", () => {
+    window.location.href = "./index.html";
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    const { error } = await db.auth.signOut();
+    if (error) {
+      status("authStatus", "Logout failed: " + error.message, "error");
+      return;
+    }
+    window.location.href = "./index.html";
+  });
+
+  renderCatalog();
+  checkLogin();
+})();
+</script>
+</body>
+</html>
