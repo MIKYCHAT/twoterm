@@ -124,16 +124,25 @@ footer{text-align:center;color:var(--muted);padding:25px}
 </div>
 
 <div class="field">
-  <label for="cameraInput">upload with camera</label>
+  <label for="videoFile">Upload from gallery</label>
+  <input
+    id="videoFile"
+    type="file"
+    accept="video/*"
+  >
+</div>
+
+<div class="field">
+  <label for="cameraInput">Record with camera</label>
   <input
     id="cameraInput"
-    type="upload"
+    type="file"
     accept="video/*"
     capture="environment"
   >
   <p class="muted">Tap to record a new video using your phone camera.</p>
-</div>
-
+</div> 
+  
 <div class="actions" style="justify-content:flex-start">
 <button class="btn primary" id="publishVideoBtn" type="submit">Publish video</button>
 <button class="btn" id="cancelVideoBtn" type="button">Cancel</button>
