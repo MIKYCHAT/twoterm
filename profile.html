@@ -109,6 +109,20 @@ footer{text-align:center;color:var(--muted);padding:25px}
 <h3>Publish a video</h3>
 <div class="field"><label for="videoTitle">Video title</label><input id="videoTitle" maxlength="100" required></div>
 <div class="field"><label for="videoDescription">Caption / description</label><textarea id="videoDescription" maxlength="1000"></textarea></div>
+<div class="field"><div class="field">
+  <label for="videoFile">Option 1 — Upload from gallery</label>
+  <input id="videoFile" type="file" accept="video/*">
+</div><div class="field">
+  <label for="videoFile">Option 1 — Upload from gallery</label>
+  <input id="videoFile" type="file" accept="video/*">
+</div>
+
+<div class="field">
+  <label for="cameraInput">Option 2 — Record a video</label>
+  <input id="cameraInput" type="file" accept="video/*" capture="environment">
+  <p class="muted">Your phone may open its camera to record a video.</p>
+</div>
+
 <div class="field">
 <label for="videoUrl">Direct video URL</label>
 <input id="videoUrl" type="url" placeholder="https://example.com/video.mp4" required>
@@ -138,7 +152,7 @@ footer{text-align:center;color:var(--muted);padding:25px}
 
 const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
-const AVATAR_BUCKET = "avatars";
+const AVATAR_BUCKET = "twoterm-videos";
 const FALLBACK_AVATAR = "https://placehold.co/220x220/302342/ffffff?text=TWOTERM";
 const $ = id => document.getElementById(id);
 
