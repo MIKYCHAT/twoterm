@@ -977,36 +977,46 @@
     }
 
     function getFilteredVideos() {
-      let videos = [...demoVideos];
+  let videos = [...realVideos];
 
-      if (activeFeed === "Following" || activePage === "Following") {
-        videos = videos.filter(video => followedCreators.has(video.handle));
-      }
+  if (activeFeed === "Following" || activePage === "Following") {
+    videos = videos.filter(video =>
+      followedCreators.has(video.handle)
+    );
+  }
 
-      if (activePage === "Saved") {
-        videos = videos.filter(video => savedVideos.has(video.id));
-      }
+  if (activePage === "Saved") {
+    videos = videos.filter(video =>
+      savedVideos.has(video.id)
+    );
+  }
 
-      if (activeCategory !== "All") {
-        videos = videos.filter(video => video.category === activeCategory);
-      }
+  if (activeCategory !== "All") {
+    videos = videos.filter(video =>
+      video.category === activeCategory
+    );
+  }
 
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase().replace(/^#/,"");
-        videos = videos.filter(video =>
-          `${video.title} ${video.creator} ${video.handle} ${video.category} ${video.description}`
-            .toLowerCase().includes(query)
-        );
-      }
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase().replace(/^#/, "");
+    videos = videos.filter(video =>
+      `${video.title} ${video.creator} ${video.handle} ${video.category} ${video.description}`
+        .toLowerCase()
+        .includes(query)
+    );
+  }
 
-      if (activePage === "Trending" || $("sortSelect").value === "popular") {
-        videos.sort((a,b) => b.likes - a.likes);
-      } else if ($("sortSelect").value === "recent") {
-        videos.reverse();
-      }
+  if (activePage === "Trending" ||
+      $("sortSelect").value === "popular") {
+    videos.sort((a, b) => b.likes - a.likes);
+  } else if ($("sortSelect").value === "recent") {
+    videos.sort((a, b) =>
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
+  }
 
-      return videos;
-    }
+  return videos;
+}
 
     function renderVideos() {
       const videos = getFilteredVideos();
