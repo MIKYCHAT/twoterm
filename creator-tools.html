@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100b20">
+  <title>TWOTERM Creator Studio</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg:#100b20; --panel:#1b1430; --panel2:#251b40;
+      --pink:#ff3d9a; --purple:#a855f7; --text:#fff;
+      --muted:#bcb2d0; --border:#392a55; --green:#42e8a5;
+      --yellow:#ffd166;
+    }
+    * {box-sizing:border-box}
+    body {
+      margin:0; min-height:100vh; color:var(--text);
+      background:radial-gradient(ellipse at top,#291342,var(--bg) 65%);
+      font-family:Arial,Helvetica,sans-serif;
+    }
+    button,input,select,textarea {font:inherit}
+    button {
+      cursor:pointer; border:0; border-radius:10px;
+      padding:11px 14px; font-weight:700;
+    }
+    button:disabled {opacity:.5;cursor:not-allowed}
+    .primary {color:white;background:linear-gradient(110deg,var(--pink),var(--purple))}
+    .secondary {color:white;background:var(--panel2);border:1px solid var(--border)}
+    .danger {color:#ffd5e5;background:#43172e;border:1px solid #74304f}
+    header {
+      position:sticky;top:0;z-index:5;display:flex;align-items:center;
+      justify-content:space-between;gap:12px;padding:14px 4%;
+      background:rgba(16,11,32,.96);border-bottom:1px solid var(--border);
+      backdrop-filter:blur(12px);
+    }
+    .brand {font-size:22px;font-weight:900}
+    .brand span {color:var(--pink)}
+    .actions {display:flex;gap:8px;flex-wrap:wrap}
+    main {width:min(1180px,94%);margin:25px auto 60px}
+    h1 {font-size:clamp(29px,5vw,43px);margin:8px 0}
+    h2 {font-size:20px;margin:0 0 15px}
+    h3 {font-size:16px;margin:0 0 10px}
+    p {line-height:1.55}
+    .muted {color:var(--muted);line-height:1.6}
+    .eyebrow {font-size:12px;color:#f4a2d0;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+    .card {
+      background:rgba(27,20,48,.96);border:1px solid var(--border);
+      border-radius:17px;padding:19px;margin-bottom:18px;min-width:0;
+    }
+    .hero {display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+    .hero p {max-width:680px}
+    .grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+    .two {display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .metric {padding:16px;background:#120d23;border:1px solid var(--border);border-radius:14px}
+    .metric .label {font-size:12px;color:var(--muted)}
+    .metric .value {font-size:27px;font-weight:900;margin:9px 0}
+    .metric .hint {font-size:11px;color:var(--muted)}
+    .section-head {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .section-head h2 {margin:0}
+    .tabs {display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;margin-bottom:14px}
+    .tab {white-space:nowrap;color:#e7ddf7;background:#241a3b;border:1px solid var(--border)}
+    .tab.active {background:#58214d;border-color:var(--pink)}
+    .panel {display:none}
+    .panel.active {display:block}
+    input,select,textarea {
+      width:100%;min-width:0;color:white;background:#100b20;
+      border:1px solid var(--border);border-radius:10px;padding:12px;
+      outline:none;
+    }
+    textarea {min-height:90px;resize:vertical}
+    label {display:block;font-size:13px;color:#e7ddf7;margin:12px 0 6px}
+    .form-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .form-actions {display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .status {padding:12px;border:1px solid var(--border);border-radius:11px;background:#120d23;color:var(--muted);font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+    .list {display:flex;flex-direction:column;gap:9px}
+    .item {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;background:#120d23;border:1px solid var(--border);border-radius:12px}
+    .item small {display:block;color:var(--muted);margin-top:5px;line-height:1.5}
+    .pill {display:inline-block;font-size:11px;border:1px solid var(--border);border-radius:999px;padding:5px 8px;color:#e7ddf7}
+    .checkrow {display:flex;align-items:flex-start;gap:9px;margin:12px 0;color:var(--muted);font-size:13px;line-height:1.5}
+    .checkrow input {width:auto;margin-top:3px}
+    .progress {height:8px;border-radius:999px;background:#100b20;overflow:hidden;margin:12px 0}
+    .progress div {height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--purple))}
+    .empty {padding:22px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:12px}
+    canvas {max-height:290px}
+    footer {text-align:center;color:var(--muted);padding:24px;border-top:1px solid var(--border);font-size:12px}
+    @media(max-width:800px) {
+      .grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+      .two {grid-template-columns:1fr}
+    }
+    @media(max-width:480px) {
+      header {padding:12px 3%}
+      .brand {font-size:18px}
+      .actions button {padding:9px;font-size:12px}
+      .card {padding:14px}
+      .form-grid {grid-template-columns:1fr}
+      .metric .value {font-size:23px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">TWO<span>TERM</span> <span style="color:white;font-size:13px">STUDIO</span></div>
+  <div class="actions">
+    <button class="secondary" id="homeBtn">Home</button>
+    <button class="secondary" id="discoverBtn">Discover</button>
+    <button class="secondary" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<main>
+  <section class="card hero">
+    <div>
+      <div class="eyebrow">Creator workspace</div>
+      <h1>Creator Studio ✨</h1>
+      <p class="muted">Manage your content, understand performance, prepare posts, and track your progress on TWOTERM.</p>
+      <div class="status" id="authStatus">Checking your Supabase session...</div>
+    </div>
+    <div class="form-actions">
+      <button class="primary" id="newDraftBtn">＋ New draft</button>
+      <button class="secondary" id="liveBtn">Open LIVE Studio</button>
+    </div>
+  </section>
+
+  <section class="grid" style="margin-bottom:18px">
+    <div class="metric">
+      <div class="label">Video views</div>
+      <div class="value" id="viewsMetric">—</div>
+      <div class="hint">Waiting for real analytics</div>
+    </div>
+    <div class="metric">
+      <div class="label">Likes</div>
+      <div class="value" id="likesMetric">—</div>
+      <div class="hint">Waiting for real analytics</div>
+    </div>
+    <div class="metric">
+      <div class="label">Comments</div>
+      <div class="value" id="commentsMetric">—</div>
+      <div class="hint">Waiting for real analytics</div>
+    </div>
+    <div class="metric">
+      <div class="label">Shares</div>
+      <div class="value" id="sharesMetric">—</div>
+      <div class="hint">Waiting for real analytics</div>
+    </div>
+  </section>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-panel="overview">Overview</button>
+    <button class="tab" data-panel="content">My content</button>
+    <button class="tab" data-panel="drafts">Drafts</button>
+    <button class="tab" data-panel="schedule">Schedule</button>
+    <button class="tab" data-panel="verification">Verification</button>
+    <button class="tab" data-panel="brands">Brand deals</button>
+    <button class="tab" data-panel="support">Creator support</button>
+  </nav>
+
+  <section class="panel active" id="panel-overview">
+    <div class="two">
+      <div class="card">
+        <div class="section-head">
+          <h2>Performance overview</h2>
+          <span class="pill">Analytics status: demo</span>
+        </div>
+        <p class="muted">Your real view counts, valid watch time, retention, traffic sources, and audience trends will appear here after database integration.</p>
+        <canvas id="viewsChart" aria-label="Demo weekly views chart"></canvas>
+      </div>
+      <div class="card">
+        <h2>Creator eligibility</h2>
+        <p class="muted">Use this checklist to prepare your account. It does not grant creator privileges automatically.</p>
+        <div id="eligibilityList"></div>
+        <div class="progress"><div id="eligibilityProgress"></div></div>
+        <div class="status" id="eligibilityStatus">Complete the checklist to track your preparation.</div>
+        <button class="secondary" id="verifyShortcut" style="margin-top:12px">Apply for verification</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Additional analytics</h2>
+      <div class="grid">
+        <div class="metric"><div class="label">Watch time</div><div class="value" style="font-size:20px">Not connected</div><div class="hint">Valid playback duration</div></div>
+        <div class="metric"><div class="label">Audience retention</div><div class="value" style="font-size:20px">Not connected</div><div class="hint">Drop-off by video position</div></div>
+        <div class="metric"><div class="label">Follower growth</div><div class="value" style="font-size:20px">Not connected</div><div class="hint">Trend over time</div></div>
+        <div class="metric"><div class="label">LIVE engagement</div><div class="value" style="font-size:20px">Not connected</div><div class="hint">Viewers and interactions</div></div>
+      </div>
+      <p class="muted">These metrics must come from verified events and database records. This page does not invent real performance data.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-content">
+    <div class="card">
+      <div class="section-head">
+        <h2>Content management</h2>
+        <span class="pill">Demo content</span>
+      </div>
+      <p class="muted">Published posts from your real TWOTERM account will appear here once your video table and permissions are connected.</p>
+      <div id="contentList" class="list"></div>
+      <div class="status" style="margin-top:12px">Editing, pinning, and deleting real posts are disabled until the correct database schema and ownership policies are confirmed.</div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-drafts">
+    <div class="card">
+      <div class="section-head">
+        <h2>Content drafts</h2>
+        <button class="primary" id="draftTabNewBtn">＋ Create draft</button>
+      </div>
+      <p class="muted">Drafts in this version are stored in this browser only. They are not uploaded or shared with other devices.</p>
+      <form id="draftForm">
+        <input type="hidden" id="draftId">
+        <label for="draftTitle">Draft title</label>
+        <input id="draftTitle" maxlength="120" placeholder="Give your post a title" required>
+        <label for="draftCaption">Caption</label>
+        <textarea id="draftCaption" maxlength="2200" placeholder="Write your caption or hashtags"></textarea>
+        <label for="draftNotes">Private notes</label>
+        <textarea id="draftNotes" maxlength="2000" placeholder="Ideas for editing or filming"></textarea>
+        <div class="form-actions">
+          <button class="primary" type="submit">Save draft</button>
+          <button class="secondary" type="button" id="cancelDraftBtn">Clear form</button>
+        </div>
+      </form>
+      <hr style="border:0;border-top:1px solid var(--border);margin:20px 0">
+      <div id="draftList" class="list"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-schedule">
+    <div class="card">
+      <h2>Scheduled publishing</h2>
+      <p class="muted">Choose a planned publishing time. This saves a local reminder only; it will not publish a video automatically.</p>
+      <form id="scheduleForm">
+        <label for="scheduleTitle">Post title</label>
+        <input id="scheduleTitle" maxlength="120" required placeholder="Your planned post">
+        <label for="scheduleTime">Date and time</label>
+        <input id="scheduleTime" type="datetime-local" required>
+        <div class="form-actions">
+          <button class="primary" type="submit">Save schedule reminder</button>
+        </div>
+      </form>
+      <div id="scheduleStatus" class="status" style="margin-top:12px">No schedule reminder saved.</div>
+      <h3 style="margin-top:20px">Your reminders</h3>
+      <div id="scheduleList" class="list"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-verification">
+    <div class="card">
+      <h2>Creator verification application</h2>
+      <p class="muted">Submit a preparation form. This demo stores it in your browser only; it does not send identity documents or submit an official application to TWOTERM.</p>
+      <form id="verificationForm">
+        <label for="creatorName">Creator or display name</label>
+        <input id="creatorName" maxlength="80" required placeholder="Your creator name">
+        <label for="creatorReason">Why would you like creator verification?</label>
+        <textarea id="creatorReason" maxlength="1500" required placeholder="Tell us about your content and creator goals"></textarea>
+        <label for="creatorLinks">Public profile links (optional)</label>
+        <textarea id="creatorLinks" maxlength="1000" placeholder="Enter links to your public creator profiles"></textarea>
+        <label class="checkrow"><input type="checkbox" id="confirmAccurate" required> I confirm that the information I entered is accurate and I understand this is a local demo form.</label>
+        <button class="primary" type="submit">Save application draft</button>
+      </form>
+      <div class="status" id="verificationStatus" style="margin-top:12px">No application draft saved.</div>
+      <p class="muted">Never enter passwords, payment PINs, or unnecessary identity information into this demo form.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-brands">
+    <div class="card">
+      <h2>Brand collaborations and sponsorships</h2>
+      <p class="muted">Prepare a draft collaboration proposal and remember to disclose paid promotions clearly when publishing sponsored content.</p>
+      <form id="brandForm">
+        <label for="brandName">Brand or business name</label>
+        <input id="brandName" maxlength="100" required placeholder="Business name">
+        <label for="brandGoal">Campaign idea</label>
+        <textarea id="brandGoal" maxlength="1500" required placeholder="Describe the content you want to create"></textarea>
+        <label class="checkrow"><input type="checkbox" id="sponsorDisclosure"> I understand that sponsored content must be disclosed clearly where required.</label>
+        <button class="primary" type="submit">Save proposal draft</button>
+      </form>
+      <div id="brandStatus" class="status" style="margin-top:12px">No proposal draft saved.</div>
+      <p class="muted">This does not contact the brand, create a contract, or publish a promotional label on a video.</p>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-support">
+    <div class="card">
+      <h2>Creator support center</h2>
+      <p class="muted">Choose the issue you need help with. These buttons prepare guidance in this page; they do not create a support ticket.</p>
+      <div class="list">
+        <div class="item"><div><strong>Publishing and drafts</strong><small>Learn how to prepare content and manage drafts.</small></div><button class="secondary" data-help="publishing">Help</button></div>
+        <div class="item"><div><strong>LIVE streaming</strong><small>Camera, microphone, connection, and access troubleshooting.</small></div><button class="secondary" data-help="live">Help</button></div>
+        <div class="item"><div><strong>Analytics</strong><small>Understand valid views, watch time, and engagement metrics.</small></div><button class="secondary" data-help="analytics">Help</button></div>
+        <div class="item"><div><strong>Account and verification</strong><small>Eligibility, account access, and verification preparation.</small></div><button class="secondary" data-help="account">Help</button></div>
+      </div>
+      <div class="status" id="helpStatus" style="margin-top:12px">Select a help topic above.</div>
+    </div>
+  </section>
+</main>
+
+<footer>© TWOTERM — Connect. Stream. Earn.</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  const $ = id => document.getElementById(id);
+  const DRAFTS_KEY = "twoterm_creator_drafts_v1";
+  const SCHEDULE_KEY = "twoterm_creator_schedule_v1";
+  const ELIGIBILITY_KEY = "twoterm_creator_eligibility_v1";
+  const VERIFY_KEY = "twoterm_creator_verification_draft_v1";
+  const BRAND_KEY = "twoterm_creator_brand_draft_v1";
+
+  let currentSession = null;
+  let chart = null;
+
+  function read(key, fallback) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key));
+      return value == null ? fallback : value;
+    } catch (_) { return fallback; }
+  }
+
+  function write(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (_) {
+      alert("This browser could not save the data. Check available storage.");
+      return false;
+    }
+  }
+
+  function node(tag, className, text) {
+    const n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+
+  function button(label, className, callback) {
+    const b = node("button", className || "secondary", label);
+    b.type = "button";
+    b.addEventListener("click", callback);
+    return b;
+  }
+
+  function showPanel(name) {
+    document.querySelectorAll(".panel").forEach(p => {
+      p.classList.toggle("active", p.id === "panel-" + name);
+    });
+    document.querySelectorAll(".tab").forEach(t => {
+      t.classList.toggle("active", t.dataset.panel === name);
+    });
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  $("tabs").addEventListener("click", event => {
+    const tab = event.target.closest("[data-panel]");
+    if (tab) showPanel(tab.dataset.panel);
+  });
+
+  $("homeBtn").addEventListener("click", () => {
+    window.location.href = "./index.html";
+  });
+
+  $("discoverBtn").addEventListener("click", () => {
+    window.location.href = "./discover.html";
+  });
+
+  $("liveBtn").addEventListener("click", () => {
+    window.location.href = "./live.html";
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    if (!currentSession) {
+      $("authStatus").textContent = "You are not signed in.";
+      return;
+    }
+    const {error} = await db.auth.signOut();
+    if (error) {
+      $("authStatus").textContent = "Logout failed: " + error.message;
+      return;
+    }
+    currentSession = null;
+    $("authStatus").textContent = "Signed out. Redirecting to home...";
+    window.location.href = "./index.html";
+  });
+
+  async function checkAuth() {
+    try {
+      const {data, error} = await db.auth.getSession();
+      if (error) throw error;
+      currentSession = data.session || null;
+      $("authStatus").textContent = currentSession
+        ? "Signed in. User ID: " + currentSession.user.id + ". Creator tools are open."
+        : "Not signed in. You can try the local demo tools, but creator actions are not connected to your account.";
+    } catch (e) {
+      $("authStatus").textContent = "Could not check Supabase login: " + e.message;
+    }
+  }
+
+  const eligibilityItems = [
+    "Use a valid account and secure login",
+    "Complete your public creator profile",
+    "Review community rules and content policies",
+    "Check LIVE and monetization eligibility",
+    "Read payment and identity requirements where applicable"
+  ];
+
+  function renderEligibility() {
+    const saved = read(ELIGIBILITY_KEY, []);
+    const container = $("eligibilityList");
+    container.replaceChildren();
+
+    eligibilityItems.forEach((label, index) => {
+      const row = node("label", "checkrow");
+      const input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = saved.includes(index);
+      input.addEventListener("change", () => {
+        const updated = read(ELIGIBILITY_KEY, []);
+        const next = input.checked
+          ? [...new Set([...updated, index])]
+          : updated.filter(i => i !== index);
+        write(ELIGIBILITY_KEY, next);
+        renderEligibility();
+      });
+      row.append(input, node("span", "", label));
+      container.appendChild(row);
+    });
+
+    const count = saved.length;
+    $("eligibilityProgress").style.width = (count / eligibilityItems.length * 100) + "%";
+    $("eligibilityStatus").textContent =
+      count + " of " + eligibilityItems.length +
+      " preparation steps checked. This checklist does not verify your account or unlock features.";
+  }
+
+  $("verifyShortcut").addEventListener("click", () => showPanel("verification"));
+
+  function renderContent() {
+    const container = $("contentList");
+    container.replaceChildren();
+    container.appendChild(node("div", "empty",
+      "No real published posts loaded. Connect your existing video table to display your content here."));
+  }
+
+  function resetDraftForm() {
+    $("draftId").value = "";
+    $("draftTitle").value = "";
+    $("draftCaption").value = "";
+    $("draftNotes").value = "";
+  }
+
+  function renderDrafts() {
+    const container = $("draftList");
+    container.replaceChildren();
+    const drafts = read(DRAFTS_KEY, []);
+
+    if (!drafts.length) {
+      container.appendChild(node("div", "empty", "No local drafts yet. Create one above."));
+      return;
+    }
+
+    drafts.forEach(draft => {
+      const item = node("div", "item");
+      const details = document.createElement("div");
+      details.appendChild(node("strong", "", draft.title));
+      details.appendChild(node("small", "", draft.caption || "No caption"));
+      details.appendChild(node("small", "", "Saved on this device"));
+      const controls = node("div", "form-actions");
+      controls.appendChild(button("Edit", "secondary", () => {
+        $("draftId").value = draft.id;
+        $("draftTitle").value = draft.title;
+        $("draftCaption").value = draft.caption || "";
+        $("draftNotes").value = draft.notes || "";
+        showPanel("drafts");
+        $("draftTitle").focus();
+      }));
+      controls.appendChild(button("Delete", "danger", () => {
+        if (!confirm("Delete this local draft?")) return;
+        write(DRAFTS_KEY, read(DRAFTS_KEY, []).filter(d => d.id !== draft.id));
+        renderDrafts();
+      }));
+      item.append(details, controls);
+      container.appendChild(item);
+    });
+  }
+
+  $("draftForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const title = $("draftTitle").value.trim();
+    if (!title) return;
+
+    const drafts = read(DRAFTS_KEY, []);
+    const id = $("draftId").value || (Date.now().toString(36) + Math.random().toString(36).slice(2,7));
+    const draft = {
+      id, title,
+      caption: $("draftCaption").value.trim(),
+      notes: $("draftNotes").value.trim(),
+      updatedAt: new Date().toISOString()
+    };
+    const index = drafts.findIndex(d => d.id === id);
+    if (index >= 0) drafts[index] = draft;
+    else drafts.unshift(draft);
+
+    if (write(DRAFTS_KEY, drafts)) {
+      resetDraftForm();
+      renderDrafts();
+      alert("Draft saved in this browser only.");
+    }
+  });
+
+  $("newDraftBtn").addEventListener("click", () => {
+    resetDraftForm();
+    showPanel("drafts");
+    $("draftTitle").focus();
+  });
+
+  $("draftTabNewBtn").addEventListener("click", () => {
+    resetDraftForm();
+    $("draftTitle").focus();
+  });
+
+  $("cancelDraftBtn").addEventListener("click", resetDraftForm);
+
+  function renderSchedules() {
+    const container = $("scheduleList");
+    container.replaceChildren();
+    const schedules = read(SCHEDULE_KEY, []);
+
+    if (!schedules.length) {
+      container.appendChild(node("div", "empty", "No schedule reminders saved."));
+      return;
+    }
+
+    schedules.forEach(itemData => {
+      const item = node("div", "item");
+      const details = document.createElement("div");
+      details.appendChild(node("strong", "", itemData.title));
+      details.appendChild(node("small", "", new Date(itemData.time).toLocaleString()));
+      details.appendChild(node("small", "", "Reminder only — not an automatic post"));
+      item.appendChild(details);
+      item.appendChild(button("Delete", "danger", () => {
+        write(SCHEDULE_KEY, read(SCHEDULE_KEY, []).filter(s => s.id !== itemData.id));
+        renderSchedules();
+      }));
+      container.appendChild(item);
+    });
+  }
+
+  $("scheduleForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const title = $("scheduleTitle").value.trim();
+    const time = $("scheduleTime").value;
+    if (!title || !time) return;
+
+    if (new Date(time).getTime() <= Date.now()) {
+      $("scheduleStatus").textContent = "Choose a future date and time.";
+      return;
+    }
+
+    const schedules = read(SCHEDULE_KEY, []);
+    schedules.unshift({id:Date.now().toString(), title, time});
+    if (write(SCHEDULE_KEY, schedules)) {
+      $("scheduleStatus").textContent =
+        "Reminder saved locally. A secure server scheduler is required for automatic publishing.";
+      $("scheduleForm").reset();
+      renderSchedules();
+    }
+  });
+
+  $("verificationForm").addEventListener("submit", event => {
+    event.preventDefault();
+    if (!$("confirmAccurate").checked) return;
+
+    const application = {
+      name: $("creatorName").value.trim(),
+      reason: $("creatorReason").value.trim(),
+      links: $("creatorLinks").value.trim(),
+      status: "Local draft — not submitted",
+      savedAt: new Date().toISOString()
+    };
+    if (write(VERIFY_KEY, application)) {
+      $("verificationStatus").textContent =
+        "Application draft saved on this device. It has not been sent for review.";
+    }
+  });
+
+  function loadVerificationDraft() {
+    const v = read(VERIFY_KEY, null);
+    if (!v) return;
+    $("creatorName").value = v.name || "";
+    $("creatorReason").value = v.reason || "";
+    $("creatorLinks").value = v.links || "";
+    $("verificationStatus").textContent =
+      "Saved local application draft found. Status: " + v.status + ".";
+  }
+
+  $("brandForm").addEventListener("submit", event => {
+    event.preventDefault();
+    const proposal = {
+      brand: $("brandName").value.trim(),
+      goal: $("brandGoal").value.trim(),
+      disclosureAcknowledged: $("sponsorDisclosure").checked,
+      savedAt: new Date().toISOString()
+    };
+    if (write(BRAND_KEY, proposal)) {
+      $("brandStatus").textContent =
+        "Proposal draft saved locally for " + proposal.brand +
+        ". No message was sent and no sponsorship label was published.";
+    }
+  });
+
+  document.querySelectorAll("[data-help]").forEach(b => {
+    b.addEventListener("click", () => {
+      const messages = {
+        publishing: "Save a draft first. Real video uploads and publishing require a configured storage bucket, database records, and secure upload policies.",
+        live: "Check camera and microphone permissions, network access, and the live-token Edge Function. Never expose your LiveKit API secret in browser code.",
+        analytics: "Analytics require real view, like, comment, share, playback, and LIVE events. Avoid counting repeated or invalid playback as valid views.",
+        account: "Check Supabase Authentication and your profile data. Verification must be reviewed by an authorized server-side workflow."
+      };
+      $("helpStatus").textContent = messages[b.dataset.help] || "No guidance available.";
+    });
+  });
+
+  function initChart() {
+    const canvas = $("viewsChart");
+    if (!window.Chart) {
+      canvas.replaceWith(node("div", "status", "Chart library unavailable. Analytics chart is not loaded."));
+      return;
+    }
+    chart = new Chart(canvas, {
+      type: "line",
+      data: {
+        labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+        datasets: [{
+          label: "Illustrative views",
+          data: [0,0,0,0,0,0,0],
+          tension: 0.35,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {labels: {color:"#e7ddf7"}},
+          tooltip: {enabled:true}
+        },
+        scales: {
+          x: {ticks:{color:"#bcb2d0"},grid:{color:"#392a55"}},
+          y: {beginAtZero:true,ticks:{color:"#bcb2d0"},grid:{color:"#392a55"}}
+        }
+      }
+    });
+  }
+
+  renderEligibility();
+  renderContent();
+  renderDrafts();
+  renderSchedules();
+  loadVerificationDraft();
+  initChart();
+  checkAuth();
+})();
+</script>
+</body>
+</html>
