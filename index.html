@@ -1,0 +1,1339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100d20">
+  <meta name="description" content="TWOTERM — Connect. Create. Stream. Earn. Discover videos, creators and LIVE experiences.">
+  <title>TWOTERM — Connect. Create. Stream. Earn.</title>
+
+  <style>
+    :root {
+      --bg: #100d20;
+      --panel: #1b1730;
+      --panel2: #24203b;
+      --text: #f8f7ff;
+      --muted: #aaa5c0;
+      --border: #35304c;
+      --accent: #a855f7;
+      --pink: #ec4899;
+      --danger: #ff646e;
+      --success: #40d6a0;
+      --header: rgba(16,13,32,.94);
+    }
+
+    body.light {
+      --bg: #f6f5fb;
+      --panel: #ffffff;
+      --panel2: #efedf7;
+      --text: #201b32;
+      --muted: #69647b;
+      --border: #e1ddec;
+      --header: rgba(246,245,251,.95);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
+      transition: background .2s, color .2s;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      padding: 13px 22px;
+      background: var(--header);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 25px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      white-space: nowrap;
+    }
+
+    .logo-mark {
+      display: grid;
+      place-items: center;
+      width: 39px;
+      height: 39px;
+      border-radius: 13px;
+      background: linear-gradient(135deg,var(--accent),var(--pink));
+      color: white;
+    }
+
+    .gradient {
+      background: linear-gradient(90deg,#c084fc,#f472b6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .search {
+      flex: 1;
+      max-width: 520px;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 12px 16px 12px 43px;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      background: var(--panel);
+      color: var(--text);
+      outline: none;
+    }
+
+    .search input:focus { border-color: var(--accent); }
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 10px;
+      font-size: 18px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-left: auto;
+    }
+
+    .btn {
+      padding: 10px 15px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .btn.primary {
+      color: white;
+      border: 0;
+      background: linear-gradient(110deg,var(--accent),var(--pink));
+    }
+
+    .btn:hover, .nav-item:hover, .category:hover {
+      filter: brightness(1.12);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 225px minmax(0,1fr);
+      max-width: 1500px;
+      margin: auto;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 66px;
+      align-self: start;
+      height: calc(100vh - 66px);
+      overflow-y: auto;
+      padding: 20px 13px;
+      border-right: 1px solid var(--border);
+    }
+
+    .nav-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      margin: 22px 12px 9px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px;
+      margin: 3px 0;
+      border: 0;
+      border-radius: 12px;
+      text-align: left;
+      background: transparent;
+      color: var(--text);
+      font-weight: 650;
+    }
+
+    .nav-item.active {
+      background: linear-gradient(100deg,rgba(168,85,247,.23),rgba(236,72,153,.12));
+      color: #d8a9ff;
+    }
+
+    .nav-icon { width: 24px; font-size: 19px; text-align: center; }
+
+    main { min-width: 0; padding: 25px; }
+
+    .welcome {
+      padding: 25px;
+      margin-bottom: 25px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background:
+        radial-gradient(ellipse at 85% 0%,rgba(236,72,153,.22),transparent 45%),
+        linear-gradient(120deg,var(--panel),var(--bg));
+    }
+
+    .welcome h1 {
+      font-size: clamp(26px,4vw,39px);
+      margin: 0 0 10px;
+      letter-spacing: -1px;
+    }
+
+    .welcome p { color: var(--muted); line-height: 1.7; max-width: 600px; }
+    .welcome-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0 14px;
+    }
+
+    .section-head h2 { font-size: 21px; margin: 0; }
+    .muted { color: var(--muted); }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-weight: 750;
+    }
+
+    .tab.active { background: var(--panel2); color: var(--text); }
+
+    .categories {
+      display: flex;
+      gap: 9px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scrollbar-width: thin;
+    }
+
+    .category {
+      flex: 0 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 25px;
+      padding: 9px 14px;
+      color: var(--text);
+      background: var(--panel);
+    }
+
+    .category.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 17px;
+    }
+
+    .video-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: var(--panel);
+    }
+
+    .video-frame {
+      position: relative;
+      aspect-ratio: 9/12;
+      background: #211834;
+      overflow: hidden;
+    }
+
+    .video-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .video-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .video-overlay {
+      position: absolute;
+      inset: auto 0 0;
+      padding: 45px 12px 12px;
+      background: linear-gradient(transparent,rgba(0,0,0,.85));
+      color: white;
+    }
+
+    .video-overlay h3 { margin: 0 0 6px; font-size: 16px; }
+    .video-overlay p { margin: 0; font-size: 12px; color: #eee; }
+
+    .video-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 5px 9px;
+      background: rgba(0,0,0,.58);
+      border-radius: 7px;
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .video-info { padding: 12px; }
+    .creator-line { display: flex; align-items: center; gap: 9px; }
+
+    .avatar {
+      width: 37px;
+      height: 37px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: linear-gradient(135deg,#a855f7,#ec4899);
+      color: white;
+      font-weight: 900;
+    }
+
+    .creator-name { font-weight: 800; font-size: 13px; }
+    .creator-handle { color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .follow-btn { margin-left: auto; padding: 7px 10px; font-size: 12px; }
+
+    .video-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .action-btn {
+      background: transparent;
+      color: inherit;
+      border: 0;
+      padding: 4px 0;
+    }
+
+    .action-btn.liked { color: #fb579c; }
+
+    .live-strip {
+      display: grid;
+      grid-template-columns: repeat(4,minmax(0,1fr));
+      gap: 12px;
+    }
+
+    .live-card {
+      padding: 15px 8px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-align: center;
+      background: var(--panel);
+    }
+
+    .live-avatar {
+      width: 59px;
+      height: 59px;
+      margin: 0 auto 9px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#a855f7,#ec4899);
+      color: white;
+      font-size: 22px;
+      border: 3px solid #f04c90;
+    }
+
+    .live-tag {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #f04465;
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .empty-state {
+      padding: 45px 15px;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 17px;
+      color: var(--muted);
+    }
+
+    .empty-state .big { font-size: 38px; margin-bottom: 12px; }
+
+    .status {
+      position: fixed;
+      z-index: 40;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      max-width: calc(100% - 24px);
+      padding: 12px 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: 0 10px 35px #0003;
+      display: none;
+    }
+
+    .status.show { display: block; }
+
+    .status.error { border-color: var(--danger); }
+    .status.success { border-color: var(--success); }
+
+    .connection {
+      padding: 8px 12px;
+      border-radius: 9px;
+      background: var(--panel2);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .connection.offline { color: var(--danger); }
+
+    .settings-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    select {
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--text);
+    }
+
+    footer {
+      margin-top: 35px;
+      padding: 25px 0 10px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .mobile-nav { display: none; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0,0,0,.72);
+      padding: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-box {
+      width: 100%;
+      max-width: 430px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+    }
+
+    .modal-box h2 { margin-top: 0; }
+    .modal-box label { display: block; margin: 14px 0 6px; font-size: 13px; }
+
+    .modal-box input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .modal-box .btn { margin-top: 15px; }
+    .modal-note { font-size: 12px; line-height: 1.6; color: var(--muted); }
+
+    @media(max-width:1050px) {
+      .video-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .layout { grid-template-columns: 190px minmax(0,1fr); }
+      .topbar { gap: 12px; }
+    }
+
+    @media(max-width:700px) {
+      .topbar { padding: 10px 12px; gap: 10px; flex-wrap: wrap; }
+      .logo { font-size: 21px; }
+      .logo-mark { width: 34px; height: 34px; }
+      .search { order: 3; flex-basis: 100%; max-width: none; }
+      .top-actions { gap: 6px; }
+      .top-actions .desktop-only { display: none; }
+      .layout { display: block; }
+      .sidebar { display: none; }
+      main { padding: 14px 12px 90px; }
+      .welcome { padding: 19px; }
+      .video-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+      .video-info { padding: 9px; }
+      .creator-line { gap: 6px; }
+      .avatar { width: 30px; height: 30px; font-size: 12px; }
+      .creator-name { font-size: 11px; }
+      .creator-handle { font-size: 10px; }
+      .follow-btn { padding: 5px 7px; font-size: 10px; }
+      .video-actions { font-size: 11px; }
+      .live-strip { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .mobile-nav {
+        position: fixed;
+        z-index: 30;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 4px max(8px,env(safe-area-inset-bottom));
+        background: var(--header);
+        border-top: 1px solid var(--border);
+        backdrop-filter: blur(15px);
+      }
+      .mobile-nav button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 5px;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font-size: 10px;
+      }
+      .mobile-nav button span:first-child { font-size: 20px; }
+      .mobile-nav button.active { color: #d8a9ff; }
+    }
+
+    @media(max-width:360px) {
+      .video-grid { grid-template-columns: 1fr; }
+      .top-actions .btn { padding: 8px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="logo" href="#" aria-label="TWOTERM home" onclick="showPage('Home');return false;">
+      <span class="logo-mark">T</span>
+      <span>TWOTERM<span class="gradient">.</span></span>
+    </a>
+
+    <div class="search">
+      <span class="search-icon">⌕</span>
+      <input id="searchInput" type="search"
+        placeholder="Search videos, creators, hashtags..."
+        aria-label="Search TWOTERM">
+    </div>
+
+    <div class="top-actions">
+      <span class="connection" id="connectionStatus">Checking connection...</span>
+      <button class="btn desktop-only" id="themeBtn" type="button">☀️ Theme</button>
+      <button class="btn" id="loginBtn" type="button">Log in</button>
+      <button class="btn primary" id="joinBtn" type="button">Join</button>
+      <button class="btn" id="logoutBtn" type="button" hidden>Log out</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="nav-label">DISCOVER</div>
+      <button class="nav-item active" data-page="Home"><span class="nav-icon">⌂</span>Home</button>
+      <button class="nav-item" data-page="For You"><span class="nav-icon">✦</span>For You</button>
+      <button class="nav-item" data-page="Following"><span class="nav-icon">♡</span>Following</button>
+      <button class="nav-item" data-page="Explore"><span class="nav-icon">⌕</span>Explore</button>
+      <button class="nav-item" data-page="Trending"><span class="nav-icon">↗</span>Trending</button>
+      <button class="nav-item" data-page="LIVE"><span class="nav-icon">◉</span>LIVE <span class="live-tag">LIVE</span></button>
+
+      <div class="nav-label">YOUR ACCOUNT</div>
+      <button class="nav-item" data-page="Profile"><span class="nav-icon">☺</span>My profile</button>
+      <button class="nav-item" data-page="Saved"><span class="nav-icon">▣</span>Saved videos</button>
+
+      <div class="nav-label">PREFERENCES</div>
+      <div class="settings-row">
+        <select id="languageSelect" aria-label="Select language">
+          <option value="en">🌐 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="sw">🇰🇪 Kiswahili</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <select id="regionSelect" aria-label="Select region">
+          <option value="KE">🇰🇪 Kenya</option>
+          <option value="TZ">🇹🇿 Tanzania</option>
+          <option value="NG">🇳🇬 Nigeria</option>
+          <option value="US">🇺🇸 United States</option>
+          <option value="GB">🇬🇧 United Kingdom</option>
+          <option value="FR">🇫🇷 France</option>
+          <option value="global">🌍 Global</option>
+        </select>
+      </div>
+
+      <footer>
+        <strong>TWOTERM</strong><br>
+        Connect. Create. Stream. Earn.<br>
+        <a href="#safety">Safety &amp; Trust</a> ·
+        <a href="#about">About</a><br>
+        <span>© <span id="year"></span> TWOTERM</span>
+      </footer>
+    </aside>
+
+    <main>
+      <section class="welcome" id="homeWelcome">
+        <p class="gradient"><strong>YOUR WORLD. YOUR CREATIVITY.</strong></p>
+        <h1>Welcome to <span class="gradient">TWOTERM</span></h1>
+        <p>Discover videos, find your community, connect with creators and explore new ideas from around the world.</p>
+        <div class="welcome-actions">
+          <button class="btn primary" id="welcomeJoin">Get started free →</button>
+          <button class="btn" id="exploreBtn">Explore videos</button>
+        </div>
+      </section>
+
+      <section id="liveSection">
+        <div class="section-head">
+          <h2>🔴 LIVE creators</h2>
+          <button class="tab" data-page="LIVE">See all →</button>
+        </div>
+        <div class="live-strip" id="liveStrip"></div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2 id="feedTitle">Recommended for you</h2>
+          <div class="tabs" id="feedTabs">
+            <button class="tab active" data-feed="For You">For You</button>
+            <button class="tab" data-feed="Following">Following</button>
+          </div>
+        </div>
+
+        <div class="categories" id="categories">
+          <button class="category active" data-category="All">✨ All</button>
+          <button class="category" data-category="Comedy">😂 Comedy</button>
+          <button class="category" data-category="Education">📚 Education</button>
+          <button class="category" data-category="Music">🎵 Music</button>
+          <button class="category" data-category="Sports">⚽ Sports</button>
+          <button class="category" data-category="Gaming">🎮 Gaming</button>
+          <button class="category" data-category="Lifestyle">🌿 Lifestyle</button>
+          <button class="category" data-category="Business">💼 Business</button>
+        </div>
+
+        <div class="section-head">
+          <span class="muted" id="resultsLabel">Discover something new</span>
+          <select id="sortSelect" aria-label="Sort videos">
+            <option value="recommended">Recommended</option>
+            <option value="popular">Popular</option>
+            <option value="recent">Recent</option>
+          </select>
+        </div>
+
+        <div class="video-grid" id="videoGrid" aria-live="polite"></div>
+        <div id="emptyState" class="empty-state" hidden>
+          <div class="big">🔎</div>
+          <h3 id="emptyTitle">No videos found</h3>
+          <p id="emptyText">Try another search or category.</p>
+          <button class="btn" id="resetFilters">Clear filters</button>
+        </div>
+      </section>
+
+      <section id="safety" style="margin-top:35px">
+        <div class="section-head"><h2>🛡️ Safety &amp; Trust</h2></div>
+        <p class="muted">TWOTERM is designed for adults aged 18 and over. Respect other users, protect your account and report harmful content. Never share passwords or verification codes.</p>
+      </section>
+
+      <section id="about" style="margin-top:25px">
+        <div class="section-head"><h2>About TWOTERM</h2></div>
+        <p class="muted">A social discovery experience for videos, creators and communities. Features such as personalized recommendations, LIVE streaming and creator earnings depend on available services and account eligibility.</p>
+      </section>
+
+      <footer>
+        <div class="settings-row">
+          <span>Appearance</span>
+          <button class="btn" id="themeBtnBottom">Switch dark/light theme</button>
+          <span>Region: <strong id="regionLabel">Kenya</strong></span>
+        </div>
+        <p>TWOTERM · Connect. Create. Stream. Earn.</p>
+        <p>Video cards shown on a new installation are demonstration content until your real video database is connected.</p>
+      </footer>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="active" data-page="Home"><span>⌂</span>Home</button>
+    <button data-page="Explore"><span>⌕</span>Explore</button>
+    <button data-page="Following"><span>♡</span>Following</button>
+    <button data-page="LIVE"><span>◉</span>LIVE</button>
+    <button data-page="Profile"><span>☺</span>Profile</button>
+  </nav>
+
+  <div class="status" id="statusMessage" role="status" aria-live="polite"></div>
+
+  <div class="modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 id="authTitle">Welcome to TWOTERM</h2>
+        <button class="btn" id="closeModal" aria-label="Close">✕</button>
+      </div>
+
+      <p class="muted">Sign in or create your account.</p>
+
+      <form id="authForm">
+        <label for="authEmail">Email address</label>
+        <input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" autocomplete="current-password"
+          required minlength="6" placeholder="At least 6 characters">
+
+        <button class="btn primary" id="authSubmit" type="submit" style="width:100%">Log in</button>
+      </form>
+
+      <button class="btn" id="switchAuth" style="width:100%">Create a new account instead</button>
+      <p class="modal-note" id="authNotice">By continuing, you agree to use TWOTERM responsibly. This platform is intended for adults aged 18 and over.</p>
+    </div>
+  </div>
+
+  <!-- Supabase JavaScript library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    /*
+      TWOTERM HOME PAGE
+
+      Keep the URL and publishable/anon key consistent with your
+      existing Supabase project. Never put a service_role or secret key
+      in this public HTML file.
+    */
+
+    const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+    let supabaseClient = null;
+    let currentUser = null;
+    let authMode = "login";
+    let activePage = "Home";
+    let activeFeed = "For You";
+    let activeCategory = "All";
+    let searchQuery = "";
+    let savedVideos = new Set();
+    let followedCreators = new Set();
+
+    const demoVideos = [
+      {
+        id:"demo1", title:"A little creativity goes a long way ✨",
+        creator:"Luna Rose", handle:"@lunarose", category:"Lifestyle",
+        likes:12400, views:86000, badge:"FEATURED",
+        color:"#713b9e", initials:"LR",
+        description:"Lifestyle and everyday inspiration"
+      },
+      {
+        id:"demo2", title:"Learn something new every day 📚",
+        creator:"Kai Rivers", handle:"@kairivers", category:"Education",
+        likes:8200, views:42000, badge:"LEARN",
+        color:"#235d83", initials:"KR",
+        description:"Ideas that make you think"
+      },
+      {
+        id:"demo3", title:"When your friends say one more game 😂",
+        creator:"Mira Jade", handle:"@mirajade", category:"Comedy",
+        likes:28700, views:193000, badge:"POPULAR",
+        color:"#a63c76", initials:"MJ",
+        description:"Funny moments and good vibes"
+      },
+      {
+        id:"demo4", title:"Make your next idea happen 💼",
+        creator:"Alex Skye", handle:"@alexskye", category:"Business",
+        likes:6100, views:31000, badge:"CREATOR TIPS",
+        color:"#246c5b", initials:"AS",
+        description:"Business and creator inspiration"
+      },
+      {
+        id:"demo5", title:"Your daily music discovery 🎵",
+        creator:"Nova Beats", handle:"@novabeats", category:"Music",
+        likes:17900, views:99000, badge:"MUSIC",
+        color:"#a45b28", initials:"NB",
+        description:"Music, rhythm and creativity"
+      },
+      {
+        id:"demo6", title:"Never stop moving forward ⚽",
+        creator:"Jay Motion", handle:"@jaymotion", category:"Sports",
+        likes:9500, views:53000, badge:"SPORTS",
+        color:"#315d9c", initials:"JM",
+        description:"Sports and motivation"
+      },
+      {
+        id:"demo7", title:"A new world to explore 🎮",
+        creator:"Pixel World", handle:"@pixelworld", category:"Gaming",
+        likes:14300, views:78000, badge:"GAMING",
+        color:"#5d3d9a", initials:"PW",
+        description:"Gaming highlights and discoveries"
+      },
+      {
+        id:"demo8", title:"Small steps, big dreams 🌍",
+        creator:"City Creator", handle:"@citycreator", category:"Lifestyle",
+        likes:7300, views:38000, badge:"DISCOVER",
+        color:"#a34d52", initials:"CC",
+        description:"Life, creativity and personal growth"
+      }
+    ];
+
+    const demoLives = [
+      {name:"Luna Rose", initials:"LR", topic:"Chat & chill"},
+      {name:"Kai Rivers", initials:"KR", topic:"Learning together"},
+      {name:"Mira Jade", initials:"MJ", topic:"Entertainment"},
+      {name:"Alex Skye", initials:"AS", topic:"Creator talk"}
+    ];
+
+    const $ = id => document.getElementById(id);
+
+    function notify(message, type = "") {
+      const box = $("statusMessage");
+      box.textContent = message;
+      box.className = "status show " + type;
+      clearTimeout(notify.timer);
+      notify.timer = setTimeout(() => box.classList.remove("show"), 4000);
+    }
+
+    function initSupabase() {
+      if (!window.supabase || !SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+        notify("Supabase could not be initialized. Check the library, project URL and publishable key.", "error");
+        return;
+      }
+
+      try {
+        supabaseClient = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_PUBLISHABLE_KEY
+        );
+
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+          currentUser = session?.user || null;
+          updateAuthUI();
+        });
+
+        supabaseClient.auth.getSession()
+          .then(({data, error}) => {
+            if (error) throw error;
+            currentUser = data.session?.user || null;
+            updateAuthUI();
+          })
+          .catch(error => {
+            console.error("Session check failed:", error);
+            notify("Unable to check your session. Check your connection and Supabase settings.", "error");
+          });
+      } catch (error) {
+        console.error("Supabase initialization failed:", error);
+        notify("Supabase setup failed. Check the project configuration.", "error");
+      }
+    }
+
+    function updateAuthUI() {
+      $("loginBtn").hidden = !!currentUser;
+      $("joinBtn").hidden = !!currentUser;
+      $("logoutBtn").hidden = !currentUser;
+
+      if (currentUser) {
+        $("welcomeJoin").textContent = "Explore videos →";
+        $("authNotice").textContent = "Signed in as " + currentUser.email;
+      } else {
+        $("welcomeJoin").textContent = "Get started free →";
+      }
+    }
+
+    function openAuth(mode) {
+      authMode = mode;
+      $("authTitle").textContent = mode === "login" ? "Welcome back" : "Join TWOTERM";
+      $("authSubmit").textContent = mode === "login" ? "Log in" : "Create account";
+      $("switchAuth").textContent = mode === "login"
+        ? "Create a new account instead"
+        : "I already have an account";
+      $("authPassword").autocomplete = mode === "login" ? "current-password" : "new-password";
+      $("authModal").classList.add("open");
+    }
+
+    function closeAuth() {
+      $("authModal").classList.remove("open");
+    }
+
+    async function handleAuth(event) {
+      event.preventDefault();
+
+      if (!supabaseClient) {
+        notify("Supabase is not ready. Check your project URL and publishable key.", "error");
+        return;
+      }
+
+      const email = $("authEmail").value.trim();
+      const password = $("authPassword").value;
+      const submit = $("authSubmit");
+
+      submit.disabled = true;
+      submit.textContent = "Please wait...";
+
+      try {
+        let result;
+
+        if (authMode === "login") {
+          result = await supabaseClient.auth.signInWithPassword({email, password});
+        } else {
+          result = await supabaseClient.auth.signUp({email, password});
+        }
+
+        if (result.error) throw result.error;
+
+        if (authMode === "login") {
+          currentUser = result.data.user;
+          closeAuth();
+          updateAuthUI();
+          notify("You are signed in.", "success");
+          showPage("For You");
+        } else if (result.data.session) {
+          currentUser = result.data.user;
+          closeAuth();
+          updateAuthUI();
+          notify("Your account has been created.", "success");
+        } else {
+          notify("Account created. Check your email to confirm your account.", "success");
+        }
+      } catch (error) {
+        console.error("Authentication error:", error);
+        notify(error.message || "Authentication failed. Please try again.", "error");
+      } finally {
+        submit.disabled = false;
+        submit.textContent = authMode === "login" ? "Log in" : "Create account";
+      }
+    }
+
+    async function logout() {
+      if (!supabaseClient) return notify("Supabase is not ready.", "error");
+
+      const {error} = await supabaseClient.auth.signOut();
+
+      if (error) {
+        console.error(error);
+        notify("Could not log out. Please try again.", "error");
+        return;
+      }
+
+      currentUser = null;
+      updateAuthUI();
+      notify("You have logged out.", "success");
+      showPage("Home");
+    }
+
+    function formatNumber(number) {
+      if (number >= 1000000) return (number / 1000000).toFixed(1).replace(/\.0$/,"") + "M";
+      if (number >= 1000) return (number / 1000).toFixed(1).replace(/\.0$/,"") + "K";
+      return String(number);
+    }
+
+    function renderLives() {
+      $("liveStrip").innerHTML = demoLives.map(person => `
+        <article class="live-card">
+          <div class="live-avatar">${person.initials}</div>
+          <strong>${person.name}</strong>
+          <p class="muted" style="font-size:12px">${person.topic}</p>
+          <span class="live-tag">LIVE DEMO</span>
+        </article>
+      `).join("");
+    }
+
+    function getFilteredVideos() {
+      let videos = [...demoVideos];
+
+      if (activeFeed === "Following" || activePage === "Following") {
+        videos = videos.filter(video => followedCreators.has(video.handle));
+      }
+
+      if (activePage === "Saved") {
+        videos = videos.filter(video => savedVideos.has(video.id));
+      }
+
+      if (activeCategory !== "All") {
+        videos = videos.filter(video => video.category === activeCategory);
+      }
+
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase().replace(/^#/,"");
+        videos = videos.filter(video =>
+          `${video.title} ${video.creator} ${video.handle} ${video.category} ${video.description}`
+            .toLowerCase().includes(query)
+        );
+      }
+
+      if (activePage === "Trending" || $("sortSelect").value === "popular") {
+        videos.sort((a,b) => b.likes - a.likes);
+      } else if ($("sortSelect").value === "recent") {
+        videos.reverse();
+      }
+
+      return videos;
+    }
+
+    function renderVideos() {
+      const videos = getFilteredVideos();
+      const grid = $("videoGrid");
+      const empty = $("emptyState");
+
+      $("feedTitle").textContent =
+        activePage === "Trending" ? "Trending videos" :
+        activePage === "Explore" ? "Explore videos" :
+        activePage === "Following" ? "Videos from creators you follow" :
+        activePage === "Saved" ? "Your saved videos" :
+        activePage === "LIVE" ? "Discover creators" :
+        activeFeed === "Following" ? "Your Following feed" :
+        "Recommended for you";
+
+      $("resultsLabel").textContent =
+        `${videos.length} demonstration video${videos.length === 1 ? "" : "s"}`;
+
+      grid.innerHTML = "";
+      empty.hidden = videos.length > 0;
+      grid.hidden = videos.length === 0;
+
+      if (!videos.length) {
+        $("emptyTitle").textContent =
+          activePage === "Following" || activeFeed === "Following"
+            ? "Your Following feed is empty"
+            : activePage === "Saved"
+              ? "No saved videos yet"
+              : "No videos found";
+
+        $("emptyText").textContent =
+          activePage === "Following" || activeFeed === "Following"
+            ? "Follow creators to see their videos here. The current cards are demonstrations."
+            : activePage === "Saved"
+              ? "Save videos using the bookmark button to find them here."
+              : "Try another search, category or filter.";
+        return;
+      }
+
+      videos.forEach(video => {
+        const card = document.createElement("article");
+        card.className = "video-card";
+
+        card.innerHTML = `
+          <div class="video-frame">
+            <div style="width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(145deg,${video.color},#151225);color:white;">
+              <div style="text-align:center;padding:15px">
+                <div style="font-size:54px;font-weight:900;opacity:.9">${video.initials}</div>
+                <div style="font-size:13px;opacity:.8">${video.category}</div>
+              </div>
+            </div>
+            <span class="video-badge">${video.badge}</span>
+            <div class="video-overlay">
+              <h3>${video.title}</h3>
+              <p>${formatNumber(video.views)} views</p>
+            </div>
+          </div>
+          <div class="video-info">
+            <div class="creator-line">
+              <div class="avatar">${video.initials}</div>
+              <div style="min-width:0">
+                <div class="creator-name">${video.creator}</div>
+                <div class="creator-handle">${video.handle}</div>
+              </div>
+              <button class="btn follow-btn" data-follow="${video.handle}">
+                ${followedCreators.has(video.handle) ? "Following" : "Follow"}
+              </button>
+            </div>
+            <div class="video-actions">
+              <button class="action-btn ${video.liked ? "liked" : ""}" data-like="${video.id}">♡ ${formatNumber(video.likes)}</button>
+              <button class="action-btn" data-save="${video.id}">${savedVideos.has(video.id) ? "▣ Saved" : "▢ Save"}</button>
+              <button class="action-btn" data-share="${video.id}">↗ Share</button>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    function showPage(page) {
+      activePage = page;
+
+      if (page === "For You") activeFeed = "For You";
+      if (page === "Following") activeFeed = "Following";
+      if (page === "Explore" || page === "Trending") {
+        activeCategory = "All";
+        document.querySelectorAll(".category").forEach(button =>
+          button.classList.toggle("active", button.dataset.category === "All")
+        );
+      }
+
+      document.querySelectorAll("[data-page]").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === page);
+      });
+
+      document.querySelectorAll("[data-feed]").forEach(button => {
+        button.classList.toggle("active", button.dataset.feed === activeFeed);
+      });
+
+      $("homeWelcome").hidden = page !== "Home";
+      $("liveSection").hidden = page === "Saved" || page === "Profile";
+      $("feedTabs").hidden = !["Home","For You","Following"].includes(page);
+      $("categories").hidden = page === "Profile" || page === "LIVE";
+      $("sortSelect").hidden = page === "Profile";
+
+      if (page === "Profile") {
+        if (!currentUser) {
+          renderVideos();
+          openAuth("login");
+          return;
+        }
+
+        $("feedTitle").textContent = "My profile";
+        $("resultsLabel").textContent = currentUser.email;
+        $("videoGrid").innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1">
+            <div class="big">☺</div>
+            <h3>Your TWOTERM account</h3>
+            <p>${currentUser.email}</p>
+            <p>Profile details and uploaded videos will appear when connected to your profile database.</p>
+          </div>`;
+        $("videoGrid").hidden = false;
+        $("emptyState").hidden = true;
+        return;
+      }
+
+      if (page === "LIVE") {
+        notify("These are demonstration LIVE cards. Real broadcasts require your LiveKit integration.");
+      }
+
+      renderVideos();
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle("light");
+      $("themeBtn").textContent = isLight ? "🌙 Theme" : "☀️ Theme";
+      try { localStorage.setItem("twoterm-theme", isLight ? "light" : "dark"); } catch (_) {}
+    }
+
+    function updateConnection() {
+      const status = $("connectionStatus");
+      status.textContent = navigator.onLine ? "● Online" : "● Offline";
+      status.classList.toggle("offline", !navigator.onLine);
+
+      if (!navigator.onLine) {
+        notify("You are offline. Some features may not work until you reconnect.", "error");
+      } else {
+        notify("Connection restored.", "success");
+      }
+    }
+
+    // Main navigation
+    document.querySelectorAll("[data-page]").forEach(button => {
+      button.addEventListener("click", () => showPage(button.dataset.page));
+    });
+
+    // Feed navigation
+    document.querySelectorAll("[data-feed]").forEach(button => {
+      button.addEventListener("click", () => {
+        activeFeed = button.dataset.feed;
+        activePage = activeFeed;
+        document.querySelectorAll("[data-feed]").forEach(tab =>
+          tab.classList.toggle("active", tab.dataset.feed === activeFeed)
+        );
+        showPage(activeFeed);
+      });
+    });
+
+    // Categories
+    document.querySelectorAll("[data-category]").forEach(button => {
+      button.addEventListener("click", () => {
+        activeCategory = button.dataset.category;
+        document.querySelectorAll("[data-category]").forEach(category =>
+          category.classList.toggle("active", category === button)
+        );
+        renderVideos();
+      });
+    });
+
+    $("searchInput").addEventListener("input", event => {
+      searchQuery = event.target.value.trim();
+      activePage = "Explore";
+      renderVideos();
+    });
+
+    $("sortSelect").addEventListener("change", renderVideos);
+
+    $("resetFilters").addEventListener("click", () => {
+      searchQuery = "";
+      activeCategory = "All";
+      activePage = "Home";
+      activeFeed = "For You";
+      $("searchInput").value = "";
+      $("sortSelect").value = "recommended";
+      document.querySelectorAll("[data-category]").forEach(button =>
+        button.classList.toggle("active", button.dataset.category === "All")
+      );
+      showPage("Home");
+    });
+
+    // Delegated video actions
+    $("videoGrid").addEventListener("click", async event => {
+      const button = event.target.closest("button");
+      if (!button) return;
+
+      if (button.dataset.follow) {
+        const handle = button.dataset.follow;
+        if (followedCreators.has(handle)) {
+          followedCreators.delete(handle);
+          notify("Creator unfollowed.");
+        } else {
+          followedCreators.add(handle);
+          notify("Creator followed. Demo only; follow status is not saved to Supabase yet.", "success");
+        }
+        renderVideos();
+      }
+
+      if (button.dataset.save) {
+        const id = button.dataset.save;
+        if (savedVideos.has(id)) savedVideos.delete(id);
+        else savedVideos.add(id);
+        renderVideos();
+        notify("Saved-video list updated for this session.");
+      }
+
+      if (button.dataset.like) {
+        notify("Likes will be saved when the likes database feature is connected.");
+      }
+
+      if (button.dataset.share) {
+        const video = demoVideos.find(item => item.id === button.dataset.share);
+        const shareData = {
+          title: video?.title || "TWOTERM",
+          text: `Discover creators on TWOTERM: ${video?.title || ""}`,
+          url: window.location.href
+        };
+
+        try {
+          if (navigator.share) await navigator.share(shareData);
+          else if (navigator.clipboard) {
+            await navigator.clipboard.writeText(shareData.url);
+            notify("Page link copied.", "success");
+          } else {
+            notify("Copy the website address from your browser.");
+          }
+        } catch (error) {
+          if (error.name !== "AbortError") notify("Sharing was not available.");
+        }
+      }
+    });
+
+    // Authentication
+    $("loginBtn").addEventListener("click", () => openAuth("login"));
+    $("joinBtn").addEventListener("click", () => openAuth("signup"));
+    $("welcomeJoin").addEventListener("click", () => {
+      if (currentUser) showPage("For You");
+      else openAuth("signup");
+    });
+    $("exploreBtn").addEventListener("click", () => showPage("Explore"));
+    $("logoutBtn").addEventListener("click", logout);
+    $("closeModal").addEventListener("click", closeAuth);
+    $("switchAuth").addEventListener("click", () => openAuth(authMode === "login" ? "signup" : "login"));
+    $("authForm").addEventListener("submit", handleAuth);
+
+    $("authModal").addEventListener("click", event => {
+      if (event.target === $("authModal")) closeAuth();
+    });
+
+    // Appearance
+    $("themeBtn").addEventListener("click", toggleTheme);
+    $("themeBtnBottom").addEventListener("click", toggleTheme);
+
+    try {
+      if (localStorage.getItem("twoterm-theme") === "light") {
+        document.body.classList.add("light");
+        $("themeBtn").textContent = "🌙 Theme";
+      }
+    } catch (_) {}
+
+    // Language preference UI
+    const translations = {
+      en: {home:"Welcome to", tagline:"Discover videos, find your community, connect with creators and explore new ideas from around the world."},
+      fr: {home:"Bienvenue sur", tagline:"Découvrez des vidéos, trouvez votre communauté et rencontrez des créateurs du monde entier."},
+      sw: {home:"Karibu", tagline:"Gundua video, pata jamii yako na ungana na wabunifu kutoka duniani kote."}
+    };
+
+    $("languageSelect").addEventListener("change", event => {
+      const language = event.target.value;
+      const translation = translations[language];
+      $("homeWelcome").querySelector("h1").innerHTML =
+        `${translation.home} <span class="gradient">TWOTERM</span>`;
+      $("homeWelcome").querySelector("p:not(.gradient)").textContent = translation.tagline;
+      try { localStorage.setItem("twoterm-language", language); } catch (_) {}
+      notify("Language preference changed. Some interface text is still in English.");
+    });
+
+    $("regionSelect").addEventListener("change", event => {
+      const select = event.target;
+      $("regionLabel").textContent = select.options[select.selectedIndex].text;
+      try { localStorage.setItem("twoterm-region", select.value); } catch (_) {}
+      notify("Region preference updated. Regional content filtering requires backend integration.");
+    });
+
+    window.addEventListener("online", updateConnection);
+    window.addEventListener("offline", updateConnection);
+
+    $("year").textContent = new Date().getFullYear();
+
+    // Restore preferences
+    try {
+      const language = localStorage.getItem("twoterm-language");
+      const region = localStorage.getItem("twoterm-region");
+      if (language) $("languageSelect").value = language;
+      if (region) {
+        $("regionSelect").value = region;
+        const select = $("regionSelect");
+        $("regionLabel").textContent = select.options[select.selectedIndex].text;
+      }
+    } catch (_) {}
+
+    // Initial page
+    renderLives();
+    renderVideos();
+    updateConnection();
+    initSupabase();
+  </script>
+</body>
+</html>
