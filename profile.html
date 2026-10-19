@@ -234,6 +234,41 @@ async function loadProfile(){
   };
 
   renderProfile();
+  const meta = user.user_metadata || {};
+
+  // Use Auth metadata as a fallback.
+  profile = {
+    display_name: meta.display_name || "",
+    username: meta.username || "",
+    bio: meta.bio || "",
+    country: meta.country || "",
+    language: meta.language || "en",
+    avatar_url: meta.avatar_url || "",
+    is_public: meta.is_public !== false
+  };
+
+  // Load the signed-in user's saved database profile.
+  const { data: dbProfile, error: profileError } = await client
+    .from("profiles")
+    .select("username, display_name, avatar_url, bio")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Could not load database profile:", profileError.message);
+    notify("Using account profile information; database profile could not be loaded.");
+  } else if (dbProfile) {
+    profile = {
+      ...profile,
+      username: dbProfile.username ?? profile.username,
+      display_name: dbProfile.display_name ?? profile.display_name,
+      avatar_url: dbProfile.avatar_url ?? profile.avatar_url,
+      bio: dbProfile.bio ?? profile.bio
+    };
+  }
+
+  renderProfile();
+
 }
 
 function renderProfile(){
