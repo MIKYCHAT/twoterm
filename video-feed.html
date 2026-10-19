@@ -1,0 +1,717 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10091f">
+<title>TWOTERM — Video Feed</title>
+
+<style>
+:root {
+  --bg:#10091f;
+  --panel:#1b1230;
+  --pink:#ff3e9d;
+  --purple:#9b5cff;
+  --text:#fff;
+  --muted:#c2b8d2;
+  --border:#38264d;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#10091ff5;
+  border-bottom:1px solid var(--border);
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.brand {
+  color:white;
+  text-decoration:none;
+  font-size:22px;
+  font-weight:900;
+}
+.brand span { color:var(--pink); }
+button,select,textarea,input { font:inherit; }
+button {
+  cursor:pointer;
+  color:white;
+  background:#352044;
+  border:1px solid #68418a;
+  border-radius:10px;
+  padding:9px 12px;
+}
+button:focus-visible,a:focus-visible,textarea:focus-visible {
+  outline:3px solid var(--pink);
+  outline-offset:3px;
+}
+.primary {
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  border:0;
+}
+.page {
+  max-width:1180px;
+  margin:auto;
+  padding:16px;
+  display:grid;
+  grid-template-columns:190px minmax(0,650px) 210px;
+  gap:18px;
+}
+.side,.right {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  height:max-content;
+  position:sticky;
+  top:78px;
+}
+.side a,.right a {
+  display:block;
+  padding:12px 8px;
+  border-radius:8px;
+  color:var(--muted);
+  text-decoration:none;
+}
+.side a:hover,.right a:hover { background:#352044;color:white; }
+h1 { font-size:22px; margin:4px 0 8px; }
+h2 { font-size:18px; }
+.small { color:var(--muted);font-size:13px;line-height:1.5; }
+.status {
+  color:#e6d8ff;
+  font-size:13px;
+  line-height:1.5;
+  margin:10px 0;
+  overflow-wrap:anywhere;
+}
+.feed {
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.video-card {
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--panel);
+}
+.video-stage {
+  position:relative;
+  width:100%;
+  aspect-ratio:9 / 14;
+  max-height:700px;
+  background:#05040a;
+  overflow:hidden;
+}
+.video-stage video {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#05040a;
+}
+.video-stage video[hidden] { display:none; }
+.video-overlay {
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  pointer-events:none;
+  text-shadow:0 2px 5px #000;
+}
+.video-overlay button { pointer-events:auto; }
+.video-title { font-weight:bold;font-size:16px; }
+.video-info { padding:14px; }
+.creator {
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.avatar {
+  width:42px;
+  height:42px;
+  flex-shrink:0;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-weight:bold;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+}
+.creator-meta { min-width:0; }
+.creator-name { font-weight:bold;overflow-wrap:anywhere; }
+.follow { margin-left:auto; }
+.caption { line-height:1.5;overflow-wrap:anywhere; }
+.actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+.actions button { font-size:13px; }
+.actions .active { background:#76264f;border-color:var(--pink); }
+.comment-area { margin-top:12px; }
+.comment-area textarea {
+  width:100%;
+  min-height:65px;
+  color:white;
+  background:#10091f;
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:10px;
+  resize:vertical;
+}
+.comments-list {
+  padding-left:16px;
+  margin:10px 0;
+  color:var(--muted);
+  overflow-wrap:anywhere;
+}
+.comments-list li { margin:7px 0; }
+.badge {
+  display:inline-block;
+  padding:4px 7px;
+  border-radius:7px;
+  font-size:11px;
+  color:#ffe0f0;
+  background:#512442;
+}
+.empty {
+  padding:28px 16px;
+  text-align:center;
+  color:var(--muted);
+  line-height:1.6;
+}
+.empty .emoji { font-size:42px; }
+.bottom-nav { display:none; }
+footer { text-align:center;color:var(--muted);padding:24px 16px 90px;font-size:12px; }
+@media(max-width:900px) {
+  .page { display:block;max-width:700px;padding:10px; }
+  .side,.right { display:none; }
+  .bottom-nav {
+    position:fixed;
+    bottom:0;left:0;right:0;
+    display:flex;
+    justify-content:space-around;
+    gap:4px;
+    z-index:30;
+    padding:9px 4px calc(9px + env(safe-area-inset-bottom));
+    background:#160d26;
+    border-top:1px solid var(--border);
+  }
+  .bottom-nav a {
+    color:var(--muted);
+    text-decoration:none;
+    font-size:12px;
+    text-align:center;
+  }
+  .bottom-nav span { display:block;font-size:19px;margin-bottom:3px; }
+  header { padding:10px; }
+  .brand { font-size:19px; }
+  .video-stage { aspect-ratio:9 / 13; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <a class="brand" href="index.html">TWO<span>TERM</span></a>
+  <div style="display:flex;gap:7px">
+    <button id="refreshBtn" type="button">↻ Refresh</button>
+    <button id="authBtn" class="primary" type="button">Account</button>
+  </div>
+</header>
+
+<main class="page">
+  <aside class="side">
+    <h2>Discover</h2>
+    <a href="index.html">🏠 Home</a>
+    <a href="video-feed.html">▶ Video feed</a>
+    <a href="profile.html">👤 My profile</a>
+    <a href="account.html">🔐 Account security</a>
+    <hr style="border-color:var(--border)">
+    <p class="small">TWOTERM — Connect. Create. Stream. Earn.</p>
+  </aside>
+
+  <section>
+    <h1>For you ✨</h1>
+    <p class="small">Discover videos and creators from around the world.</p>
+    <div id="pageStatus" class="status" role="status" aria-live="polite">
+      Loading your video feed…
+    </div>
+
+    <div id="feed" class="feed">
+      <article class="video-card">
+        <div class="empty">
+          <div class="emoji">🎬</div>
+          <strong>Your video feed is ready for content.</strong>
+          <p>Videos will appear here after connecting your video database and storage.</p>
+        </div>
+      </article>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:center;margin:18px 0">
+      <button id="historyBtn" type="button">Watch history</button>
+      <button id="continueBtn" type="button">Continue watching</button>
+    </div>
+    <div id="historyPanel" class="status" aria-live="polite"></div>
+  </section>
+
+  <aside class="right">
+    <h2>Creator tools</h2>
+    <a href="profile.html">Edit profile</a>
+    <a href="account.html">Account security</a>
+    <p class="small">Keep your account secure and respect other members.</p>
+    <hr style="border-color:var(--border)">
+    <h2>Community safety</h2>
+    <p class="small">Report harmful content. Do not upload illegal, abusive, or non-consensual material.</p>
+  </aside>
+</main>
+
+<nav class="bottom-nav" aria-label="Main navigation">
+  <a href="index.html"><span>🏠</span>Home</a>
+  <a href="video-feed.html"><span>▶️</span>Videos</a>
+  <a href="profile.html"><span>👤</span>Profile</a>
+  <a href="account.html"><span>🔐</span>Account</a>
+</nav>
+
+<footer>TWOTERM © 2026 · Connect. Create. Stream. Earn.</footer>
+
+<script type="module">
+import { createClient } from
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+const SUPABASE_KEY =
+  "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+
+const feed = $("feed");
+const statusBox = $("pageStatus");
+const historyPanel = $("historyPanel");
+
+let videos = [];
+let activeIndex = 0;
+let observer = null;
+let touchStartY = null;
+
+const HISTORY_KEY = "twoterm_watch_history_preview";
+const BOOKMARK_KEY = "twoterm_bookmarks_preview";
+const NOT_INTERESTED_KEY = "twoterm_not_interested_preview";
+
+function readList(key) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "[]");
+  } catch {
+    return [];
+  }
+}
+function writeList(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {}
+}
+function updateList(key, item) {
+  const list = readList(key).filter(x => x.id !== item.id);
+  list.unshift(item);
+  writeList(key, list.slice(0, 100));
+}
+
+async function checkAuth() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    statusBox.textContent = "Login status unavailable: " + error.message;
+    return;
+  }
+  $("authBtn").textContent = data.session ? "Log out" : "Log in";
+}
+
+$("authBtn").addEventListener("click", async () => {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    statusBox.textContent = error.message;
+    return;
+  }
+  if (data.session) {
+    const { error: logoutError } = await supabase.auth.signOut();
+    if (logoutError) {
+      statusBox.textContent = "Log out failed: " + logoutError.message;
+      return;
+    }
+    window.location.href = "account.html";
+  } else {
+    window.location.href = "account.html";
+  }
+});
+
+function showEmpty(message) {
+  feed.innerHTML = "";
+  const card = document.createElement("article");
+  card.className = "video-card";
+  const box = document.createElement("div");
+  box.className = "empty";
+  const emoji = document.createElement("div");
+  emoji.className = "emoji";
+  emoji.textContent = "🎬";
+  const title = document.createElement("strong");
+  title.textContent = "TWOTERM video feed";
+  const paragraph = document.createElement("p");
+  paragraph.textContent = message;
+  box.append(emoji, title, paragraph);
+  card.append(box);
+  feed.append(card);
+}
+
+function makeButton(label, handler, className = "") {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = label;
+  if (className) button.className = className;
+  button.addEventListener("click", handler);
+  return button;
+}
+
+/*
+ * This page intentionally does not guess your database schema.
+ * Add real video records after confirming the actual table and column names.
+ */
+function renderVideos(items) {
+  videos = items;
+  feed.innerHTML = "";
+
+  if (!videos.length) {
+    showEmpty(
+      "No published videos are connected yet. Your existing login remains available. " +
+      "Connect your actual video table and Storage bucket to show real videos."
+    );
+    return;
+  }
+
+  videos.forEach((video, index) => {
+    const card = document.createElement("article");
+    card.className = "video-card";
+    card.dataset.index = index;
+
+    const stage = document.createElement("div");
+    stage.className = "video-stage";
+
+    const player = document.createElement("video");
+    player.controls = true;
+    player.playsInline = true;
+    player.preload = "metadata";
+    player.setAttribute("aria-label", "Video by " + video.creator);
+    player.src = video.url;
+
+    const overlay = document.createElement("div");
+    overlay.className = "video-overlay";
+    const title = document.createElement("div");
+    title.className = "video-title";
+    title.textContent = video.creator;
+    const caption = document.createElement("div");
+    caption.textContent = video.caption;
+    overlay.append(title, caption);
+    stage.append(player, overlay);
+
+    const info = document.createElement("div");
+    info.className = "video-info";
+
+    const creator = document.createElement("div");
+    creator.className = "creator";
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = (video.creator || "T").slice(0, 1).toUpperCase();
+
+    const creatorMeta = document.createElement("div");
+    creatorMeta.className = "creator-meta";
+    const creatorName = document.createElement("div");
+    creatorName.className = "creator-name";
+    creatorName.textContent = video.creator;
+    const handle = document.createElement("div");
+    handle.className = "small";
+    handle.textContent = "TWOTERM creator";
+    creatorMeta.append(creatorName, handle);
+
+    const follow = makeButton("Follow", () => {
+      statusBox.textContent =
+        "Follow requires your real follows table and RLS policies. No follow has been saved.";
+    }, "follow");
+    creator.append(avatar, creatorMeta, follow);
+
+    const description = document.createElement("p");
+    description.className = "caption";
+    description.textContent = video.caption;
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    let isLiked = false;
+    actions.append(
+      makeButton("♡ Like", event => {
+        isLiked = !isLiked;
+        event.currentTarget.textContent = isLiked ? "♥ Liked" : "♡ Like";
+        event.currentTarget.classList.toggle("active", isLiked);
+        statusBox.textContent =
+          "Like preview only. Connect the likes table before likes can be saved.";
+      })
+    );
+
+    actions.append(
+      makeButton("💬 Comment", () => {
+        commentArea.hidden = !commentArea.hidden;
+      })
+    );
+
+    actions.append(
+      makeButton("🔖 Save", event => {
+        const bookmarks = readList(BOOKMARK_KEY);
+        const exists = bookmarks.some(x => x.id === video.id);
+        writeList(
+          BOOKMARK_KEY,
+          exists ? bookmarks.filter(x => x.id !== video.id)
+                 : [{ id: video.id, caption: video.caption, url: video.url },
+                    ...bookmarks]
+        );
+        event.currentTarget.classList.toggle("active", !exists);
+        statusBox.textContent =
+          "Bookmark preview updated on this browser only; it is not synced to your account.";
+      })
+    );
+
+    actions.append(
+      makeButton("↗ Share", async () => {
+        const shareData = {
+          title: "TWOTERM video",
+          text: video.caption,
+          url: video.shareUrl || window.location.href
+        };
+        if (navigator.share) {
+          try {
+            await navigator.share(shareData);
+          } catch (error) {
+            if (error.name !== "AbortError") {
+              statusBox.textContent = "Could not complete sharing.";
+            }
+          }
+        } else {
+          try {
+            await navigator.clipboard.writeText(shareData.url);
+            statusBox.textContent = "Video link copied.";
+          } catch {
+            statusBox.textContent = "Copy the page URL from your browser.";
+          }
+        }
+      })
+    );
+
+    actions.append(
+      makeButton("🔗 Copy link", async () => {
+        try {
+          await navigator.clipboard.writeText(video.shareUrl || window.location.href);
+          statusBox.textContent = "Link copied.";
+        } catch {
+          statusBox.textContent = "Copy the page URL from your browser.";
+        }
+      })
+    );
+
+    actions.append(
+      makeButton("🎁 Gift", () => {
+        statusBox.textContent =
+          "Gifting will be available after creator eligibility, wallet, and payment checks are connected.";
+      })
+    );
+
+    actions.append(
+      makeButton("⚑ Report", () => {
+        const reason = prompt("Briefly describe why you want to report this video:");
+        if (reason && reason.trim()) {
+          statusBox.textContent =
+            "Report not submitted. A secure report endpoint and moderation workflow must be connected first.";
+        }
+      })
+    );
+
+    actions.append(
+      makeButton("Not interested", () => {
+        const list = readList(NOT_INTERESTED_KEY);
+        if (!list.includes(video.id)) list.push(video.id);
+        writeList(NOT_INTERESTED_KEY, list);
+        card.remove();
+        statusBox.textContent =
+          "This video was hidden in this browser preview. Recommendations are not yet personalized.";
+      })
+    );
+
+    const commentArea = document.createElement("div");
+    commentArea.className = "comment-area";
+    commentArea.hidden = true;
+
+    const commentInput = document.createElement("textarea");
+    commentInput.maxLength = 1000;
+    commentInput.placeholder = "Write a comment…";
+    commentInput.setAttribute("aria-label", "Write a comment");
+
+    const commentStatus = document.createElement("p");
+    commentStatus.className = "small";
+
+    const commentList = document.createElement("ul");
+    commentList.className = "comments-list";
+
+    const postComment = makeButton("Post comment", () => {
+      const text = commentInput.value.trim();
+      if (!text) {
+        commentStatus.textContent = "Write a comment first.";
+        return;
+      }
+      commentStatus.textContent =
+        "Comment not published. Connect the comments table and RLS policies first.";
+    }, "primary");
+
+    commentArea.append(commentInput, postComment, commentStatus, commentList);
+
+    info.append(creator, description, actions, commentArea);
+    card.append(stage, info);
+    feed.append(card);
+
+    player.addEventListener("play", () => {
+      activeIndex = index;
+      updateList(HISTORY_KEY, {
+        id: video.id,
+        caption: video.caption,
+        creator: video.creator,
+        url: video.url,
+        position: player.currentTime || 0,
+        updatedAt: Date.now()
+      });
+    });
+
+    player.addEventListener("timeupdate", () => {
+      if (!player.paused && player.currentTime > 0) {
+        updateList(HISTORY_KEY, {
+          id: video.id,
+          caption: video.caption,
+          creator: video.creator,
+          url: video.url,
+          position: player.currentTime,
+          updatedAt: Date.now()
+        });
+      }
+    });
+
+    player.addEventListener("ended", () => {
+      const next = feed.querySelectorAll("video")[index + 1];
+      if (next) next.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  });
+
+  setupAutoPlayback();
+}
+
+function setupAutoPlayback() {
+  if (observer) observer.disconnect();
+
+  const players = [...feed.querySelectorAll("video")];
+  if (!("IntersectionObserver" in window)) return;
+
+  const autoPlayAllowed = window.matchMedia("(prefers-reduced-motion: reduce)").matches === false;
+
+  observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const player = entry.target;
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.65) {
+        players.forEach(other => {
+          if (other !== player) other.pause();
+        });
+        if (autoPlayAllowed) {
+          player.play().catch(() => {
+            // Browsers may require the user to press Play first.
+          });
+        }
+      } else {
+        player.pause();
+      }
+    });
+  }, { threshold: [0, 0.65, 1] });
+
+  players.forEach(player => observer.observe(player));
+}
+
+$("refreshBtn").addEventListener("click", async () => {
+  statusBox.textContent = "Refreshing…";
+  await checkAuth();
+  statusBox.textContent =
+    "Feed refreshed. No video database query is configured yet.";
+});
+
+$("historyBtn").addEventListener("click", () => {
+  const history = readList(HISTORY_KEY);
+  historyPanel.textContent = history.length
+    ? "Watch history preview: " + history.map(x =>
+        x.creator + " — " + x.caption + " (" +
+        Math.floor(x.position || 0) + "s)"
+      ).join(" | ")
+    : "No watch history yet in this browser.";
+});
+
+$("continueBtn").addEventListener("click", () => {
+  const history = readList(HISTORY_KEY);
+  if (!history.length) {
+    historyPanel.textContent = "No video to continue yet.";
+    return;
+  }
+  const last = history[0];
+  const player = [...feed.querySelectorAll("video")].find(
+    v => v.currentSrc === last.url || v.src === last.url
+  );
+  if (!player) {
+    historyPanel.textContent =
+      "Your saved playback position is " +
+      Math.floor(last.position || 0) +
+      " seconds, but that video is not currently in the feed.";
+    return;
+  }
+  player.scrollIntoView({ behavior: "smooth", block: "center" });
+  player.currentTime = last.position || 0;
+  player.play().catch(() => {
+    historyPanel.textContent = "Press Play to continue watching.";
+  });
+});
+
+let startY = null;
+feed.addEventListener("touchstart", event => {
+  startY = event.touches[0]?.clientY ?? null;
+}, { passive:true });
+
+feed.addEventListener("touchend", event => {
+  if (startY === null) return;
+  const endY = event.changedTouches[0]?.clientY;
+  const delta = startY - endY;
+  startY = null;
+
+  if (Math.abs(delta) < 70) return;
+  const cards = [...feed.querySelectorAll(".video-card")];
+  if (!cards.length) return;
+  activeIndex = Math.max(0, Math.min(cards.length - 1, activeIndex + (delta > 0 ? 1 : -1)));
+  cards[activeIndex]?.scrollIntoView({ behavior:"smooth", block:"center" });
+}, { passive:true });
+
+/* This keeps the page safe: no assumed video table or bucket names. */
+async function initialise() {
+  await checkAuth();
+  renderVideos([]);
+}
+initialise();
+</script>
+</body>
+</html>
