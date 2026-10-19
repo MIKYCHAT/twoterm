@@ -347,9 +347,7 @@ $("photo").addEventListener("change", event => {
   if (file.size > 5 * 1024 * 1024) {
     event.target.value = "";
     return notify("Image must be smaller than 5 MB.");
-  }
-
-  aploadphoto = gallery;
+   = gallery;
   $("avatar").src = URL.createObjectURL(file);
 });
 
