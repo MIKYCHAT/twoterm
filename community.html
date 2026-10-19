@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100b20">
+  <title>TWOTERM Community</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg:#100b20;--panel:#1b1430;--panel2:#251b40;
+      --pink:#ff3d9a;--purple:#a855f7;--text:#fff;
+      --muted:#bcb2d0;--border:#392a55;--green:#42e8a5;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;color:var(--text);font-family:Arial,sans-serif;background:radial-gradient(ellipse at top,#291342,var(--bg) 65%)}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer;border:0;border-radius:10px;padding:10px 13px;font-weight:700}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .primary{color:white;background:linear-gradient(110deg,var(--pink),var(--purple))}
+    .secondary{color:white;background:var(--panel2);border:1px solid var(--border)}
+    .danger{color:#ffd5e5;background:#43172e;border:1px solid #74304f}
+    header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 4%;background:rgba(16,11,32,.96);border-bottom:1px solid var(--border)}
+    .brand{font-size:22px;font-weight:900}.brand span{color:var(--pink)}
+    .actions,.buttons,.chips{display:flex;gap:8px;flex-wrap:wrap}
+    main{width:min(1100px,94%);margin:26px auto 55px}
+    h1{font-size:clamp(30px,5vw,43px);margin:8px 0}
+    h2{font-size:20px;margin:0 0 14px}h3{font-size:16px;margin:0 0 8px}
+    p{line-height:1.55}.muted{color:var(--muted);line-height:1.6}
+    .eyebrow{font-size:12px;color:#f4a2d0;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+    .card{background:rgba(27,20,48,.96);border:1px solid var(--border);border-radius:17px;padding:19px;margin-bottom:18px;min-width:0}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+    .tile{background:#120d23;border:1px solid var(--border);border-radius:13px;padding:14px;min-width:0}
+    label{display:block;color:#e7ddf7;font-size:13px;margin:12px 0 6px}
+    input,textarea,select{width:100%;color:white;background:#100b20;border:1px solid var(--border);border-radius:10px;padding:12px;outline:none}
+    textarea{min-height:75px;resize:vertical}
+    .status{padding:12px;background:#120d23;border:1px solid var(--border);border-radius:11px;color:var(--muted);font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+    .list{display:flex;flex-direction:column;gap:9px}
+    .item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:#120d23;border:1px solid var(--border);border-radius:11px;padding:12px}
+    .item p{margin:6px 0;color:var(--muted);font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .item small{display:block;color:var(--muted);margin-top:5px}
+    .chip{font-size:12px;color:#e7ddf7;background:#241a3b;border:1px solid var(--border);border-radius:999px;padding:7px 10px}
+    .empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:12px}
+    .form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    footer{text-align:center;padding:24px;color:var(--muted);font-size:12px;border-top:1px solid var(--border)}
+    @media(max-width:650px){.grid{grid-template-columns:1fr}.card{padding:14px}.brand{font-size:19px}.actions button{padding:9px;font-size:12px}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">TWO<span>TERM</span> COMMUNITY</div>
+  <div class="actions">
+    <button class="secondary" id="homeBtn">Home</button>
+    <button class="secondary" id="discoverBtn">Discover</button>
+    <button class="secondary" id="liveBtn">LIVE Studio</button>
+  </div>
+</header>
+
+<main>
+  <div class="eyebrow">Create together</div>
+  <h1>Community & Interaction ✨</h1>
+  <p class="muted">Build conversations, run polls, organize challenges, collect questions, and plan collaborative content.</p>
+  <div class="status" id="authStatus">Checking Supabase login...</div>
+
+  <section class="card">
+    <h2>Community tools</h2>
+    <div class="grid">
+      <div class="tile">
+        <h3>🎬 Video reply / Duet / Stitch</h3>
+        <p class="muted">Prepare a collaboration idea using a permitted public video link.</p>
+        <form id="collabForm">
+          <label for="collabType">Creation type</label>
+          <select id="collabType">
+            <option value="Video reply">Video reply to a comment</option>
+            <option value="Duet">Side-by-side duet</option>
+            <option value="Stitch">Stitch-style clip</option>
+            <option value="Collaboration">Creator collaboration</option>
+          </select>
+          <label for="sourceUrl">Original video URL (optional)</label>
+          <input id="sourceUrl" type="url" placeholder="https://...">
+          <label for="collabNotes">Idea or response</label>
+          <textarea id="collabNotes" maxlength="1200" required placeholder="Describe your video idea"></textarea>
+          <label class="muted"><input id="permissionCheck" type="checkbox" style="width:auto"> I have permission or the video is eligible for this use.</label>
+          <button class="primary" type="submit">Save creation plan</button>
+        </form>
+      </div>
+
+      <div class="tile">
+        <h3>📊 Audience poll</h3>
+        <p class="muted">Create a poll draft with two or more answer options.</p>
+        <form id="pollForm">
+          <label for="pollQuestion">Poll question</label>
+          <input id="pollQuestion" maxlength="220" required placeholder="What should I post next?">
+          <label for="pollOptions">Options — one per line, at least two</label>
+          <textarea id="pollOptions" maxlength="800" required placeholder="Comedy video&#10;Dance video&#10;Creator tips"></textarea>
+          <button class="primary" type="submit">Create poll draft</button>
+        </form>
+      </div>
+
+      <div class="tile">
+        <h3>❓ Q&A questions</h3>
+        <p class="muted">Collect sample questions and mark them answered.</p>
+        <form id="questionForm">
+          <label for="questionText">Question</label>
+          <textarea id="questionText" maxlength="700" required placeholder="Ask a question for the creator"></textarea>
+          <button class="primary" type="submit">Add question</button>
+        </form>
+        <div id="questionsList" class="list" style="margin-top:12px"></div>
+      </div>
+
+      <div class="tile">
+        <h3>🏆 Community challenge</h3>
+        <p class="muted">Plan a themed activity for your community.</p>
+        <form id="challengeForm">
+          <label for="challengeName">Challenge name</label>
+          <input id="challengeName" maxlength="100" required placeholder="e.g. 7-day creativity challenge">
+          <label for="challengeTag">Community hashtag</label>
+          <input id="challengeTag" maxlength="60" placeholder="#TWOTERMChallenge">
+          <label for="challengeRules">Instructions</label>
+          <textarea id="challengeRules" maxlength="1000" required placeholder="Explain how people can participate"></textarea>
+          <button class="primary" type="submit">Save challenge</button>
+        </form>
+      </div>
+
+      <div class="tile">
+        <h3>👥 Creator communities</h3>
+        <p class="muted">Create a local draft for a topic-focused community.</p>
+        <form id="communityForm">
+          <label for="communityName">Community name</label>
+          <input id="communityName" maxlength="100" required placeholder="e.g. Mobile Video Creators">
+          <label for="communityTopic">Topic</label>
+          <select id="communityTopic">
+            <option>Comedy</option><option>Dance</option><option>Gaming</option>
+            <option>Education</option><option>Music</option><option>Business</option>
+            <option>Travel</option><option>General</option>
+          </select>
+          <label for="communityRules">Community description and rules</label>
+          <textarea id="communityRules" maxlength="1000" required placeholder="Set respectful participation rules"></textarea>
+          <button class="primary" type="submit">Save community draft</button>
+        </form>
+      </div>
+
+      <div class="tile">
+        <h3>📚 Playlists and collections</h3>
+        <p class="muted">Organize your videos into series or collections.</p>
+        <form id="playlistForm">
+          <label for="playlistName">Playlist title</label>
+          <input id="playlistName" maxlength="100" required placeholder="e.g. My creator journey">
+          <label for="playlistDescription">Description</label>
+          <textarea id="playlistDescription" maxlength="600" placeholder="What viewers can expect"></textarea>
+          <button class="primary" type="submit">Create playlist draft</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>LIVE audience interaction</h2>
+    <p class="muted">Prepare an audience question or poll for a future LIVE session. These controls do not broadcast to actual viewers yet.</p>
+    <form id="liveInteractionForm">
+      <label for="liveInteractionType">Interaction type</label>
+      <select id="liveInteractionType">
+        <option>LIVE question</option>
+        <option>LIVE poll</option>
+        <option>Audience reaction prompt</option>
+      </select>
+      <label for="liveInteractionText">Prompt</label>
+      <textarea id="liveInteractionText" maxlength="500" required placeholder="Ask your viewers a question..."></textarea>
+      <button class="primary" type="submit">Save LIVE prompt</button>
+    </form>
+    <div id="livePromptsList" class="list" style="margin-top:14px"></div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>Pinned comments and comment filters</h2>
+      <span class="chip">Local demo</span>
+    </div>
+    <div class="grid">
+      <div class="tile">
+        <h3>📌 Pin a comment</h3>
+        <p class="muted">Save a comment draft that you want to highlight.</p>
+        <form id="pinForm">
+          <label for="pinVideo">Video title or identifier</label>
+          <input id="pinVideo" maxlength="150" required placeholder="Which video?">
+          <label for="pinComment">Comment text</label>
+          <textarea id="pinComment" maxlength="800" required placeholder="Comment to highlight"></textarea>
+          <button class="primary" type="submit">Save pin draft</button>
+        </form>
+      </div>
+      <div class="tile">
+        <h3>🛡️ Comment word filters</h3>
+        <p class="muted">Add words to your local filter list. This does not moderate live comments on the server.</p>
+        <form id="filterForm">
+          <label for="filterWord">Word or phrase to filter</label>
+          <input id="filterWord" maxlength="100" required placeholder="Enter a word or phrase">
+          <button class="primary" type="submit">Add filter</button>
+        </form>
+        <div id="filterTestBox" style="margin-top:15px">
+          <label for="filterTest">Test a comment against your local filter list</label>
+          <textarea id="filterTest" maxlength="1000" placeholder="Type a sample comment"></textarea>
+          <button class="secondary" id="testFilterBtn" type="button" style="margin-top:8px">Test comment</button>
+          <div class="status" id="filterTestStatus" style="margin-top:8px">No test run yet.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Your saved community drafts</h2>
+    <p class="muted">Items below are stored in this browser only. They are not published, uploaded, or visible to other users.</p>
+    <div id="savedItems" class="list"></div>
+    <div class="form-actions">
+      <button class="secondary" id="refreshBtn">Refresh list</button>
+      <button class="danger" id="clearBtn">Clear all local community drafts</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Account and feature status</h2>
+    <div class="status" id="featureStatus">
+      Local demo mode. Real polls, comments, playlists, communities, duets, and stitches require backend integration.
+    </div>
+  </section>
+</main>
+
+<footer>© TWOTERM — Connect. Stream. Earn.</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  const STORE_KEY = "twoterm_community_items_v1";
+  const FILTER_KEY = "twoterm_community_filters_v1";
+  const $ = id => document.getElementById(id);
+
+  function read(key, fallback) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key));
+      return value == null ? fallback : value;
+    } catch (_) { return fallback; }
+  }
+
+  function write(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (_) {
+      alert("Could not save in this browser. Check browser storage.");
+      return false;
+    }
+  }
+
+  function make(tag, className, text) {
+    const n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+
+  function addItem(type, title, details, extra = {}) {
+    const items = read(STORE_KEY, []);
+    items.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      type, title, details, extra,
+      createdAt: new Date().toISOString()
+    });
+    if (write(STORE_KEY, items)) {
+      renderSaved();
+      return true;
+    }
+    return false;
+  }
+
+  function renderSaved() {
+    const container = $("savedItems");
+    container.replaceChildren();
+    const items = read(STORE_KEY, []);
+
+    if (!items.length) {
+      container.appendChild(make("div", "empty", "No community drafts saved yet."));
+      return;
+    }
+
+    items.forEach(item => {
+      const row = make("div", "item");
+      const details = document.createElement("div");
+      details.appendChild(make("strong", "", item.title));
+      details.appendChild(make("small", "", item.type + " · " + new Date(item.createdAt).toLocaleString()));
+      details.appendChild(make("p", "", item.details || ""));
+      row.appendChild(details);
+
+      const del = make("button", "danger", "Delete");
+      del.type = "button";
+      del.addEventListener("click", () => {
+        if (!confirm("Delete this local draft?")) return;
+        write(STORE_KEY, read(STORE_KEY, []).filter(x => x.id !== item.id));
+        renderSaved();
+      });
+      row.appendChild(del);
+      container.appendChild(row);
+    });
+  }
+
+  function addFormHandler(formId, handler) {
+    $(formId).addEventListener("submit", event => {
+      event.preventDefault();
+      handler();
+    });
+  }
+
+  addFormHandler("collabForm", () => {
+    const type = $("collabType").value;
+    const url = $("sourceUrl").value.trim();
+    const notes = $("collabNotes").value.trim();
+    const permitted = $("permissionCheck").checked;
+
+    if (url) {
+      try {
+        const parsed = new URL(url);
+        if (!["http:", "https:"].includes(parsed.protocol)) throw new Error();
+      } catch (_) {
+        alert("Enter a valid HTTP or HTTPS video URL.");
+        return;
+      }
+    }
+
+    if (["Duet", "Stitch"].includes(type) && !permitted) {
+      alert("Confirm that you have permission or the source video is eligible before saving this plan.");
+      return;
+    }
+
+    if (addItem(type, type + " plan", (url ? "Source: " + url + "\n" : "") + notes,
+      {sourceUrl:url, permissionConfirmed:permitted})) {
+      $("collabForm").reset();
+    }
+  });
+
+  addFormHandler("pollForm", () => {
+    const question = $("pollQuestion").value.trim();
+    const options = $("pollOptions").value.split("\n").map(x => x.trim()).filter(Boolean);
+    if (options.length < 2) {
+      alert("Enter at least two poll options, one per line.");
+      return;
+    }
+    if (new Set(options.map(x => x.toLowerCase())).size !== options.length) {
+      alert("Remove duplicate poll options.");
+      return;
+    }
+    if (addItem("Poll draft", question, "Options:\n" + options.map((x,i) => (i+1)+". "+x).join("\n"), {options})) {
+      $("pollForm").reset();
+    }
+  });
+
+  function renderQuestions() {
+    const container = $("questionsList");
+    container.replaceChildren();
+    const questions = read(STORE_KEY, []).filter(x => x.type === "Q&A question");
+    if (!questions.length) {
+      container.appendChild(make("div", "empty", "No questions added yet."));
+      return;
+    }
+    questions.slice(0,5).forEach(q => {
+      const item = make("div", "item");
+      item.appendChild(make("p", "", q.details));
+      item.appendChild(make("span", "chip", "Unanswered"));
+      container.appendChild(item);
+    });
+  }
+
+  addFormHandler("questionForm", () => {
+    if (addItem("Q&A question", "Audience question", $("questionText").value.trim())) {
+      $("questionForm").reset();
+      renderQuestions();
+    }
+  });
+
+  addFormHandler("challengeForm", () => {
+    const name = $("challengeName").value.trim();
+    const tag = $("challengeTag").value.trim();
+    const rules = $("challengeRules").value.trim();
+    if (tag && !/^#[\p{L}\p{N}_]+$/u.test(tag)) {
+      alert("Use a hashtag beginning with # and containing only letters, numbers, or underscores.");
+      return;
+    }
+    if (addItem("Challenge draft", name, (tag ? tag + "\n" : "") + rules, {hashtag:tag})) {
+      $("challengeForm").reset();
+    }
+  });
+
+  addFormHandler("communityForm", () => {
+    const name = $("communityName").value.trim();
+    const topic = $("communityTopic").value;
+    const rules = $("communityRules").value.trim();
+    if (addItem("Creator community draft", name, "Topic: " + topic + "\n" + rules, {topic})) {
+      $("communityForm").reset();
+    }
+  });
+
+  addFormHandler("playlistForm", () => {
+    const name = $("playlistName").value.trim();
+    const description = $("playlistDescription").value.trim();
+    if (addItem("Playlist draft", name, description)) $("playlistForm").reset();
+  });
+
+  addFormHandler("liveInteractionForm", () => {
+    const type = $("liveInteractionType").value;
+    const prompt = $("liveInteractionText").value.trim();
+    if (addItem(type, type, prompt)) $("liveInteractionForm").reset();
+    renderLivePrompts();
+  });
+
+  function renderLivePrompts() {
+    const container = $("livePromptsList");
+    container.replaceChildren();
+    const prompts = read(STORE_KEY, []).filter(x =>
+      ["LIVE question","LIVE poll","Audience reaction prompt"].includes(x.type)
+    );
+    if (!prompts.length) {
+      container.appendChild(make("div", "empty", "No LIVE prompts saved."));
+      return;
+    }
+    prompts.slice(0,5).forEach(p => {
+      const row = make("div", "item");
+      row.appendChild(make("p", "", p.type + ": " + p.details));
+      row.appendChild(make("span", "chip", "Draft"));
+      container.appendChild(row);
+    });
+  }
+
+  addFormHandler("pinForm", () => {
+    const video = $("pinVideo").value.trim();
+    const comment = $("pinComment").value.trim();
+    if (addItem("Pinned comment draft", video, comment, {video})) {
+      $("pinForm").reset();
+    }
+  });
+
+  addFormHandler("filterForm", () => {
+    const word = $("filterWord").value.trim().toLowerCase();
+    if (!word) return;
+    const filters = read(FILTER_KEY, []);
+    if (filters.includes(word)) {
+      alert("That filter already exists.");
+      return;
+    }
+    filters.push(word);
+    if (write(FILTER_KEY, filters)) {
+      $("filterForm").reset();
+      renderFilters();
+    }
+  });
+
+  function renderFilters() {
+    const old = $("filterChips");
+    if (old) old.remove();
+
+    const filters = read(FILTER_KEY, []);
+    const box = make("div", "chips");
+    box.id = "filterChips";
+    box.style.marginTop = "10px";
+
+    if (!filters.length) {
+      box.appendChild(make("span", "muted", "No filtered words added."));
+    }
+
+    filters.forEach(word => {
+      const chip = make("button", "chip", word + " ×");
+      chip.type = "button";
+      chip.addEventListener("click", () => {
+        write(FILTER_KEY, read(FILTER_KEY, []).filter(x => x !== word));
+        renderFilters();
+      });
+      box.appendChild(chip);
+    });
+
+    $("filterTestBox").appendChild(box);
+  }
+
+  $("testFilterBtn").addEventListener("click", () => {
+    const text = $("filterTest").value.toLowerCase();
+    const filters = read(FILTER_KEY, []);
+    const matched = filters.filter(word => text.includes(word));
+    $("filterTestStatus").textContent = matched.length
+      ? "Potentially blocked by local demo filter: " + matched.join(", ")
+      : "No matching local filter found. This is only a test, not server moderation.";
+  });
+
+  async function checkAuth() {
+    try {
+      const {data, error} = await db.auth.getSession();
+      if (error) throw error;
+      $("authStatus").textContent = data.session
+        ? "Signed in to TWOTERM. User ID: " + data.session.user.id
+        : "Not signed in. You can test community drafts locally, but they are not tied to your account.";
+    } catch (error) {
+      $("authStatus").textContent = "Could not check login: " + error.message;
+    }
+  }
+
+  $("homeBtn").addEventListener("click", () => window.location.href = "./index.html");
+  $("discoverBtn").addEventListener("click", () => window.location.href = "./discover.html");
+  $("liveBtn").addEventListener("click", () => window.location.href = "./live.html");
+  $("refreshBtn").addEventListener("click", () => {
+    renderSaved(); renderQuestions(); renderLivePrompts(); renderFilters();
+  });
+
+  $("clearBtn").addEventListener("click", () => {
+    if (!confirm("Delete every local TWOTERM community draft in this browser? This cannot be undone.")) return;
+    write(STORE_KEY, []);
+    renderSaved();
+    renderQuestions();
+    renderLivePrompts();
+  });
+
+  renderSaved();
+  renderQuestions();
+  renderLivePrompts();
+  renderFilters();
+  checkAuth();
+})();
+</script>
+</body>
+</html>
