@@ -1,0 +1,585 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10091f">
+<title>TWOTERM — Inbox & Messages</title>
+
+<style>
+:root {
+  --bg:#10091f;
+  --panel:#1b1230;
+  --panel2:#241738;
+  --pink:#ff3e9d;
+  --purple:#9b5cff;
+  --text:#fff;
+  --muted:#c2b8d2;
+  --border:#38264d;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:13px 16px;
+  background:#10091ff5;
+  border-bottom:1px solid var(--border);
+}
+.brand {
+  color:white;
+  text-decoration:none;
+  font-size:22px;
+  font-weight:900;
+}
+.brand span { color:var(--pink); }
+button,input,textarea,select { font:inherit; }
+button {
+  cursor:pointer;
+  color:white;
+  background:#352044;
+  border:1px solid #68418a;
+  border-radius:10px;
+  padding:10px 12px;
+}
+button:focus-visible,a:focus-visible,input:focus-visible,
+textarea:focus-visible {
+  outline:3px solid var(--pink);
+  outline-offset:2px;
+}
+.primary {
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  border:0;
+}
+.muted { color:var(--muted);font-size:13px;line-height:1.5; }
+.layout {
+  max-width:1200px;
+  margin:auto;
+  padding:16px;
+  display:grid;
+  grid-template-columns:180px 320px minmax(0,1fr);
+  gap:14px;
+  min-height:calc(100vh - 70px);
+}
+.panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  min-width:0;
+}
+.sidebar { padding:14px;height:max-content; }
+.sidebar a {
+  display:block;
+  padding:11px 8px;
+  margin:3px 0;
+  border-radius:8px;
+  text-decoration:none;
+  color:var(--muted);
+}
+.sidebar a:hover { background:var(--panel2);color:white; }
+.contacts { display:flex;flex-direction:column;min-height:600px; }
+.contact-head { padding:15px;border-bottom:1px solid var(--border); }
+.contact-head h1 { font-size:20px;margin:0 0 12px; }
+.search {
+  width:100%;
+  padding:11px;
+  color:white;
+  background:#10091f;
+  border:1px solid var(--border);
+  border-radius:10px;
+}
+.tabs { display:flex;gap:6px;margin-top:12px;flex-wrap:wrap; }
+.tabs button { padding:8px 10px;font-size:12px; }
+.tabs .selected { background:#62305e;border-color:var(--pink); }
+.contact-list { overflow:auto; }
+.contact {
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  padding:13px;
+  border:0;
+  border-bottom:1px solid var(--border);
+  border-radius:0;
+  background:transparent;
+}
+.contact:hover,.contact.active { background:var(--panel2); }
+.avatar {
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  flex-shrink:0;
+  display:grid;
+  place-items:center;
+  font-weight:bold;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+}
+.contact-text { min-width:0;flex:1; }
+.contact-name { font-weight:bold;overflow-wrap:anywhere; }
+.contact-preview {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.badge {
+  background:var(--pink);
+  color:white;
+  font-size:11px;
+  padding:3px 7px;
+  border-radius:20px;
+}
+.chat {
+  display:flex;
+  flex-direction:column;
+  min-height:600px;
+}
+.chat-head {
+  padding:14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-bottom:1px solid var(--border);
+}
+.chat-head-info { min-width:0;flex:1; }
+.chat-head h2 { margin:0 0 5px;font-size:17px; }
+.chat-tools { display:flex;gap:5px;flex-wrap:wrap; }
+.chat-tools button { padding:7px 9px;font-size:12px; }
+.messages {
+  flex:1;
+  min-height:270px;
+  max-height:55vh;
+  overflow:auto;
+  padding:15px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.welcome {
+  margin:auto;
+  max-width:330px;
+  text-align:center;
+  color:var(--muted);
+  line-height:1.6;
+}
+.bubble {
+  max-width:85%;
+  padding:10px 12px;
+  border-radius:13px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+  background:#30213f;
+  align-self:flex-start;
+}
+.bubble.mine {
+  background:linear-gradient(135deg,#6436a1,#9a286c);
+  align-self:flex-end;
+}
+.bubble time { display:block;font-size:10px;color:#eadcf5;margin-top:5px; }
+.bubble-actions { display:flex;gap:5px;margin-top:7px;flex-wrap:wrap; }
+.bubble-actions button { padding:4px 7px;font-size:11px; }
+.composer {
+  padding:12px;
+  border-top:1px solid var(--border);
+}
+.composer textarea {
+  width:100%;
+  min-height:65px;
+  resize:vertical;
+  padding:11px;
+  border-radius:10px;
+  color:white;
+  background:#10091f;
+  border:1px solid var(--border);
+}
+.composer-row {
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.composer-row button { flex:1; }
+.status {
+  color:#e6d8ff;
+  font-size:12px;
+  line-height:1.5;
+  padding:10px 14px;
+  overflow-wrap:anywhere;
+}
+footer { text-align:center;color:var(--muted);padding:24px;font-size:12px; }
+.mobile-nav { display:none; }
+@media(max-width:950px) {
+  .layout {
+    grid-template-columns:minmax(0,1fr);
+    padding:10px;
+  }
+  .sidebar { display:none; }
+  .contacts { min-height:0; }
+  .contact-list { max-height:260px; }
+  .chat { min-height:520px; }
+  .messages { max-height:45vh; }
+  .mobile-nav {
+    display:flex;
+    justify-content:space-around;
+    gap:4px;
+    position:fixed;
+    bottom:0;left:0;right:0;
+    z-index:20;
+    padding:9px 4px calc(9px + env(safe-area-inset-bottom));
+    background:#160d26;
+    border-top:1px solid var(--border);
+  }
+  .mobile-nav a {
+    color:var(--muted);
+    text-align:center;
+    text-decoration:none;
+    font-size:12px;
+  }
+  .mobile-nav span { display:block;font-size:19px;margin-bottom:3px; }
+  footer { padding-bottom:80px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <a class="brand" href="index.html">TWO<span>TERM</span></a>
+  <button id="authBtn" class="primary" type="button">Checking login…</button>
+</header>
+
+<main class="layout">
+  <aside class="panel sidebar">
+    <h2>Messages</h2>
+    <a href="index.html">🏠 Home</a>
+    <a href="video-feed.html">▶ Videos</a>
+    <a href="profile.html">👤 Profile</a>
+    <a href="account.html">🔐 Account</a>
+    <a href="inbox.html">💬 Inbox</a>
+    <p class="muted">Connect. Create. Communicate.</p>
+  </aside>
+
+  <section class="panel contacts">
+    <div class="contact-head">
+      <h1>Inbox <span id="unreadBadge" class="badge">0 unread</span></h1>
+      <input id="searchInput" class="search" type="search"
+        placeholder="Search conversations…" aria-label="Search conversations">
+      <div class="tabs" role="group" aria-label="Inbox filters">
+        <button class="selected" data-filter="all" type="button">All</button>
+        <button data-filter="requests" type="button">Requests</button>
+        <button data-filter="unread" type="button">Unread</button>
+      </div>
+    </div>
+    <div id="contactList" class="contact-list">
+      <div class="status">Loading inbox…</div>
+    </div>
+  </section>
+
+  <section class="panel chat">
+    <div class="chat-head">
+      <div class="avatar" id="chatAvatar">T</div>
+      <div class="chat-head-info">
+        <h2 id="chatTitle">TWOTERM Inbox</h2>
+        <div class="muted" id="chatSubtitle">Select a conversation</div>
+      </div>
+      <div class="chat-tools">
+        <button id="muteBtn" type="button">Mute</button>
+        <button id="blockBtn" type="button">Block</button>
+      </div>
+    </div>
+
+    <div id="messageList" class="messages" aria-live="polite">
+      <div class="welcome">
+        <h2>💬 Your messages</h2>
+        <p>Select a conversation to view messages. Your private conversations will appear here after the messaging database is connected.</p>
+      </div>
+    </div>
+
+    <div id="chatStatus" class="status" role="status" aria-live="polite">
+      Checking your account…
+    </div>
+
+    <div class="composer">
+      <label class="muted" for="messageInput">Write a message</label>
+      <textarea id="messageInput" maxlength="5000"
+        placeholder="Type your message…" disabled></textarea>
+      <div class="composer-row">
+        <button id="sendBtn" class="primary" type="button" disabled>Send</button>
+        <button id="imageBtn" type="button" disabled>Image</button>
+        <button id="videoBtn" type="button" disabled>Video</button>
+        <button id="voiceBtn" type="button" disabled>Voice</button>
+        <button id="groupBtn" type="button">New group</button>
+      </div>
+      <input id="mediaInput" type="file" accept="image/*,video/*" hidden>
+      <p class="muted">
+        Sending and uploading require configured Supabase messaging tables, Storage policies, and server-side access checks.
+      </p>
+    </div>
+  </section>
+</main>
+
+<nav class="mobile-nav" aria-label="Main navigation">
+  <a href="index.html"><span>🏠</span>Home</a>
+  <a href="video-feed.html"><span>▶️</span>Videos</a>
+  <a href="inbox.html"><span>💬</span>Inbox</a>
+  <a href="profile.html"><span>👤</span>Profile</a>
+</nav>
+
+<footer>TWOTERM © 2026 · Private communication should stay private.</footer>
+
+<script type="module">
+import { createClient } from
+  "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+const SUPABASE_KEY =
+  "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let selectedConversation = null;
+let currentFilter = "all";
+let muted = false;
+let blocked = false;
+let mediaRecorder = null;
+let voiceChunks = [];
+let voiceStream = null;
+
+function setStatus(message) {
+  $("chatStatus").textContent = message;
+}
+
+function escapeText(value) {
+  return String(value ?? "");
+}
+
+async function checkAuth() {
+  const { data, error } = await supabase.auth.getSession();
+
+  if (error) {
+    setStatus("Could not check your session: " + error.message);
+    $("authBtn").textContent = "Account";
+    return;
+  }
+
+  currentUser = data.session?.user ?? null;
+
+  if (!currentUser) {
+    $("authBtn").textContent = "Log in";
+    setStatus("Please log in before using private messaging.");
+    $("contactList").innerHTML =
+      '<div class="status">Sign in to access your inbox.</div>';
+    return;
+  }
+
+  $("authBtn").textContent = "Log out";
+  setStatus("Signed in. Messaging database integration is still required.");
+  $("contactList").innerHTML =
+    '<div class="status">Your account is connected. No conversation table has been queried because the exact TWOTERM schema has not yet been verified.</div>';
+}
+
+$("authBtn").addEventListener("click", async () => {
+  if (!currentUser) {
+    window.location.href = "account.html";
+    return;
+  }
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    setStatus("Log out failed: " + error.message);
+    return;
+  }
+
+  window.location.href = "account.html";
+});
+
+$("searchInput").addEventListener("input", () => {
+  const query = $("searchInput").value.trim().toLowerCase();
+  const rows = [...$("contactList").querySelectorAll(".contact")];
+
+  rows.forEach(row => {
+    row.hidden = !row.textContent.toLowerCase().includes(query);
+  });
+
+  if (!rows.length) {
+    setStatus("Search will work across saved conversations after database integration.");
+  }
+});
+
+document.querySelectorAll("[data-filter]").forEach(button => {
+  button.addEventListener("click", () => {
+    currentFilter = button.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(b =>
+      b.classList.toggle("selected", b === button)
+    );
+
+    setStatus(
+      "Inbox filter selected: " + currentFilter +
+      ". Real message requests and unread status require saved conversation data."
+    );
+  });
+});
+
+$("sendBtn").addEventListener("click", () => {
+  const text = $("messageInput").value.trim();
+
+  if (!currentUser) {
+    setStatus("Log in before sending messages.");
+    return;
+  }
+  if (!selectedConversation) {
+    setStatus("Select a conversation first.");
+    return;
+  }
+  if (!text) {
+    setStatus("Type a message first.");
+    return;
+  }
+
+  setStatus(
+    "Message not sent. The secure messages table, recipient permissions, and RLS policies must be connected first."
+  );
+});
+
+$("imageBtn").addEventListener("click", () => {
+  $("mediaInput").accept = "image/*";
+  $("mediaInput").click();
+});
+
+$("videoBtn").addEventListener("click", () => {
+  $("mediaInput").accept = "video/*";
+  $("mediaInput").click();
+});
+
+$("mediaInput").addEventListener("change", () => {
+  const file = $("mediaInput").files?.[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+    setStatus("Choose a supported image or video file.");
+    $("mediaInput").value = "";
+    return;
+  }
+
+  const maxSize = file.type.startsWith("image/")
+    ? 10 * 1024 * 1024
+    : 50 * 1024 * 1024;
+
+  if (file.size > maxSize) {
+    setStatus("This interface preview allows images up to 10 MB and videos up to 50 MB.");
+    $("mediaInput").value = "";
+    return;
+  }
+
+  setStatus(
+    "Selected " + file.name +
+    ". This file has not been uploaded or sent. Configure private Storage and access policies first."
+  );
+});
+
+$("voiceBtn").addEventListener("click", async () => {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+    setStatus("Voice recording is not supported by this browser.");
+    return;
+  }
+
+  try {
+    if (mediaRecorder?.state === "recording") {
+      mediaRecorder.stop();
+      $("voiceBtn").textContent = "Voice";
+      return;
+    }
+
+    voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    voiceChunks = [];
+    mediaRecorder = new MediaRecorder(voiceStream);
+
+    mediaRecorder.addEventListener("dataavailable", event => {
+      if (event.data.size) voiceChunks.push(event.data);
+    });
+
+    mediaRecorder.addEventListener("stop", () => {
+      const blob = new Blob(voiceChunks, {
+        type: mediaRecorder.mimeType || "audio/webm"
+      });
+
+      voiceStream?.getTracks().forEach(track => track.stop());
+      voiceStream = null;
+
+      const url = URL.createObjectURL(blob);
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.src = url;
+      audio.setAttribute("aria-label", "Recorded voice message preview");
+
+      $("messageList").append(audio);
+
+      setStatus(
+        "Voice recording preview created. It has not been sent. Connect private audio upload and message saving to deliver it."
+      );
+    });
+
+    mediaRecorder.start();
+    $("voiceBtn").textContent = "Stop recording";
+    setStatus("Recording voice message. Press Stop recording when finished.");
+  } catch (error) {
+    setStatus("Microphone access failed: " + error.message);
+  }
+});
+
+$("muteBtn").addEventListener("click", () => {
+  muted = !muted;
+  $("muteBtn").textContent = muted ? "Unmute" : "Mute";
+  setStatus(
+    muted
+      ? "Mute preview enabled in this page only; notification preferences are not saved."
+      : "Mute preview disabled."
+  );
+});
+
+$("blockBtn").addEventListener("click", () => {
+  blocked = !blocked;
+  $("blockBtn").textContent = blocked ? "Unblock" : "Block";
+  setStatus(
+    "Block preview " + (blocked ? "enabled" : "disabled") +
+    ". No user has been blocked in the database."
+  );
+});
+
+$("groupBtn").addEventListener("click", () => {
+  if (!currentUser) {
+    setStatus("Log in before creating a group.");
+    return;
+  }
+
+  setStatus(
+    "Group creation needs conversation and group-membership tables, plus permissions for group administrators."
+  );
+});
+
+supabase.auth.onAuthStateChange(() => {
+  // Do not perform redirects or database mutations inside this callback.
+  checkAuth();
+});
+
+await checkAuth();
+</script>
+</body>
+</html>
