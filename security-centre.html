@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#130c22">
+  <title>TWOTERM | Security Center</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 18px;
+      background: #100b1c;
+      color: #f8f5ff;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .hero {
+      padding: 25px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #6d28d9, #db2777);
+    }
+
+    h1 { margin: 0 0 10px; }
+    p { line-height: 1.6; color: #ded5ee; }
+
+    .panel {
+      background: #1d1530;
+      border: 1px solid #3b2b51;
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+
+    .warning {
+      padding: 14px;
+      border-radius: 10px;
+      background: #392713;
+      border: 1px solid #a16207;
+      color: #fde68a;
+      line-height: 1.5;
+      margin-top: 16px;
+    }
+
+    .progress-track {
+      height: 10px;
+      background: #38294b;
+      border-radius: 20px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      background: #c084fc;
+      transition: width .2s;
+    }
+
+    .security-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px 0;
+      border-bottom: 1px solid #38294b;
+    }
+
+    .security-item:last-child { border-bottom: none; }
+
+    input[type="checkbox"] {
+      width: 19px;
+      height: 19px;
+      accent-color: #c084fc;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .item-text {
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .item-text strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .item-text small { color: #b8a9cb; }
+
+    button, .link {
+      display: inline-block;
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 15px;
+      margin: 6px 5px 0 0;
+      background: #7c3aed;
+      color: white;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button.secondary { background: #49385e; }
+
+    .status {
+      color: #fbbf24;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      color: #a99bbd;
+      padding: 25px 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <h1>TWOTERM Security Center</h1>
+      <p>Section 21 — Security Rules for the Whole Platform</p>
+      <p>Connect. Stream. Earn.</p>
+    </header>
+
+    <div class="warning">
+      <strong>Important:</strong> This page is a security checklist,
+      not proof that TWOTERM is secure. Checking a box records your
+      review in this browser only. Test the real backend before enabling
+      payments, withdrawals or public LIVE streaming.
+    </div>
+
+    <section class="panel">
+      <h2>Security review progress</h2>
+      <p id="progressText">0 of 18 requirements reviewed</p>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="status" id="progressStatus">Review required</p>
+      <button id="resetChecklist" class="secondary">
+        Reset checklist
+      </button>
+    </section>
+
+    <section class="panel">
+      <h2>Required security controls</h2>
+      <div id="checklist"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Supabase and backend</h2>
+      <p>
+        Keep privileged credentials in server-side secrets. Use the
+        publishable key only for intended public client access, with
+        Row Level Security and appropriate permissions enabled.
+      </p>
+      <a class="link"
+         href="https://supabase.com/dashboard/project/rhysucxztnjlskodkads/sql"
+         target="_blank" rel="noopener noreferrer">
+        Open Supabase SQL Editor
+      </a>
+      <a class="link"
+         href="https://supabase.com/dashboard/project/rhysucxztnjlskodkads/functions"
+         target="_blank" rel="noopener noreferrer">
+        Open Edge Functions
+      </a>
+    </section>
+
+    <section class="panel">
+      <h2>Before launching real payments</h2>
+      <ul>
+        <li>Verify transactions on the server.</li>
+        <li>Prevent duplicate processing using unique references.</li>
+        <li>Keep balances and earnings controlled by trusted backend logic.</li>
+        <li>Test withdrawal approval and audit records.</li>
+        <li>Test access with different user accounts.</li>
+        <li>Document backups and account deletion procedures.</li>
+      </ul>
+    </section>
+
+    <footer>TWOTERM © 2026 · Security review</footer>
+  </main>
+
+  <script>
+    const requirements = [
+      {
+        title: "Protect secret keys",
+        detail: "Never place Supabase service-role keys or other secret credentials in browser code."
+      },
+      {
+        title: "Separate public and private credentials",
+        detail: "Use the publishable key in the frontend and privileged credentials only on the server."
+      },
+      {
+        title: "Enable and test Row Level Security",
+        detail: "Verify that each user can access only permitted database records."
+      },
+      {
+        title: "Authorize privileged operations on the server",
+        detail: "Do not rely on hidden buttons or frontend-only role checks."
+      },
+      {
+        title: "Verify LIVE eligibility",
+        detail: "Check the authenticated user's permissions on the server before issuing a LiveKit token."
+      },
+      {
+        title: "Protect LiveKit secrets",
+        detail: "Keep the LiveKit API secret inside secure server-side configuration."
+      },
+      {
+        title: "Verify payment callbacks",
+        detail: "Authenticate provider callbacks and verify transaction details on the server."
+      },
+      {
+        title: "Protect verified earnings",
+        detail: "Users must not be able to set their own balances, earnings or payment status."
+      },
+      {
+        title: "Prevent duplicate transactions",
+        detail: "Use unique transaction references and idempotent server-side processing."
+      },
+      {
+        title: "Validate uploads",
+        detail: "Check file type, file size, ownership and upload permissions."
+      },
+      {
+        title: "Protect private content",
+        detail: "Restrict private media and messages using storage policies and authorization."
+      },
+      {
+        title: "Use secure connections",
+        detail: "Serve the site over HTTPS and use secure connections to backend services."
+      },
+      {
+        title: "Rate-limit abuse-prone actions",
+        detail: "Apply suitable limits to login attempts, messaging, uploads and other sensitive operations."
+      },
+      {
+        title: "Validate browser-supplied data",
+        detail: "Never trust user IDs, usernames, amounts or roles supplied by the client."
+      },
+      {
+        title: "Test permissions with multiple accounts",
+        detail: "Test allowed and denied actions as owners, other users and unauthorized visitors."
+      },
+      {
+        title: "Maintain backups and recovery",
+        detail: "Create backups and test how to restore data if something goes wrong."
+      },
+      {
+        title: "Provide privacy and safety controls",
+        detail: "Publish clear privacy information and provide reporting and account-deletion procedures."
+      },
+      {
+        title: "Review legal and payment obligations",
+        detail: "Review applicable laws, taxes, consumer protections and app-store requirements before launch."
+      }
+    ];
+
+    const storageKey = "twoterm_security_review_v1";
+    const checklist = document.getElementById("checklist");
+    let checkedItems = {};
+
+    try {
+      checkedItems = JSON.parse(
+        localStorage.getItem(storageKey) || "{}"
+      );
+    } catch {
+      checkedItems = {};
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify(checkedItems)
+        );
+      } catch {}
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = requirements.length;
+      const complete = requirements.filter(
+        (_, i) => checkedItems[i] === true
+      ).length;
+
+      document.getElementById("progressText").textContent =
+        complete + " of " + total + " requirements reviewed";
+
+      document.getElementById("progressFill").style.width =
+        (complete / total * 100) + "%";
+
+      document.getElementById("progressStatus").textContent =
+        complete === total
+          ? "Checklist reviewed — verify the actual implementation"
+          : "Review required";
+    }
+
+    requirements.forEach((item, index) => {
+      const row = document.createElement("label");
+      row.className = "security-item";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = checkedItems[index] === true;
+
+      checkbox.addEventListener("change", () => {
+        checkedItems[index] = checkbox.checked;
+        saveState();
+      });
+
+      const text = document.createElement("span");
+      text.className = "item-text";
+
+      const title = document.createElement("strong");
+      title.textContent = (index + 1) + ". " + item.title;
+
+      const detail = document.createElement("small");
+      detail.textContent = item.detail;
+
+      text.append(title, detail);
+      row.append(checkbox, text);
+      checklist.appendChild(row);
+    });
+
+    document.getElementById("resetChecklist")
+      .addEventListener("click", () => {
+        if (!confirm("Reset all checklist reviews on this browser?")) {
+          return;
+        }
+
+        checkedItems = {};
+
+        try {
+          localStorage.removeItem(storageKey);
+        } catch {}
+
+        checklist.querySelectorAll('input[type="checkbox"]')
+          .forEach(input => input.checked = false);
+
+        updateProgress();
+      });
+
+    updateProgress();
+  </script>
+</body>
+</html>
