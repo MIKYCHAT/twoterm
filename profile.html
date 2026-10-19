@@ -252,6 +252,50 @@ button:disabled { opacity:.6; cursor:wait; }
 
   <section class="card">
     <h2>Videos and posts</h2>
+<section class="card">
+  <h2>Videos and posts</h2>
+  <p class="muted" id="videosMessage">
+    Loading your published videos...
+  </p>
+
+  <form id="addVideoForm" hidden>
+    <h3>Share a video</h3>
+
+    <div class="field">
+      <label for="videoTitle">Video title</label>
+      <input id="videoTitle" maxlength="100"
+             placeholder="Give your video a title" required>
+    </div>
+
+    <div class="field">
+      <label for="videoDescription">Caption</label>
+      <textarea id="videoDescription" maxlength="1000"
+                placeholder="Tell people about your video"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="videoUrl">Direct video URL</label>
+      <input id="videoUrl" type="url"
+             placeholder="https://example.com/video.mp4" required>
+      <p class="muted">
+        Use a direct video-file URL, not a normal webpage link.
+      </p>
+    </div>
+
+    <button class="btn primary" id="publishVideoBtn" type="submit">
+      Publish video
+    </button>
+  </form>
+
+  <div class="actions" style="margin:16px 0">
+    <button class="btn primary" id="showAddVideoBtn" type="button">
+      + Add video
+    </button>
+  </div>
+
+  <div id="videosGrid" class="video-grid"></div>
+</section>
+
     <p class="muted">
       Your uploaded videos will appear here after the video database is connected.
     </p>
