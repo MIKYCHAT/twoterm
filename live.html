@@ -1,0 +1,900 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b20">
+  <title>TWOTERM LIVE — Connect. Stream. Earn.</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #100b20;
+      --panel: #1b1430;
+      --panel2: #251b40;
+      --pink: #ff3d9a;
+      --purple: #a855f7;
+      --text: #ffffff;
+      --muted: #bcb2d0;
+      --border: #392a55;
+      --green: #42e8a5;
+      --red: #ff5470;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at top, #291342, var(--bg) 65%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
+
+    button, input { font: inherit; }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      color: white;
+      background: linear-gradient(110deg, var(--pink), var(--purple));
+    }
+
+    .secondary {
+      background: var(--panel2);
+      color: white;
+      border: 1px solid var(--border);
+    }
+
+    .danger { background: #631d38; color: white; }
+    .success { background: #134d3c; color: white; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 5%;
+      background: rgba(16, 11, 32, .94);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .brand span { color: var(--pink); }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    main {
+      width: min(1120px, 92%);
+      margin: 25px auto 60px;
+    }
+
+    .hero { margin-bottom: 24px; }
+
+    .eyebrow {
+      color: #f4a2d0;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 8px 0;
+      font-size: clamp(30px, 5vw, 46px);
+      letter-spacing: -1.5px;
+    }
+
+    .muted { color: var(--muted); line-height: 1.6; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(270px, .8fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: rgba(27, 20, 48, .96);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .16);
+    }
+
+    .card h2 {
+      font-size: 19px;
+      margin: 0 0 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 15px 0 8px;
+    }
+
+    input {
+      width: 100%;
+      background: #100b20;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      color: white;
+      outline: none;
+    }
+
+    input:focus { border-color: var(--purple); }
+
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at center, #38234e, #080610 75%);
+      border: 1px solid var(--border);
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #080610;
+    }
+
+    .video-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 9px;
+      padding: 20px;
+      pointer-events: none;
+    }
+
+    .camera-icon { font-size: 43px; }
+
+    .live-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--red);
+      border-radius: 7px;
+      padding: 6px 9px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .stat {
+      background: #120d23;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 12px;
+    }
+
+    .stat strong { display: block; font-size: 20px; }
+    .stat small { color: var(--muted); font-size: 11px; }
+
+    .actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .actions button { flex: 1; min-width: 120px; }
+
+    .status {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: #120d23;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .status.ok { color: var(--green); }
+    .status.error { color: #ff9eaf; }
+
+    .check-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .check-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .check-list li:last-child { border-bottom: 0; }
+    .check-value { color: var(--muted); text-align: right; }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 { margin: 0; }
+
+    .chat-box {
+      height: 150px;
+      overflow: auto;
+      background: #100b20;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 13px 4%; }
+      .brand { font-size: 19px; }
+      main { width: 94%; margin-top: 20px; }
+      .layout { grid-template-columns: 1fr; }
+      .card { padding: 15px; }
+      .video-wrap { aspect-ratio: 3 / 4; }
+      .header-actions button { padding: 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="brand">TWO<span>TERM</span> <span style="color:white">LIVE</span></div>
+  <div class="header-actions">
+    <button class="secondary" id="homeBtn">Home</button>
+    <button class="secondary" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">TWOTERM Creator Studio</div>
+    <h1>Go LIVE. Connect. Earn.</h1>
+    <p class="muted">
+      Start a stream, connect with your audience, and build your community.
+      Creator eligibility and earning features must be enabled by TWOTERM.
+    </p>
+  </section>
+
+  <div class="layout">
+    <section>
+      <div class="card">
+        <div class="section-title">
+          <h2>LIVE studio</h2>
+          <span id="liveBadge" class="eyebrow">OFFLINE</span>
+        </div>
+
+        <div class="video-wrap">
+          <video id="localVideo" autoplay playsinline muted hidden></video>
+          <div class="video-placeholder" id="placeholder">
+            <div class="camera-icon">📹</div>
+            <strong>Your camera preview</strong>
+            <span class="note">Enable your camera to check your setup.</span>
+          </div>
+          <div class="live-badge" id="onAirBadge" hidden>● LIVE</div>
+        </div>
+
+        <label for="streamTitle">LIVE title</label>
+        <input
+          id="streamTitle"
+          maxlength="100"
+          placeholder="What are you going LIVE about?"
+        >
+
+        <div class="actions">
+          <button class="secondary" id="previewBtn">Test camera & mic</button>
+          <button class="primary" id="startBtn">Go LIVE</button>
+          <button class="danger" id="endBtn" disabled>End LIVE</button>
+        </div>
+
+        <div style="margin-top:14px" id="mainStatus" class="status">
+          Checking your login...
+        </div>
+
+        <p class="note">
+          Camera access requires HTTPS and your permission. Your stream can
+          only start if your account is eligible and the server issues a valid
+          LiveKit token.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Viewer preview</h2>
+        <div class="video-wrap">
+          <video id="remoteVideo" autoplay playsinline controls hidden></video>
+          <div id="viewerPlaceholder" class="video-placeholder">
+            <div class="camera-icon">📺</div>
+            <strong>LIVE playback</strong>
+            <span class="note">Connect to a stream room to watch.</span>
+          </div>
+        </div>
+
+        <label for="viewerRoom">Room name to watch</label>
+        <input id="viewerRoom" placeholder="Enter the exact LIVE room name">
+
+        <div class="actions">
+          <button id="watchBtn" class="secondary">Join as viewer</button>
+          <button id="leaveViewerBtn" class="secondary" disabled>Leave stream</button>
+        </div>
+
+        <div id="viewerStatus" class="status" style="margin-top:12px">
+          Not connected to a viewer room.
+        </div>
+      </div>
+    </section>
+
+    <aside>
+      <div class="card">
+        <h2>Account & stream status</h2>
+        <ul class="check-list">
+          <li><span>Signed in</span><span id="authValue" class="check-value">Checking...</span></li>
+          <li><span>Creator eligibility</span><span id="creatorValue" class="check-value">Server check required</span></li>
+          <li><span>Camera preview</span><span id="cameraValue" class="check-value">Not started</span></li>
+          <li><span>LiveKit connection</span><span id="connectionValue" class="check-value">Disconnected</span></li>
+          <li><span>Stream status</span><span id="streamValue" class="check-value">Offline</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Live statistics</h2>
+        <div class="stats">
+          <div class="stat">
+            <strong id="viewerCount">0</strong>
+            <small>Viewers</small>
+          </div>
+          <div class="stat">
+            <strong id="duration">00:00</strong>
+            <small>Duration</small>
+          </div>
+          <div class="stat">
+            <strong id="reactionCount">0</strong>
+            <small>Reactions</small>
+          </div>
+        </div>
+        <p class="note">
+          Statistics start as local display values. Accurate concurrent
+          viewer counts, reactions, analytics, and earnings need backend
+          tracking.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Live chat preview</h2>
+        <div class="chat-box" id="chatBox">
+          Live chat is not connected yet. Real-time chat requires a configured
+          chat backend and moderation rules.
+        </div>
+        <label for="chatMessage">Test message (local preview only)</label>
+        <input id="chatMessage" maxlength="300" placeholder="Write a test message">
+        <div class="actions">
+          <button id="chatTestBtn" class="secondary">Add preview message</button>
+        </div>
+        <p class="note">
+          This preview does not send a message to other viewers.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Creator safety</h2>
+        <p class="note">
+          Do not stream illegal or harmful content. Use reporting and
+          moderation controls when available. TWOTERM should verify creator
+          eligibility, enforce its 18+ rule, and support emergency termination
+          on the server before public launch.
+        </p>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>© TWOTERM — Connect. Stream. Earn.</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  // TWOTERM's existing Supabase project.
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+  // This must be the HTTPS URL of your deployed Supabase Edge Function.
+  const TOKEN_FUNCTION_URL =
+    SUPABASE_URL + "/functions/v1/livekit-token";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  const $ = id => document.getElementById(id);
+
+  let currentUser = null;
+  let cameraStream = null;
+  let publisherRoom = null;
+  let viewerRoom = null;
+  let liveStartedAt = null;
+  let durationInterval = null;
+  let reactionCount = 0;
+
+  function setStatus(id, message, type = "") {
+    const el = $(id);
+    el.textContent = message;
+    el.className = "status" + (type ? " " + type : "");
+  }
+
+  function setText(id, value) {
+    $(id).textContent = value;
+  }
+
+  async function checkSession() {
+    try {
+      const { data, error } = await db.auth.getSession();
+      if (error) throw error;
+
+      const session = data.session;
+      if (!session) {
+        currentUser = null;
+        setText("authValue", "Not signed in");
+        setStatus("mainStatus", "Please log in to TWOTERM before starting LIVE.", "error");
+        $("startBtn").disabled = true;
+        return false;
+      }
+
+      currentUser = session.user;
+      setText("authValue", "Signed in");
+      setStatus("mainStatus", "Signed in. Test your camera, then try Go LIVE.", "ok");
+      $("startBtn").disabled = false;
+      return true;
+    } catch (error) {
+      console.error("Session check failed:", error);
+      setStatus("mainStatus", "Could not verify your session: " + error.message, "error");
+      return false;
+    }
+  }
+
+  async function getFreshAccessToken() {
+    const { data, error } = await db.auth.getSession();
+    if (error) throw error;
+    if (!data.session?.access_token) {
+      throw new Error("Your session expired. Log in again.");
+    }
+    return data.session.access_token;
+  }
+
+  async function requestLiveKitToken(roomName, role) {
+    const accessToken = await getFreshAccessToken();
+
+    const response = await fetch(TOKEN_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + accessToken,
+        "apikey": SUPABASE_PUBLISHABLE_KEY
+      },
+      body: JSON.stringify({
+        roomName: roomName,
+        role: role
+      })
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ||
+        result.message ||
+        ("Token function returned HTTP " + response.status)
+      );
+    }
+
+    // Accept common response property names, but never guess the LiveKit URL.
+    const token = result.token || result.accessToken;
+    const serverUrl = result.url || result.livekitUrl || result.wsUrl;
+
+    if (!token) {
+      throw new Error(
+        "The Edge Function response has no token field. Check its response format."
+      );
+    }
+
+    if (!serverUrl) {
+      throw new Error(
+        "The Edge Function response has no LiveKit URL field. Return url with the token."
+      );
+    }
+
+    return { token, serverUrl };
+  }
+
+  async function testCamera() {
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Camera access is unavailable. Open this page over HTTPS in a supported browser.");
+      }
+
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+      }
+
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+
+      $("localVideo").srcObject = cameraStream;
+      $("localVideo").hidden = false;
+      $("placeholder").hidden = true;
+
+      setText("cameraValue", "Ready");
+      setStatus("mainStatus", "Camera and microphone are ready.", "ok");
+    } catch (error) {
+      console.error("Camera preview failed:", error);
+      setText("cameraValue", "Unavailable");
+      setStatus("mainStatus", "Camera/microphone error: " + error.message, "error");
+    }
+  }
+
+  function startDurationCounter() {
+    liveStartedAt = Date.now();
+    clearInterval(durationInterval);
+
+    durationInterval = setInterval(() => {
+      if (!liveStartedAt) return;
+      const seconds = Math.floor((Date.now() - liveStartedAt) / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const remainder = seconds % 60;
+      setText(
+        "duration",
+        String(minutes).padStart(2, "0") + ":" +
+        String(remainder).padStart(2, "0")
+      );
+    }, 1000);
+  }
+
+  function stopDurationCounter() {
+    liveStartedAt = null;
+    clearInterval(durationInterval);
+    durationInterval = null;
+    setText("duration", "00:00");
+  }
+
+  function updateLiveUI(isLive) {
+    setText("liveBadge", isLive ? "LIVE NOW" : "OFFLINE");
+    $("onAirBadge").hidden = !isLive;
+    $("startBtn").disabled = isLive;
+    $("endBtn").disabled = !isLive;
+    setText("streamValue", isLive ? "Live" : "Offline");
+  }
+
+  async function startLive() {
+    if (!currentUser) {
+      setStatus("mainStatus", "Log in before starting LIVE.", "error");
+      return;
+    }
+
+    if (!window.LivekitClient) {
+      setStatus("mainStatus", "LiveKit browser library failed to load. Refresh and try again.", "error");
+      return;
+    }
+
+    const title = $("streamTitle").value.trim();
+    if (!title) {
+      setStatus("mainStatus", "Enter a title for your LIVE stream first.", "error");
+      $("streamTitle").focus();
+      return;
+    }
+
+    $("startBtn").disabled = true;
+    setStatus("mainStatus", "Checking eligibility and requesting a secure stream token...");
+
+    try {
+      // The server must enforce creator eligibility and room permissions.
+      const roomName = "twoterm-" + currentUser.id + "-" + Date.now();
+
+      const credentials = await requestLiveKitToken(roomName, "publisher");
+
+      publisherRoom = new window.LivekitClient.Room({
+        adaptiveStream: true,
+        dynacast: true
+      });
+
+      publisherRoom.on(
+        window.LivekitClient.RoomEvent.ConnectionStateChanged,
+        state => setText("connectionValue", String(state))
+      );
+
+      publisherRoom.on(
+        window.LivekitClient.RoomEvent.Disconnected,
+        () => {
+          setText("connectionValue", "Disconnected");
+        }
+      );
+
+      await publisherRoom.connect(credentials.serverUrl, credentials.token);
+
+      setText("connectionValue", "Connected");
+
+      // Publish local camera/microphone through LiveKit.
+      await publisherRoom.localParticipant.setCameraEnabled(true);
+      await publisherRoom.localParticipant.setMicrophoneEnabled(true);
+
+      // Display the LiveKit local video track in the preview.
+      const localTrack = publisherRoom.localParticipant.videoTrackPublications
+        ? Array.from(publisherRoom.localParticipant.videoTrackPublications.values())
+            .map(publication => publication.track)
+            .find(track => track)
+        : null;
+
+      if (localTrack) {
+        $("localVideo").srcObject = null;
+        $("localVideo").hidden = false;
+        $("placeholder").hidden = true;
+        localTrack.attach($("localVideo"));
+      }
+
+      setText("creatorValue", "Token accepted");
+      setStatus(
+        "mainStatus",
+        "Connected to LiveKit. Confirm the Edge Function creates/authorizes this room and your stream is visible to viewers.",
+        "ok"
+      );
+
+      updateLiveUI(true);
+      startDurationCounter();
+
+      // Inform the user this page does not yet persist a public discovery listing.
+      $("viewerRoom").value = roomName;
+    } catch (error) {
+      console.error("Could not start LIVE:", error);
+
+      if (publisherRoom) {
+        try { await publisherRoom.disconnect(); } catch (_) {}
+        publisherRoom = null;
+      }
+
+      updateLiveUI(false);
+      setStatus("mainStatus", "Could not start LIVE: " + error.message, "error");
+    } finally {
+      if (!publisherRoom) $("startBtn").disabled = false;
+    }
+  }
+
+  async function endLive() {
+    $("endBtn").disabled = true;
+    setStatus("mainStatus", "Ending your LIVE session...");
+
+    try {
+      if (publisherRoom) {
+        await publisherRoom.localParticipant.setCameraEnabled(false).catch(() => {});
+        await publisherRoom.localParticipant.setMicrophoneEnabled(false).catch(() => {});
+        await publisherRoom.disconnect();
+        publisherRoom = null;
+      }
+
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+
+      $("localVideo").srcObject = null;
+      $("localVideo").hidden = true;
+      $("placeholder").hidden = false;
+
+      updateLiveUI(false);
+      stopDurationCounter();
+      setText("connectionValue", "Disconnected");
+      setText("cameraValue", "Not started");
+      setStatus("mainStatus", "Your local LIVE connection has ended.", "ok");
+    } catch (error) {
+      console.error("End LIVE failed:", error);
+      setStatus("mainStatus", "Could not cleanly end LIVE: " + error.message, "error");
+      $("endBtn").disabled = false;
+    }
+  }
+
+  async function joinAsViewer() {
+    const roomName = $("viewerRoom").value.trim();
+
+    if (!roomName) {
+      setStatus("viewerStatus", "Enter the exact room name first.", "error");
+      return;
+    }
+
+    if (!window.LivekitClient) {
+      setStatus("viewerStatus", "LiveKit browser library failed to load.", "error");
+      return;
+    }
+
+    $("watchBtn").disabled = true;
+    setStatus("viewerStatus", "Requesting viewer access...");
+
+    try {
+      const credentials = await requestLiveKitToken(roomName, "viewer");
+
+      viewerRoom = new window.LivekitClient.Room({
+        adaptiveStream: true,
+        dynacast: true
+      });
+
+      viewerRoom.on(
+        window.LivekitClient.RoomEvent.TrackSubscribed,
+        (track) => {
+          if (
+            track.kind === window.LivekitClient.Track.Kind.Video ||
+            track.kind === window.LivekitClient.Track.Kind.Audio
+          ) {
+            track.attach($("remoteVideo"));
+            $("remoteVideo").hidden = false;
+            $("viewerPlaceholder").hidden = true;
+          }
+        }
+      );
+
+      viewerRoom.on(
+        window.LivekitClient.RoomEvent.TrackUnsubscribed,
+        track => track.detach()
+      );
+
+      viewerRoom.on(
+        window.LivekitClient.RoomEvent.Disconnected,
+        () => setStatus("viewerStatus", "Disconnected from LIVE.")
+      );
+
+      await viewerRoom.connect(credentials.serverUrl, credentials.token);
+      setStatus("viewerStatus", "Connected to the room. Waiting for a publisher...", "ok");
+      $("leaveViewerBtn").disabled = false;
+    } catch (error) {
+      console.error("Viewer connection failed:", error);
+      if (viewerRoom) {
+        try { await viewerRoom.disconnect(); } catch (_) {}
+        viewerRoom = null;
+      }
+      setStatus("viewerStatus", "Could not join stream: " + error.message, "error");
+    } finally {
+      $("watchBtn").disabled = false;
+    }
+  }
+
+  async function leaveViewer() {
+    if (viewerRoom) {
+      try { await viewerRoom.disconnect(); } catch (_) {}
+      viewerRoom = null;
+    }
+
+    $("remoteVideo").srcObject = null;
+    $("remoteVideo").hidden = true;
+    $("viewerPlaceholder").hidden = false;
+    $("leaveViewerBtn").disabled = true;
+    setStatus("viewerStatus", "You have left the stream.");
+  }
+
+  function addPreviewMessage() {
+    const input = $("chatMessage");
+    const message = input.value.trim();
+    if (!message) return;
+
+    const line = document.createElement("div");
+    line.style.marginBottom = "8px";
+
+    const name = document.createElement("strong");
+    name.style.color = "#ff8ac5";
+    name.textContent = "You: ";
+
+    const content = document.createElement("span");
+    content.textContent = message;
+
+    line.append(name, content);
+    $("chatBox").appendChild(line);
+    $("chatBox").scrollTop = $("chatBox").scrollHeight;
+    input.value = "";
+  }
+
+  $("previewBtn").addEventListener("click", testCamera);
+  $("startBtn").addEventListener("click", startLive);
+  $("endBtn").addEventListener("click", endLive);
+  $("watchBtn").addEventListener("click", joinAsViewer);
+  $("leaveViewerBtn").addEventListener("click", leaveViewer);
+  $("chatTestBtn").addEventListener("click", addPreviewMessage);
+
+  $("homeBtn").addEventListener("click", () => {
+    window.location.href = "./index.html";
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    // End local media and LIVE connections before signing out.
+    if (publisherRoom || cameraStream) await endLive();
+    if (viewerRoom) await leaveViewer();
+
+    const { error } = await db.auth.signOut();
+    if (error) {
+      setStatus("mainStatus", "Logout failed: " + error.message, "error");
+      return;
+    }
+
+    window.location.href = "./index.html";
+  });
+
+  // Cleanup local camera tracks if the browser page is closed.
+  window.addEventListener("pagehide", () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+    }
+    if (publisherRoom) publisherRoom.disconnect();
+    if (viewerRoom) viewerRoom.disconnect();
+  });
+
+  checkSession();
+})();
+</script>
+</body>
+</html>
