@@ -1381,6 +1381,100 @@ async function loadRealVideos() {
         }
       }
     });
+    // TWOTERM video upload
+    $("toggleUploadBtn").addEventListener("click", () => {
+      if (!currentUser) {
+        openAuth("login");
+        notify("Log in before uploading a video.");
+        return;
+      }
+
+      const panel = $("uploadPanel");
+      panel.hidden = !panel.hidden;
+    });
+
+    $("videoUploadForm").addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (!supabaseClient || !currentUser) {
+        notify("Please log in before uploading.", "error");
+        openAuth("login");
+        return;
+      }
+
+      const file = $("videoFile").files[0];
+      const caption = $("videoCaption").value.trim();
+      const status = $("uploadStatus");
+      const button = $("uploadVideoBtn");
+
+      if (!file) {
+        status.textContent = "Choose a video file first.";
+        return;
+      }
+
+      if (!file.type.startsWith("video/")) {
+        status.textContent = "Please choose a valid video file.";
+        return;
+      }
+
+      // Keep uploads below 50 MB for this first version.
+      if (file.size > 50 * 1024 * 1024) {
+        status.textContent = "This version supports videos up to 50 MB.";
+        return;
+      }
+
+      button.disabled = true;
+      status.textContent = "Uploading video... Please wait.";
+
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `${currentUser.id}/${Date.now()}-${safeName}`;
+
+      try {
+        const { error: uploadError } = await supabaseClient
+          .storage
+          .from("twoterm-videos")
+          .upload(path, file, {
+            contentType: file.type,
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { error: insertError } = await supabaseClient
+          .from("videos")
+          .insert({
+            user_id: currentUser.id,
+            caption: caption,
+            video_url: path,
+            visibility: "public",
+            status: "published"
+          });
+
+        if (insertError) {
+          // Remove the uploaded file if its database record failed.
+          await supabaseClient.storage
+            .from("twoterm-videos")
+            .remove([path]);
+
+          throw insertError;
+        }
+
+        status.textContent =
+          "Upload complete. Your video record has been saved.";
+        $("videoUploadForm").reset();
+        notify("Video uploaded successfully.", "success");
+
+        await loadRealVideos();
+      } catch (error) {
+        console.error("Video upload failed:", error);
+        status.textContent = error.message ||
+          "Upload failed. Check Storage and database policies.";
+        notify("Video upload failed. See the upload message.", "error");
+      } finally {
+        button.disabled = false;
+      }
+    });
+
 
     // Authentication
     $("loginBtn").addEventListener("click", () => openAuth("login"));
