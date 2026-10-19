@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b2c">
+  <meta name="description" content="TWOTERM mobile app roadmap, PWA installation, Android, iOS, notifications, privacy and app-store compliance.">
+  <title>TWOTERM — Mobile App & Expansion</title>
+  <style>
+    :root {
+      --bg: #09071d;
+      --panel: #12102e;
+      --panel2: #18143b;
+      --border: #30265f;
+      --text: #f7f5ff;
+      --muted: #b9b3e8;
+      --pink: #f12eb5;
+      --purple: #8a35ff;
+      --cyan: #39cfff;
+      --green: #35e4b5;
+      --yellow: #ffca58;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 75% 8%, #29104e 0, transparent 35%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    a { color: #d3b7ff; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button, select { font: inherit; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(11, 8, 31, .95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav {
+      max-width: 1450px;
+      margin: auto;
+      padding: 15px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      color: white;
+      font-weight: 900;
+      font-size: 25px;
+      letter-spacing: -1px;
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--pink); }
+
+    .navlinks {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .navlinks a {
+      text-decoration: none;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .navlinks a:hover { color: white; }
+
+    .wrap {
+      max-width: 1450px;
+      margin: auto;
+      padding: 30px 24px 45px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.4fr .9fr;
+      gap: 30px;
+      align-items: center;
+      padding: 20px 4px 35px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .eyebrow {
+      color: var(--pink);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(32px, 4.5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -2px;
+      margin: 12px 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      max-width: 650px;
+      font-size: 16px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: #171237;
+      padding: 9px 15px;
+      border-radius: 30px;
+      font-size: 13px;
+    }
+
+    .phone-stage {
+      min-height: 260px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      perspective: 800px;
+    }
+
+    .phone {
+      width: 145px;
+      height: 250px;
+      border: 3px solid #8760ff;
+      border-radius: 25px;
+      padding: 12px;
+      background: linear-gradient(160deg, #1c1551, #08071a 70%);
+      box-shadow: 0 0 45px #7b2cff30;
+      transform: rotate(-5deg);
+    }
+
+    .phone.second {
+      height: 225px;
+      transform: rotate(6deg) translateY(15px);
+      border-color: #b64bff;
+    }
+
+    .notch {
+      width: 52px;
+      height: 10px;
+      margin: 0 auto 15px;
+      border-radius: 10px;
+      background: #03030a;
+    }
+
+    .appmark {
+      text-align: center;
+      font-size: 27px;
+      font-weight: 900;
+      margin: 12px 0 18px;
+    }
+
+    .appmark span { color: var(--pink); }
+
+    .mock-video {
+      height: 92px;
+      border-radius: 12px;
+      background: linear-gradient(160deg, #5e48a4, #ec5ab6 48%, #ffbd83);
+      display: flex;
+      align-items: end;
+      padding: 9px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .mock-line {
+      height: 7px;
+      border-radius: 8px;
+      background: #514581;
+      margin-top: 10px;
+    }
+
+    .store {
+      border: 1px solid #7763bb;
+      padding: 9px 5px;
+      border-radius: 9px;
+      margin: 17px 0;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .section-heading {
+      margin: 28px 0 17px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h2 { margin: 0; font-size: 23px; }
+    .muted { color: var(--muted); font-size: 13px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 22px 0;
+    }
+
+    .stat, .card, .next, .progress-panel {
+      background: linear-gradient(140deg, #151133, #0f0d28);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+
+    .stat { padding: 17px; }
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      color: #e3b9ff;
+    }
+
+    .stat span { color: var(--muted); font-size: 13px; }
+
+    .progress-panel {
+      padding: 17px;
+      margin: 18px 0 25px;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .track {
+      height: 9px;
+      border-radius: 20px;
+      background: #29224d;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      border-radius: 20px;
+      background: linear-gradient(90deg, var(--pink), var(--purple));
+      transition: width .2s;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      padding: 18px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .symbol {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #8545ff;
+      background: #5421a633;
+      color: #d5aaff;
+      border-radius: 50%;
+      font-size: 22px;
+    }
+
+    .card h3 {
+      font-size: 15px;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0;
+      min-height: 56px;
+    }
+
+    .card label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: auto;
+    }
+
+    .card select {
+      width: 100%;
+      margin-top: 6px;
+      padding: 9px;
+      color: white;
+      background: #201942;
+      border: 1px solid #45356f;
+      border-radius: 8px;
+    }
+
+    .status-note {
+      font-size: 11px;
+      color: #a9a1d5;
+    }
+
+    .next {
+      margin-top: 24px;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .next h2 { margin-bottom: 8px; }
+
+    .primary {
+      display: inline-block;
+      border: 0;
+      color: white;
+      font-weight: 800;
+      padding: 13px 19px;
+      border-radius: 12px;
+      background: linear-gradient(100deg, var(--pink), var(--purple));
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .secondary {
+      border: 1px solid var(--border);
+      color: white;
+      background: #191438;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .checkitem {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #100d29;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1050px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero { grid-template-columns: 1fr .7fr; }
+    }
+
+    @media (max-width: 700px) {
+      .nav { padding: 13px 16px; }
+      .navlinks { gap: 10px; }
+      .navlinks a { font-size: 12px; }
+      .wrap { padding: 22px 14px 32px; }
+      .hero { grid-template-columns: 1fr; }
+      .phone-stage { min-height: 225px; }
+      .grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+      .next { grid-template-columns: 1fr; }
+      .checklist { grid-template-columns: 1fr; }
+      h1 { letter-spacing: -1px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <nav class="nav" aria-label="Main navigation">
+    <a class="logo" href="index.html">TWO<span>TERM</span></a>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="video-feed.html">Video Feed</a>
+      <a href="live.html">LIVE</a>
+      <a href="safety.html">Safety</a>
+      <a href="performance.html">Performance</a>
+    </div>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Section 17 · Features 321–332</div>
+      <h1>Mobile App and Future Expansion</h1>
+      <p class="subtitle">
+        Make TWOTERM easier to install and use on mobile devices,
+        then prepare for Android, iOS, app-store releases, reliable
+        updates, privacy, and safety.
+      </p>
+      <div class="chips">
+        <span class="chip">▣ Installable web app</span>
+        <span class="chip">◈ Android</span>
+        <span class="chip">● iOS</span>
+        <span class="chip">↗ Deep links</span>
+      </div>
+    </div>
+
+    <div class="phone-stage" aria-label="Illustration of TWOTERM on mobile">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="appmark">▶ <span>TWOTERM</span></div>
+        <div class="mock-video">Discover videos</div>
+        <div class="mock-line"></div>
+        <div class="mock-line" style="width:75%"></div>
+        <div class="mock-line" style="width:50%"></div>
+      </div>
+      <div class="phone second">
+        <div class="notch"></div>
+        <div class="store">▶ Google Play<br><b>Android release</b></div>
+        <div class="store">● App Store<br><b>iOS release</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Roadmap summary">
+    <div class="stat">
+      <strong id="totalCount">12</strong>
+      <span>Roadmap requirements</span>
+    </div>
+    <div class="stat">
+      <strong id="doneCount">0</strong>
+      <span>Marked complete</span>
+    </div>
+    <div class="stat">
+      <strong id="remainingCount">12</strong>
+      <span>Still to complete</span>
+    </div>
+  </section>
+
+  <section class="progress-panel">
+    <div class="progress-top">
+      <strong>Mobile expansion progress</strong>
+      <span id="progressText">0% complete</span>
+    </div>
+    <div class="track" role="progressbar"
+      aria-label="Mobile expansion progress"
+      aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+      id="progressTrack">
+      <div class="bar" id="progressBar"></div>
+    </div>
+    <p class="muted">
+      Status changes are saved in this browser only. They do not
+      automatically build, deploy, or connect the features.
+    </p>
+  </section>
+
+  <div class="section-heading">
+    <div>
+      <h2>Mobile expansion roadmap</h2>
+      <div class="muted">321–332 · Update each status as real work is completed.</div>
+    </div>
+    <button class="secondary" id="resetBtn" type="button">Reset statuses</button>
+  </div>
+
+  <section class="grid" id="featureGrid" aria-label="Mobile feature list">
+    <article class="card" data-id="321">
+      <div class="card-top"><div class="symbol">▣</div><h3>321. Installable web app (PWA)</h3></div>
+      <p>Let supported browsers install TWOTERM with a web app manifest, suitable icons, HTTPS, and a service worker.</p>
+      <div class="status-note">Requires additional PWA files and testing.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="322">
+      <div class="card-top"><div class="symbol">♟</div><h3>322. Android application</h3></div>
+      <p>Package and test a mobile-friendly experience using a suitable Android app approach.</p>
+      <div class="status-note">Packaging and device testing required.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="323">
+      <div class="card-top"><div class="symbol">▶</div><h3>323. Google Play release</h3></div>
+      <p>Prepare store assets, testing, developer account requirements, privacy disclosures, and policy review.</p>
+      <div class="status-note">No store release is created by this page.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="324">
+      <div class="card-top"><div class="symbol">●</div><h3>324. iOS application</h3></div>
+      <p>Plan an iOS version, compatible build workflow, device testing, and Apple developer requirements.</p>
+      <div class="status-note">Requires Apple-platform preparation.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="325">
+      <div class="card-top"><div class="symbol">↗</div><h3>325. App deep links</h3></div>
+      <p>Open shared creator profiles and videos in the installed app, with web fallbacks when needed.</p>
+      <div class="status-note">Requires URL routing and app association.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="326">
+      <div class="card-top"><div class="symbol">♧</div><h3>326. Mobile push notifications</h3></div>
+      <p>Send permitted alerts for messages, LIVE activity, and creator updates after users opt in.</p>
+      <div class="status-note">Requires notification service and permission handling.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="327">
+      <div class="card-top"><div class="symbol">◎</div><h3>327. Native camera integration</h3></div>
+      <p>Allow supported devices to capture or select video with clear camera and microphone permissions.</p>
+      <div class="status-note">Requires real-device testing.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="328">
+      <div class="card-top"><div class="symbol">☁</div><h3>328. Background upload handling</h3></div>
+      <p>Make uploads resilient to interruptions and use background transfer only where the platform permits it.</p>
+      <div class="status-note">Browser background capabilities are limited.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="329">
+      <div class="card-top"><div class="symbol">⟳</div><h3>329. App updates</h3></div>
+      <p>Test releases, fix security issues, communicate changes, and maintain a rollback procedure.</p>
+      <div class="status-note">Requires a release workflow.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="330">
+      <div class="card-top"><div class="symbol">⚠</div><h3>330. Crash reporting</h3></div>
+      <p>Capture actionable crash and error reports while protecting account information and private data.</p>
+      <div class="status-note">Requires a selected reporting service.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="331">
+      <div class="card-top"><div class="symbol">◇</div><h3>331. App-store privacy disclosures</h3></div>
+      <p>Document data collection, sharing, retention, account deletion, and permissions accurately.</p>
+      <div class="status-note">Must match the actual implementation.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+
+    <article class="card" data-id="332">
+      <div class="card-top"><div class="symbol">▤</div><h3>332. Store compliance</h3></div>
+      <p>Review rules for payments, user-generated content, reporting, blocking, age restrictions, and privacy.</p>
+      <div class="status-note">Review current store policies before release.</div>
+      <label>Status<select><option>Not started</option><option>In progress</option><option>Complete</option></select></label>
+    </article>
+  </section>
+
+  <section class="next">
+    <div>
+      <h2>Recommended next steps</h2>
+      <p class="muted">
+        First make the existing website reliable on mobile. Then add the
+        PWA manifest, app icons, service worker, and install testing.
+        After that, package and test Android before planning store submission.
+        Keep privacy, account security, reporting, and moderation in scope.
+      </p>
+    </div>
+    <a class="primary" href="performance.html">Review performance →</a>
+  </section>
+
+  <section>
+    <div class="section-heading">
+      <div>
+        <h2>Before a public app release</h2>
+        <div class="muted">Use this launch checklist as work is completed.</div>
+      </div>
+    </div>
+    <div class="checklist">
+      <div class="checkitem">□ Test login, logout, account recovery, and account deletion.</div>
+      <div class="checkitem">□ Test video playback, upload failures, and slow connections.</div>
+      <div class="checkitem">□ Verify LIVE permissions and protect server secrets.</div>
+      <div class="checkitem">□ Test reporting, blocking, moderation, and age restrictions.</div>
+      <div class="checkitem">□ Publish an accurate privacy policy and data disclosures.</div>
+      <div class="checkitem">□ Test on real Android devices and supported browsers.</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  TWOTERM · Connect. Create. Stream. Earn. · Mobile expansion roadmap
+</footer>
+
+<script>
+  const cards = [...document.querySelectorAll(".card")];
+  const storageKey = "twoterm_mobile_roadmap_v1";
+
+  function updateProgress() {
+    const complete = cards.filter(card =>
+      card.querySelector("select").value === "Complete"
+    ).length;
+
+    const inProgress = cards.filter(card =>
+      card.querySelector("select").value === "In progress"
+    ).length;
+
+    const remaining = cards.length - complete;
+    const percent = Math.round((complete / cards.length) * 100);
+
+    document.getElementById("totalCount").textContent = cards.length;
+    document.getElementById("doneCount").textContent = complete;
+    document.getElementById("remainingCount").textContent = remaining;
+    document.getElementById("progressText").textContent =
+      percent + "% complete · " + inProgress + " in progress";
+    document.getElementById("progressBar").style.width = percent + "%";
+    document.getElementById("progressTrack").setAttribute(
+      "aria-valuenow", String(percent)
+    );
+  }
+
+  function saveStatuses() {
+    const statuses = {};
+    cards.forEach(card => {
+      statuses[card.dataset.id] = card.querySelector("select").value;
+    });
+
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(statuses));
+    } catch (error) {
+      // The roadmap still works for the current page session.
+    }
+    updateProgress();
+  }
+
+  function loadStatuses() {
+    let statuses = {};
+    try {
+      statuses = JSON.parse(localStorage.getItem(storageKey) || "{}") || {};
+    } catch (error) {
+      statuses = {};
+    }
+
+    cards.forEach(card => {
+      const select = card.querySelector("select");
+      const saved = statuses[card.dataset.id];
+      if (["Not started", "In progress", "Complete"].includes(saved)) {
+        select.value = saved;
+      }
+      select.addEventListener("change", saveStatuses);
+    });
+    updateProgress();
+  }
+
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (!confirm("Reset all mobile roadmap statuses?")) return;
+    cards.forEach(card => {
+      card.querySelector("select").value = "Not started";
+    });
+    saveStatuses();
+  });
+
+  loadStatuses();
+</script>
+</body>
+</html>
