@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TWOTERM | Backend Status</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #100b1d;
+      color: #fff;
+      padding: 20px;
+    }
+    .container { max-width: 850px; margin: auto; }
+    header {
+      padding: 24px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #6d28d9, #db2777);
+      margin-bottom: 20px;
+    }
+    h1 { margin: 0 0 8px; font-size: 30px; }
+    p { line-height: 1.6; color: #ded6ee; }
+    .panel {
+      background: #1e1630;
+      border: 1px solid #3c2c56;
+      padding: 18px;
+      border-radius: 14px;
+      margin: 14px 0;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid #382a4a;
+    }
+    .item:last-child { border-bottom: 0; }
+    .status {
+      color: #fbbf24;
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    .notice {
+      background: #332711;
+      border: 1px solid #856404;
+      padding: 14px;
+      border-radius: 10px;
+      color: #fde68a;
+    }
+    a {
+      display: inline-block;
+      color: white;
+      text-decoration: none;
+      background: #7c3aed;
+      padding: 12px 16px;
+      border-radius: 9px;
+      margin: 6px 6px 0 0;
+    }
+    button {
+      background: #db2777;
+      color: white;
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    footer { text-align: center; color: #a99bbd; padding: 20px; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>TWOTERM</h1>
+      <p>Section 20 — Core Database & Backend</p>
+      <p>Connect. Stream. Earn.</p>
+    </header>
+
+    <div class="notice">
+      This page tracks backend requirements. It does not verify that
+      database tables, security policies, payments, or LIVE streaming work.
+    </div>
+
+    <section class="panel">
+      <h2>Core platform systems</h2>
+      <div id="requirements"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Database setup</h2>
+      <p>
+        Inspect your existing tables before changing the database.
+        Keep your current login and working features intact.
+      </p>
+      <a href="https://supabase.com/dashboard/project/rhysucxztnjlskodkads/sql"
+         target="_blank" rel="noopener noreferrer">
+        Open Supabase SQL Editor
+      </a>
+    </section>
+
+    <section class="panel">
+      <h2>Existing TWOTERM pages</h2>
+      <a href="index.html">Home / Login</a>
+      <a href="profile.html">Profile</a>
+      <a href="video-feed.html">Video Feed</a>
+      <a href="live.html">LIVE</a>
+      <a href="inbox.html">Messages</a>
+      <a href="safety.html">Safety Centre</a>
+    </section>
+
+    <section class="panel">
+      <h2>Next step</h2>
+      <p>
+        Run the read-only database inspection SQL first. Then create a
+        migration matched to your actual tables and column names.
+      </p>
+      <button id="copyChecklist">Copy backend checklist</button>
+      <p id="message" aria-live="polite"></p>
+    </section>
+
+    <footer>TWOTERM © 2026 · Backend setup tracker</footer>
+  </main>
+
+  <script>
+    const features = [
+      ["Profiles and account settings", "Needs verification"],
+      ["Videos, likes and comments", "Needs verification"],
+      ["Follows and bookmarks", "Needs verification"],
+      ["Views and analytics", "Needs verification"],
+      ["Private messages and notifications", "Needs verification"],
+      ["LIVE sessions and LiveKit tokens", "Needs verification"],
+      ["Gifts and wallet ledger", "Needs verification"],
+      ["Withdrawals and payment verification", "Needs verification"],
+      ["Reports and moderation", "Needs verification"],
+      ["Admin permissions and audit logs", "Needs verification"]
+    ];
+
+    const list = document.getElementById("requirements");
+
+    features.forEach(([name, status]) => {
+      const row = document.createElement("div");
+      row.className = "item";
+
+      const label = document.createElement("span");
+      label.textContent = name;
+
+      const badge = document.createElement("span");
+      badge.className = "status";
+      badge.textContent = status;
+
+      row.append(label, badge);
+      list.appendChild(row);
+    });
+
+    document.getElementById("copyChecklist").addEventListener("click", async () => {
+      const text = features.map(([name]) => "- [ ] " + name).join("\n");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        document.getElementById("message").textContent =
+          "Checklist copied. You can paste it into your notes.";
+      } catch {
+        document.getElementById("message").textContent =
+          text;
+      }
+    });
+  </script>
+</body>
+</html>
