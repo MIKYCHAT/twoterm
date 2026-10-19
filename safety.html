@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b20">
+  <title>Safety & Privacy | TWOTERM</title>
+  <meta name="description" content="TWOTERM Safety Center: community guidelines, reporting, privacy controls, appeals and account protection.">
+  <style>
+    :root {
+      --bg: #100b20;
+      --panel: #1b1430;
+      --panel2: #241a3d;
+      --text: #f7f3ff;
+      --muted: #b9afcf;
+      --pink: #ff4fa3;
+      --purple: #a78bfa;
+      --green: #5ee0b5;
+      --red: #ff7d91;
+      --border: #3a2c55;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at top, #291747 0, var(--bg) 48%);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+    }
+    a { color: #e6c7ff; }
+    button, input, select, textarea { font: inherit; }
+    button, .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 15px;
+      cursor: pointer;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+    }
+    button:focus-visible, a:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible {
+      outline: 3px solid #ffd2e8;
+      outline-offset: 3px;
+    }
+    .primary { background: linear-gradient(100deg, var(--pink), #a78bfa); color: #160c25; }
+    .secondary { background: #322448; color: var(--text); border: 1px solid var(--border); }
+    .danger { background: #552338; color: #ffe5ec; border: 1px solid #87435c; }
+    .wrap { max-width: 1100px; margin: auto; padding: 18px; }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 14px; flex-wrap: wrap; border-bottom: 1px solid var(--border);
+      padding: 12px 0 20px;
+    }
+    .brand { font-size: 1.35rem; font-weight: 900; letter-spacing: .5px; }
+    .brand span { color: var(--pink); }
+    nav { display: flex; flex-wrap: wrap; gap: 14px; }
+    nav a { text-decoration: none; color: var(--muted); font-size: .94rem; }
+    nav a:hover { color: white; }
+    .hero { padding: 35px 0 22px; }
+    .eyebrow { color: #ff9bce; text-transform: uppercase; font-size: .78rem; letter-spacing: 2px; font-weight: 800; }
+    h1 { font-size: clamp(2rem, 6vw, 3.4rem); line-height: 1.1; margin: 9px 0 14px; }
+    h2 { font-size: 1.35rem; margin-top: 0; }
+    h3 { font-size: 1.05rem; }
+    p { color: var(--muted); }
+    .notice {
+      background: #30203e; border: 1px solid #66426d; padding: 14px 16px;
+      border-radius: 14px; color: #f5e7ff; margin: 16px 0;
+    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .card {
+      background: linear-gradient(145deg, rgba(36,26,61,.96), rgba(24,17,42,.96));
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 20px; margin-bottom: 16px; min-width: 0;
+    }
+    .wide { grid-column: 1 / -1; }
+    .tag {
+      display: inline-block; padding: 4px 9px; border-radius: 99px;
+      background: #352248; color: #f0d7ff; font-size: .78rem; font-weight: 700;
+    }
+    label { display: block; margin: 12px 0 6px; font-weight: 700; font-size: .92rem; }
+    input, select, textarea {
+      width: 100%; border-radius: 10px; border: 1px solid #554269;
+      background: #120d22; color: white; padding: 11px 12px;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    input[type="checkbox"] { width: auto; accent-color: var(--pink); }
+    .checkline { display: flex; align-items: flex-start; gap: 9px; font-weight: 400; }
+    .checkline input { margin-top: 6px; }
+    .actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; }
+    .small { font-size: .86rem; }
+    .muted { color: var(--muted); }
+    .good { color: var(--green); }
+    .warning { color: #ffd28b; }
+    .bad { color: var(--red); }
+    .rule { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+    .status { min-height: 24px; margin-top: 10px; font-size: .9rem; color: var(--green); }
+    .list { padding-left: 21px; color: var(--muted); }
+    .list li { margin: 8px 0; }
+    .hidden { display: none !important; }
+    footer { border-top: 1px solid var(--border); margin-top: 25px; padding: 22px 0 35px; }
+    footer a { margin-right: 14px; }
+    .pillrow { display: flex; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .wrap { padding: 14px; }
+      .card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="index.html" class="brand" style="text-decoration:none;color:white">TWO<span>TERM</span></a>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="discover.html">Discover</a>
+      <a href="live.html">LIVE</a>
+      <a href="community.html">Community</a>
+      <a href="#report">Report</a>
+      <a href="#privacy">Privacy</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Safety • Privacy • Trust</div>
+      <h1>Your safety matters.</h1>
+      <p>Find TWOTERM's community rules, learn how to report harmful behaviour, manage privacy preferences, and understand how moderation should work.</p>
+      <div class="pillrow">
+        <a class="btn primary" href="#report">Report a concern</a>
+        <a class="btn secondary" href="#guidelines">Community guidelines</a>
+        <a class="btn secondary" href="#privacy">Privacy controls</a>
+      </div>
+    </section>
+
+    <div class="notice">
+      <strong>Prototype notice:</strong> This page does not yet submit reports to a moderation team, enforce account restrictions, or delete server data. Forms below save request drafts in this browser only. Do not enter passwords, payment details, government ID numbers, or other highly sensitive information here.
+    </div>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">01 • Get help</span>
+        <h2>Safety Center</h2>
+        <p>Use the tools below to prepare a report, document a moderation appeal, and review basic account-protection advice.</p>
+        <ul class="list">
+          <li>Report harassment, scams, impersonation, or dangerous content.</li>
+          <li>Block users and limit unwanted interactions when those features are available.</li>
+          <li>Keep evidence such as public URLs, dates, and relevant screenshots.</li>
+          <li>If someone is in immediate danger, contact appropriate local emergency services.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <span class="tag">02 • Account security</span>
+        <h2>Protect your account</h2>
+        <ul class="list">
+          <li>Use a unique password and never share it with moderators.</li>
+          <li>Enable multi-factor authentication if supported by your sign-in provider.</li>
+          <li>Never share one-time login codes.</li>
+          <li>Be cautious of links, fake support accounts, and requests to pay to unlock earnings.</li>
+          <li>Sign out on shared devices and review your active sessions where available.</li>
+        </ul>
+        <p class="small">Security controls must also be enforced by the authentication provider and backend.</p>
+      </article>
+    </section>
+
+    <section class="card" id="guidelines">
+      <span class="tag">Community standards</span>
+      <h2>Community guidelines</h2>
+      <p>Everyone using TWOTERM is expected to follow these rules. Apply them consistently and consider context when reviewing reports.</p>
+      <h3>1. Respect people</h3>
+      <p>Do not threaten, stalk, bully, target, or repeatedly harass people. Do not encourage violence or share private information without permission.</p>
+      <h3>2. No scams or deceptive behaviour</h3>
+      <p>Do not impersonate others, run fraudulent offers, manipulate engagement, steal accounts, or mislead people about payments, gifts, jobs, or earnings.</p>
+      <h3>3. No harmful or unlawful content</h3>
+      <p>Do not post content that exploits people, promotes serious harm, or violates applicable law. Sexual exploitation of minors is prohibited. Never use TWOTERM to facilitate abuse.</p>
+      <h3>4. Respect intellectual property</h3>
+      <p>Only upload or reuse videos, music, images, and other material when you have the rights or permission required. Use the copyright complaint process for suspected infringement.</p>
+      <h3>5. Protect privacy</h3>
+      <p>Do not publish another person's confidential information, private messages, personal documents, or location details to target them.</p>
+      <h3>6. Use LIVE and interactive features responsibly</h3>
+      <p>Do not use LIVE sessions, comments, gifts, polls, or messages to threaten people, defraud viewers, or evade safety measures.</p>
+      <h3>7. Age and sensitive content</h3>
+      <p>TWOTERM's intended platform audience is adults aged 18 and above. Features must use reliable age and eligibility checks where required. Do not assume a simple checkbox verifies someone's age.</p>
+      <h3>8. Enforcement and fairness</h3>
+      <p>Depending on severity and applicable law, actions may include content removal, warnings, feature limits, temporary suspension, or account termination. Users should receive an explanation and an appeal route where eligible.</p>
+      <p class="small warning">These are proposed platform rules, not legal advice. Publish a reviewed, final policy before opening the platform to the public.</p>
+    </section>
+
+    <section class="card" id="report">
+      <span class="tag">Report content or behaviour</span>
+      <h2>Submit a report draft</h2>
+      <p>Choose the type of concern and describe what happened. This prototype saves the draft only in this browser; it does not alert moderators.</p>
+      <form id="reportForm">
+        <label for="reportType">What are you reporting?</label>
+        <select id="reportType" required>
+          <option value="">Choose a category</option>
+          <option>Video or post</option>
+          <option>Comment</option>
+          <option>Profile or impersonation</option>
+          <option>LIVE session</option>
+          <option>Private message</option>
+          <option>Harassment or threats</option>
+          <option>Scam or suspicious link</option>
+          <option>Copyright complaint</option>
+          <option>Privacy violation</option>
+          <option>Other safety concern</option>
+        </select>
+
+        <label for="reportUrl">Public content URL or profile link (optional)</label>
+        <input id="reportUrl" type="url" placeholder="https://...">
+
+        <label for="reportDetails">What happened?</label>
+        <textarea id="reportDetails" maxlength="3000" required placeholder="Describe the concern, relevant context, and approximate date. Avoid adding passwords or unnecessary private information."></textarea>
+
+        <label for="reportUrgency">Urgency</label>
+        <select id="reportUrgency">
+          <option>Standard review</option>
+          <option>Urgent safety concern</option>
+          <option>Immediate danger — contact emergency services directly</option>
+        </select>
+
+        <label class="checkline">
+          <input id="reportTruth" type="checkbox" required>
+          <span>I believe this report is accurate to the best of my knowledge.</span>
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit">Save report draft</button>
+          <button class="secondary" type="button" id="clearReport">Clear form</button>
+        </div>
+        <div id="reportStatus" class="status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">For affected users</span>
+        <h2>Blocking and harassment controls</h2>
+        <p>When connected to the backend, users should be able to block accounts, limit comments, mute unwanted interactions, and report abusive messages or LIVE behaviour.</p>
+        <label for="blockedAccount">Account identifier or profile URL (draft only)</label>
+        <input id="blockedAccount" placeholder="Enter a username or profile URL">
+        <div class="actions">
+          <button class="secondary" id="saveBlock" type="button">Save block-list draft</button>
+        </div>
+        <div id="blockStatus" class="status" role="status" aria-live="polite"></div>
+        <p class="small warning">Saving here does not actually block an account or prevent that person from contacting you.</p>
+      </article>
+
+      <article class="card" id="appeal">
+        <span class="tag">Fair review</span>
+        <h2>Appeal a moderation decision</h2>
+        <p>If you believe a restriction or removal was mistaken, prepare an appeal. A production system should show the decision, reason, review deadline, and appeal status.</p>
+        <form id="appealForm">
+          <label for="appealRef">Decision or case reference (if available)</label>
+          <input id="appealRef" placeholder="Case reference">
+          <label for="appealType">Decision being appealed</label>
+          <select id="appealType" required>
+            <option value="">Choose a decision</option>
+            <option>Video or comment removed</option>
+            <option>LIVE access restricted</option>
+            <option>Account temporarily suspended</option>
+            <option>Account disabled</option>
+            <option>Other feature restriction</option>
+          </select>
+          <label for="appealReason">Why should this decision be reviewed?</label>
+          <textarea id="appealReason" maxlength="3000" required></textarea>
+          <button class="primary" type="submit">Save appeal draft</button>
+          <div id="appealStatus" class="status" role="status" aria-live="polite"></div>
+        </form>
+      </article>
+    </section>
+
+    <section class="card">
+      <span class="tag">Copyright and identity</span>
+      <h2>Copyright complaints and impersonation</h2>
+      <p><strong>Copyright:</strong> A production workflow should collect the affected work, the allegedly infringing URL, the complainant's required contact information, declarations required by applicable law, and a secure way to submit supporting evidence. It should support counter-notices where required and guard against fraudulent complaints.</p>
+      <p><strong>Impersonation:</strong> Report a profile pretending to be you or another person. A real review process should verify claims proportionately, protect identity documents, and avoid publicly exposing private evidence.</p>
+      <p class="small">Use the report form above to prepare a draft. No formal copyright notice or identity report is transmitted from this page.</p>
+    </section>
+
+    <section class="card" id="privacy">
+      <span class="tag">Your choices</span>
+      <h2>Privacy settings</h2>
+      <p>These switches demonstrate the intended settings. They are saved locally and do not yet change server-side visibility or messaging permissions.</p>
+      <form id="privacyForm">
+        <label class="checkline">
+          <input type="checkbox" id="privateProfile">
+          <span><strong>Private profile preference</strong><br><span class="muted small">Preference draft: limit who can view profile content.</span></span>
+        </label>
+        <label class="checkline">
+          <input type="checkbox" id="allowMessages" checked>
+          <span><strong>Allow messages preference</strong><br><span class="muted small">Preference draft: allow messages from eligible users.</span></span>
+        </label>
+        <label class="checkline">
+          <input type="checkbox" id="allowComments" checked>
+          <span><strong>Allow comments preference</strong><br><span class="muted small">Preference draft: allow comments on your content.</span></span>
+        </label>
+        <label class="checkline">
+          <input type="checkbox" id="personalized">
+          <span><strong>Personalized recommendations preference</strong><br><span class="muted small">Preference draft: use activity to tailor recommendations.</span></span>
+        </label>
+        <label class="checkline">
+          <input type="checkbox" id="analyticsConsent">
+          <span><strong>Optional analytics preference</strong><br><span class="muted small">Preference draft only; no analytics service is configured here.</span></span>
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit">Save privacy preferences</button>
+          <button class="secondary" type="button" id="resetPrivacy">Reset preferences</button>
+        </div>
+        <div id="privacyStatus" class="status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <span class="tag">Data access</span>
+        <h2>Request a copy of your data</h2>
+        <p>A production export tool should verify the signed-in user, export only eligible personal data, protect the download, and notify the user when it is ready.</p>
+        <form id="exportForm">
+          <label for="exportScope">Requested data</label>
+          <select id="exportScope">
+            <option>All eligible personal data</option>
+            <option>Profile and account details</option>
+            <option>My videos and comments</option>
+            <option>My messages, where legally and technically available</option>
+            <option>My privacy and account settings</option>
+          </select>
+          <button class="primary" type="submit">Save export request draft</button>
+          <div id="exportStatus" class="status" role="status" aria-live="polite"></div>
+        </form>
+      </article>
+
+      <article class="card">
+        <span class="tag">Account rights</span>
+        <h2>Request account or data deletion</h2>
+        <p>Deletion must be handled securely by the backend. Some records may need to be retained where the law requires it or for legitimate security, fraud-prevention, or dispute purposes. Users should be told what will be deleted and what may be retained.</p>
+        <form id="deleteForm">
+          <label for="deleteScope">What do you want to request?</label>
+          <select id="deleteScope">
+            <option>Delete eligible personal data</option>
+            <option>Delete my account</option>
+          </select>
+          <label for="deleteReason">Optional details</label>
+          <textarea id="deleteReason" maxlength="1000" placeholder="Do not include passwords or payment card details."></textarea>
+          <label class="checkline">
+            <input type="checkbox" id="deleteConfirm" required>
+            <span>I understand this is only a request draft and has not deleted any account or data.</span>
+          </label>
+          <button class="danger" type="submit">Save deletion request draft</button>
+          <div id="deleteStatus" class="status" role="status" aria-live="polite"></div>
+        </form>
+      </article>
+    </section>
+
+    <section class="card" id="cookies">
+      <span class="tag">Consent choices</span>
+      <h2>Cookie and tracking preferences</h2>
+      <p>Essential storage may be required for core site functions. Optional analytics and advertising technologies should only run according to applicable consent requirements and your published policy.</p>
+      <p><strong>Essential storage:</strong> Required for basic page or security functions where applicable.</p>
+      <label class="checkline">
+        <input type="checkbox" id="cookieAnalytics">
+        <span>Allow optional analytics (preference only; no analytics script is loaded by this page).</span>
+      </label>
+      <label class="checkline">
+        <input type="checkbox" id="cookieAds">
+        <span>Allow personalized advertising (preference only; no advertising script is loaded by this page).</span>
+      </label>
+      <div class="actions">
+        <button class="primary" id="saveCookies" type="button">Save cookie preferences</button>
+        <button class="secondary" id="rejectOptional" type="button">Reject optional tracking</button>
+      </div>
+      <div id="cookieStatus" class="status" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="card">
+      <span class="tag">Moderator access</span>
+      <h2>Moderation dashboard preview</h2>
+      <p>This is a design preview, not a real moderation queue. It does not fetch reports, identify moderators, remove content, or apply restrictions.</p>
+      <div class="notice">
+        <strong>Access rule:</strong> In production, only authorized moderators should be able to review reports or take action. Verify moderator roles on the server and enforce access through Supabase Row Level Security (RLS) and secure backend functions.
+      </div>
+      <div class="grid">
+        <div>
+          <label for="demoCase">Demo review item</label>
+          <select id="demoCase">
+            <option>Reported video — suspected scam</option>
+            <option>Profile — suspected impersonation</option>
+            <option>Comment — reported harassment</option>
+            <option>LIVE session — safety concern</option>
+            <option>Copyright complaint — needs review</option>
+          </select>
+        </div>
+        <div>
+          <label for="demoDecision">Demo decision</label>
+          <select id="demoDecision">
+            <option>Needs review</option>
+            <option>No violation found</option>
+            <option>Request more information</option>
+            <option>Violation confirmed — action required</option>
+            <option>Escalate for specialist review</option>
+          </select>
+        </div>
+      </div>
+      <label for="demoNotes">Internal note (demo only)</label>
+      <textarea id="demoNotes" maxlength="1000" placeholder="Do not enter real user information here."></textarea>
+      <div class="actions">
+        <button class="secondary" id="saveDemoDecision" type="button">Save demo review locally</button>
+      </div>
+      <div id="moderationStatus" class="status" role="status" aria-live="polite"></div>
+      <div class="rule">
+        <h3>Production moderation requirements</h3>
+        <ul class="list">
+          <li>Authenticated moderator roles and least-privilege permissions.</li>
+          <li>Private report queue with assignment, timestamps, and review status.</li>
+          <li>Documented reasons for removals, warnings, and restrictions.</li>
+          <li>Appeal handling with independent review where practical.</li>
+          <li>Audit records for administrative actions, protected from unauthorized changes.</li>
+          <li>Rate limits, spam controls, suspicious-activity monitoring, and abuse escalation.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <span class="tag">Platform policies</span>
+      <h2>Privacy policy</h2>
+      <p><strong>Draft summary:</strong> TWOTERM should explain what account details, profile information, videos, comments, messages, device/security events, and payment-related records it collects; why each category is needed; how long it is retained; who receives it; and how users can exercise their rights.</p>
+      <p>Access should be limited to authorized systems and people. The final policy must accurately describe actual services, storage locations, vendors, international transfers, age requirements, security practices, and applicable legal rights. Do not claim that information is encrypted, anonymous, or never shared unless the implementation supports that claim.</p>
+
+      <h2>Terms of service</h2>
+      <p><strong>Draft summary:</strong> Terms should explain eligibility, account responsibilities, prohibited behaviour, content ownership and licences, moderation powers, LIVE and gift rules, creator earnings eligibility, payment conditions, suspensions, appeals, account closure, and how updates are communicated.</p>
+      <p>Creator earnings must not be described as guaranteed. Payment and withdrawal features should have clear eligibility, fees, fraud checks, dispute procedures, and applicable legal disclosures.</p>
+
+      <div class="notice">
+        These summaries are not a substitute for complete legal documents. Before public launch, publish final policy pages that reflect TWOTERM's real data practices and obtain appropriate legal review for the countries where the platform operates.
+      </div>
+      <div class="actions">
+        <a class="btn secondary" href="privacy.html">Privacy policy page</a>
+        <a class="btn secondary" href="terms.html">Terms of service page</a>
+      </div>
+      <p class="small muted">The links above work once you create the separate <code>privacy.html</code> and <code>terms.html</code> files.</p>
+    </section>
+
+    <section class="card">
+      <span class="tag">Security foundation</span>
+      <h2>Required backend protections</h2>
+      <ul class="list">
+        <li><strong>Supabase RLS:</strong> users should access only records they are permitted to access.</li>
+        <li><strong>Server authorization:</strong> check moderator permissions and ownership on every privileged action.</li>
+        <li><strong>Rate limiting:</strong> limit report spam, login attempts, messages, and sensitive API requests.</li>
+        <li><strong>Audit logging:</strong> record relevant security and moderation actions without exposing secrets.</li>
+        <li><strong>Secure secrets:</strong> never put service-role keys, LiveKit API secrets, or payment-provider secrets in browser code.</li>
+        <li><strong>Data lifecycle:</strong> implement verified export and deletion workflows with documented retention rules.</li>
+        <li><strong>Abuse detection:</strong> monitor suspicious activity and provide a human review route for consequential decisions.</li>
+      </ul>
+      <p class="small warning">A visible setting, hidden button, or browser-side check is not a security boundary. The database and server must enforce permissions.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand">TWO<span>TERM</span></div>
+    <p class="small">Connect. Create. Stream. Earn.</p>
+    <a href="index.html">Home</a>
+    <a href="community.html">Community</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <p class="small muted">Safety Center prototype. Check all policy text and backend integrations before public launch.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const DRAFTS_KEY = "twoterm_safety_drafts_v1";
+  const PREFS_KEY = "twoterm_privacy_preferences_v1";
+  const COOKIE_KEY = "twoterm_cookie_preferences_v1";
+  const BLOCK_KEY = "twoterm_block_drafts_v1";
+  const MOD_KEY = "twoterm_moderation_demo_v1";
+
+  function readStore(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (_) {
+      return fallback;
+    }
+  }
+
+  function writeStore(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function saveDraft(type, data, statusId) {
+    const drafts = readStore(DRAFTS_KEY, []);
+    drafts.push({
+      type,
+      data,
+      createdAt: new Date().toISOString(),
+      storage: "This browser only; not submitted to TWOTERM servers."
+    });
+    const ok = writeStore(DRAFTS_KEY, drafts);
+    $(statusId).textContent = ok
+      ? "Draft saved in this browser only. It has NOT been sent to TWOTERM."
+      : "Could not save this draft. Browser storage may be disabled or full.";
+  }
+
+  function safeValue(id) {
+    return $(id).value.trim();
+  }
+
+  $("reportForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveDraft("report", {
+      category: safeValue("reportType"),
+      url: safeValue("reportUrl"),
+      details: safeValue("reportDetails"),
+      urgency: safeValue("reportUrgency")
+    }, "reportStatus");
+  });
+
+  $("clearReport").addEventListener("click", () => {
+    $("reportForm").reset();
+    $("reportStatus").textContent = "Form cleared.";
+  });
+
+  $("saveBlock").addEventListener("click", () => {
+    const account = safeValue("blockedAccount");
+    if (!account) {
+      $("blockStatus").textContent = "Enter an account identifier first.";
+      return;
+    }
+    const list = readStore(BLOCK_KEY, []);
+    list.push({ account, createdAt: new Date().toISOString() });
+    const ok = writeStore(BLOCK_KEY, list);
+    $("blockStatus").textContent = ok
+      ? "Block-list draft saved locally. The account is NOT actually blocked."
+      : "Could not save the draft.";
+  });
+
+  $("appealForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveDraft("appeal", {
+      reference: safeValue("appealRef"),
+      decision: safeValue("appealType"),
+      reason: safeValue("appealReason")
+    }, "appealStatus");
+  });
+
+  const privacyFields = [
+    "privateProfile", "allowMessages", "allowComments",
+    "personalized", "analyticsConsent"
+  ];
+
+  function loadPrivacy() {
+    const saved = readStore(PREFS_KEY, null);
+    if (!saved) return;
+    privacyFields.forEach((id) => {
+      if (typeof saved[id] === "boolean") $(id).checked = saved[id];
+    });
+  }
+
+  $("privacyForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const prefs = {};
+    privacyFields.forEach((id) => prefs[id] = $(id).checked);
+    const ok = writeStore(PREFS_KEY, prefs);
+    $("privacyStatus").textContent = ok
+      ? "Preferences saved in this browser only. Server-side privacy settings are unchanged."
+      : "Could not save preferences.";
+  });
+
+  $("resetPrivacy").addEventListener("click", () => {
+    $("privacyForm").reset();
+    localStorage.removeItem(PREFS_KEY);
+    $("privacyStatus").textContent = "Local preferences reset. Server settings are unchanged.";
+  });
+
+  $("exportForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveDraft("data-export-request", {
+      scope: safeValue("exportScope")
+    }, "exportStatus");
+  });
+
+  $("deleteForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!$("deleteConfirm").checked) return;
+    saveDraft("data-deletion-request", {
+      scope: safeValue("deleteScope"),
+      details: safeValue("deleteReason"),
+      confirmedDraftOnly: true
+    }, "deleteStatus");
+  });
+
+  function loadCookies() {
+    const saved = readStore(COOKIE_KEY, null);
+    if (!saved) return;
+    $("cookieAnalytics").checked = !!saved.analytics;
+    $("cookieAds").checked = !!saved.personalizedAds;
+  }
+
+  function saveCookies(analytics, personalizedAds) {
+    const ok = writeStore(COOKIE_KEY, {
+      analytics,
+      personalizedAds,
+      updatedAt: new Date().toISOString(),
+      note: "Preference record only; this page does not load analytics or ad scripts."
+    });
+    $("cookieStatus").textContent = ok
+      ? "Cookie preferences saved locally. No tracking services are configured on this page."
+      : "Could not save preferences.";
+  }
+
+  $("saveCookies").addEventListener("click", () => {
+    saveCookies($("cookieAnalytics").checked, $("cookieAds").checked);
+  });
+
+  $("rejectOptional").addEventListener("click", () => {
+    $("cookieAnalytics").checked = false;
+    $("cookieAds").checked = false;
+    saveCookies(false, false);
+  });
+
+  $("saveDemoDecision").addEventListener("click", () => {
+    const records = readStore(MOD_KEY, []);
+    records.push({
+      item: safeValue("demoCase"),
+      decision: safeValue("demoDecision"),
+      notes: safeValue("demoNotes"),
+      createdAt: new Date().toISOString(),
+      demoOnly: true
+    });
+    const ok = writeStore(MOD_KEY, records);
+    $("moderationStatus").textContent = ok
+      ? "Demo review saved locally. No content was removed and no account was restricted."
+      : "Could not save the demo review.";
+  });
+
+  loadPrivacy();
+  loadCookies();
+})();
+</script>
+</body>
+</html>
