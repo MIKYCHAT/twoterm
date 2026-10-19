@@ -380,7 +380,7 @@ $("profileForm").addEventListener("submit", async event => {
       const path = user.id + "/avatar-" + Date.now() + "." + extension;
 
       const { error: uploadError } = await client.storage
-        .from(AVATAR_BUCKET)
+        .from(twoterm-media)
         .upload(path, selectedPhoto, {
           upsert: true,
           contentType: selectedPhoto.type
@@ -389,7 +389,7 @@ $("profileForm").addEventListener("submit", async event => {
       if (uploadError) throw uploadError;
 
       const { data: urlData } = client.storage
-        .from(AVATAR_BUCKET)
+        .from(twoterm-media)
         .getPublicUrl(path);
 
       avatarUrl = urlData.publicUrl;
