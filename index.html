@@ -926,6 +926,110 @@ async function loadRealVideos() {
       clearTimeout(notify.timer);
       notify.timer = setTimeout(() => box.classList.remove("show"), 4000);
     }
+function initSupabase() {
+  const status = document.getElementById("connectionStatus");
+
+  function setConnectionStatus(message, state) {
+    if (!status) return;
+    status.textContent = message;
+    status.dataset.state = state;
+    status.title = message;
+  }
+
+  if (
+    !window.supabase ||
+    !SUPABASE_URL ||
+    !SUPABASE_PUBLISHABLE_KEY
+  ) {
+    setConnectionStatus("Supabase configuration missing", "error");
+    console.error("TWOTERM: Supabase library, URL, or publishable key is missing.");
+    return;
+  }
+
+  try {
+    supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    setConnectionStatus("Checking connection...", "checking");
+
+    // Check the Supabase server without blocking login initialization.
+    (async () => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
+      try {
+        const response = await fetch(
+          SUPABASE_URL + "/auth/v1/health",
+          {
+            method: "GET",
+            headers: {
+              apikey: SUPABASE_PUBLISHABLE_KEY
+            },
+            signal: controller.signal
+          }
+        );
+
+        if (response.ok) {
+          setConnectionStatus("Supabase server reachable", "connected");
+        } else if (response.status === 401 || response.status === 403) {
+          setConnectionStatus("Supabase reachable — check API key", "error");
+        } else {
+          setConnectionStatus(
+            "Supabase responded: HTTP " + response.status,
+            "error"
+          );
+        }
+      } catch (error) {
+        console.error("TWOTERM connection check failed:", error);
+
+        setConnectionStatus(
+          error.name === "AbortError"
+            ? "Connection check timed out"
+            : "Cannot reach Supabase",
+          "error"
+        );
+      } finally {
+        clearTimeout(timeout);
+      }
+    })();
+
+    // Keep the existing authentication flow.
+    if (typeof loadRealVideos === "function") {
+      loadRealVideos();
+    }
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      currentUser = session?.user || null;
+      updateAuthUI();
+    });
+
+    supabaseClient.auth.getSession()
+      .then(({ data, error }) => {
+        if (error) throw error;
+
+        currentUser = data.session?.user || null;
+        updateAuthUI();
+      })
+      .catch(error => {
+        console.error("Session check failed:", error);
+        notify(
+          "Unable to check your session. Check your connection and Supabase settings.",
+          "error"
+        );
+      });
+
+  } catch (error) {
+    console.error("Supabase initialization failed:", error);
+    setConnectionStatus("Supabase initialization failed", "error");
+    notify(
+      "Supabase setup failed. Check the project configuration.",
+      "error"
+    );
+  }
+}
+
 
     function initSupabase() {
       if (!window.supabase || !SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
