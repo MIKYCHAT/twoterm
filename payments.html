@@ -1,0 +1,554 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100b20">
+  <title>TWOTERM Payments</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg:#100b20;
+      --panel:#1b1430;
+      --panel2:#251b40;
+      --pink:#ff3d9a;
+      --purple:#a855f7;
+      --text:#fff;
+      --muted:#bcb2d0;
+      --border:#392a55;
+      --green:#42e8a5;
+      --red:#ff7189;
+      --gold:#ffd166;
+    }
+
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      font-family:Arial,Helvetica,sans-serif;
+      background:radial-gradient(ellipse at top,#291342,var(--bg) 65%);
+    }
+
+    button,input,select { font:inherit; }
+
+    button {
+      padding:12px 16px;
+      border:0;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    button:disabled { opacity:.45; cursor:not-allowed; }
+
+    .primary {
+      color:white;
+      background:linear-gradient(110deg,var(--pink),var(--purple));
+    }
+
+    .secondary {
+      color:white;
+      background:var(--panel2);
+      border:1px solid var(--border);
+    }
+
+    header {
+      position:sticky;
+      top:0;
+      z-index:3;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:15px 5%;
+      background:rgba(16,11,32,.95);
+      border-bottom:1px solid var(--border);
+    }
+
+    .brand { font-size:22px; font-weight:900; }
+    .brand span { color:var(--pink); }
+
+    main { width:min(1050px,92%); margin:28px auto 60px; }
+
+    h1 { font-size:clamp(30px,5vw,44px); margin:8px 0; }
+    h2 { font-size:20px; margin:0 0 15px; }
+
+    .eyebrow {
+      color:#f4a2d0;
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:2px;
+    }
+
+    .muted { color:var(--muted); line-height:1.6; }
+
+    .card {
+      background:rgba(27,20,48,.96);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:20px;
+      margin-bottom:18px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin:22px 0;
+    }
+
+    .stat {
+      min-width:0;
+      background:#120d23;
+      border:1px solid var(--border);
+      padding:16px;
+      border-radius:14px;
+    }
+
+    .stat strong {
+      display:block;
+      font-size:clamp(18px,3vw,25px);
+      margin:8px 0;
+      overflow-wrap:anywhere;
+    }
+
+    .stat small { color:var(--muted); }
+
+    label {
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      margin:14px 0 7px;
+    }
+
+    input,select {
+      width:100%;
+      color:white;
+      background:#100b20;
+      border:1px solid var(--border);
+      border-radius:11px;
+      padding:13px;
+      outline:none;
+    }
+
+    input:focus,select:focus { border-color:var(--purple); }
+    select option { background:var(--panel); }
+
+    .row {
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .row > * { flex:1; min-width:0; }
+
+    .status {
+      background:#120d23;
+      border:1px solid var(--border);
+      color:var(--muted);
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:13px;
+      line-height:1.6;
+      overflow-wrap:anywhere;
+    }
+
+    .status.ok { color:var(--green); }
+    .status.error { color:#ff9eaf; }
+
+    .notice {
+      padding:13px 15px;
+      border-left:3px solid var(--gold);
+      border-radius:0 10px 10px 0;
+      background:#241d2d;
+      color:#eadfc8;
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:570px; }
+
+    th,td {
+      padding:12px 10px;
+      text-align:left;
+      border-bottom:1px solid var(--border);
+      font-size:13px;
+    }
+
+    th { color:var(--muted); font-weight:600; }
+
+    .pill {
+      display:inline-block;
+      background:var(--panel2);
+      border-radius:8px;
+      padding:5px 8px;
+      font-size:11px;
+    }
+
+    footer {
+      border-top:1px solid var(--border);
+      padding:24px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    @media(max-width:700px) {
+      header { padding:13px 4%; }
+      main { width:94%; }
+      .grid { grid-template-columns:1fr; }
+      .card { padding:15px; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="brand">TWO<span>TERM</span></div>
+  <div class="row" style="flex:0 0 auto">
+    <button class="secondary" id="homeBtn">Home</button>
+    <button class="secondary" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<main>
+  <div class="eyebrow">Secure checkout</div>
+  <h1>Payments & Transactions</h1>
+  <p class="muted">
+    Manage payment requests and view transaction statuses in one place.
+  </p>
+
+  <div id="authStatus" class="status">Checking your TWOTERM login...</div>
+
+  <div class="notice" style="margin-top:15px">
+    <strong>Integration status:</strong> This page is the frontend only.
+    It will not initiate a real M-Pesa payment until the secure Daraja
+    backend has been configured and deployed. Never enter an M-Pesa PIN
+    on this website.
+  </div>
+
+  <section class="grid">
+    <div class="stat">
+      <small>Completed payments</small>
+      <strong id="completedTotal">KSh 0.00</strong>
+      <small>Verified records only</small>
+    </div>
+    <div class="stat">
+      <small>Pending payments</small>
+      <strong id="pendingTotal">KSh 0.00</strong>
+      <small>Awaiting provider confirmation</small>
+    </div>
+    <div class="stat">
+      <small>Refunds</small>
+      <strong id="refundTotal">KSh 0.00</strong>
+      <small>Verified refund records only</small>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📱 M-Pesa checkout</h2>
+    <p class="muted">
+      Use this checkout for an approved TWOTERM purchase. The server must
+      validate the amount, user, order, and payment status.
+    </p>
+
+    <label for="purpose">Payment purpose</label>
+    <select id="purpose">
+      <option value="virtual_gift">Virtual gift</option>
+      <option value="creator_subscription">Creator subscription</option>
+      <option value="other">Other approved purchase</option>
+    </select>
+
+    <label for="amount">Amount (KSh)</label>
+    <input id="amount" type="number" min="1" step="1"
+      placeholder="Enter amount">
+
+    <label for="phone">M-Pesa phone number</label>
+    <input id="phone" type="tel" inputmode="tel" autocomplete="tel"
+      placeholder="e.g. 0712345678">
+
+    <div class="row" style="margin-top:16px">
+      <button class="primary" id="payBtn">Request M-Pesa payment</button>
+      <button class="secondary" id="refreshBtn">Refresh history</button>
+    </div>
+
+    <div id="paymentStatus" class="status" style="margin-top:14px">
+      No payment request started.
+    </div>
+
+    <p class="muted" style="font-size:12px">
+      A payment request is not proof of payment. Your order should only be
+      fulfilled after a valid provider callback is verified on the server.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Transaction history</h2>
+    <p class="muted">
+      Transactions will appear here once the backend endpoint is configured
+      to return records belonging to your authenticated account.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Purpose</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="transactionRows">
+          <tr><td colspan="5">No verified transaction history loaded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Refund & withdrawal tracking</h2>
+    <p class="muted">
+      Refunds and creator payouts require separate authorized server-side
+      workflows. Do not treat a browser-submitted reference as proof of a
+      completed refund or payout.
+    </p>
+    <div id="refundStatus" class="status">
+      Refund tracking backend not configured.
+    </div>
+    <div id="withdrawalStatus" class="status" style="margin-top:10px">
+      Withdrawal tracking backend not configured.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Financial security</h2>
+    <ul class="muted">
+      <li>Daraja consumer secrets and passkeys stay on the server.</li>
+      <li>Verify provider callbacks and reconcile transaction references.</li>
+      <li>Use idempotency so duplicate callbacks cannot duplicate credits.</li>
+      <li>Record refunds, reversals, and withdrawals in an auditable ledger.</li>
+      <li>Apply transaction limits, access controls, and fraud monitoring.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>© TWOTERM — Connect. Stream. Earn.</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  const $ = id => document.getElementById(id);
+
+  // Replace this with the exact URL of your deployed payment Edge Function
+  // after the Daraja backend has been created and configured.
+  const PAYMENT_FUNCTION_URL = "";
+
+  let currentUser = null;
+
+  function setStatus(id, message, kind = "") {
+    const el = $(id);
+    el.textContent = message;
+    el.className = "status" + (kind ? " " + kind : "");
+  }
+
+  async function getSession() {
+    const { data, error } = await db.auth.getSession();
+    if (error) throw error;
+    currentUser = data.session?.user || null;
+    return data.session || null;
+  }
+
+  async function checkLogin() {
+    try {
+      const session = await getSession();
+
+      if (!session) {
+        setStatus(
+          "authStatus",
+          "You are not logged in. Log in through TWOTERM first.",
+          "error"
+        );
+        return false;
+      }
+
+      setStatus(
+        "authStatus",
+        "Signed in. Financial history will appear after the secure backend is connected.",
+        "ok"
+      );
+      return true;
+    } catch (error) {
+      setStatus("authStatus", "Login check failed: " + error.message, "error");
+      return false;
+    }
+  }
+
+  function normalizePhone(value) {
+    let phone = value.replace(/[\s()+-]/g, "");
+
+    if (/^0\d{9}$/.test(phone)) {
+      phone = "254" + phone.slice(1);
+    }
+
+    if (/^7\d{8}$/.test(phone) || /^1\d{8}$/.test(phone)) {
+      phone = "254" + phone;
+    }
+
+    if (!/^254[71]\d{8}$/.test(phone)) {
+      throw new Error(
+        "Enter a valid Kenyan M-Pesa number, such as 0712345678."
+      );
+    }
+
+    return phone;
+  }
+
+  async function initiatePayment() {
+    const session = await getSession().catch(error => {
+      setStatus("paymentStatus", "Session error: " + error.message, "error");
+      return null;
+    });
+
+    if (!session) {
+      setStatus("paymentStatus", "Please log in before making a payment.", "error");
+      return;
+    }
+
+    const amount = Number($("amount").value);
+    const purpose = $("purpose").value;
+
+    if (!Number.isSafeInteger(amount) || amount < 1) {
+      setStatus("paymentStatus", "Enter a whole-number amount greater than zero.", "error");
+      return;
+    }
+
+    let phone;
+    try {
+      phone = normalizePhone($("phone").value.trim());
+    } catch (error) {
+      setStatus("paymentStatus", error.message, "error");
+      return;
+    }
+
+    if (!PAYMENT_FUNCTION_URL) {
+      setStatus(
+        "paymentStatus",
+        "Not sent: the secure Daraja payment Edge Function has not been connected yet. No payment has been initiated.",
+        "error"
+      );
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Review payment request\n\n" +
+      "Purpose: " + purpose.replaceAll("_", " ") + "\n" +
+      "Amount: KSh " + amount.toLocaleString("en-KE") + "\n" +
+      "Phone: " + phone + "\n\n" +
+      "Continue to the secure payment service?"
+    );
+
+    if (!confirmed) return;
+
+    $("payBtn").disabled = true;
+    setStatus("paymentStatus", "Sending request to the secure payment service...");
+
+    try {
+      const response = await fetch(PAYMENT_FUNCTION_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + session.access_token,
+          "apikey": SUPABASE_PUBLISHABLE_KEY
+        },
+        body: JSON.stringify({
+          amount,
+          phone,
+          purpose
+        })
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || result.message ||
+          ("Payment service returned HTTP " + response.status)
+        );
+      }
+
+      // A successful HTTP response only means a request was accepted.
+      // It does not mean the customer has paid.
+      setStatus(
+        "paymentStatus",
+        "Payment request response received. Status: " +
+        String(result.status || "pending") +
+        ". Wait for server-verified Daraja confirmation before treating it as paid.",
+        "ok"
+      );
+
+      await loadTransactions();
+    } catch (error) {
+      setStatus("paymentStatus", "Payment request failed: " + error.message, "error");
+    } finally {
+      $("payBtn").disabled = false;
+    }
+  }
+
+  async function loadTransactions() {
+    const session = await getSession().catch(() => null);
+
+    if (!session) {
+      setStatus("paymentStatus", "Log in to load your transaction history.", "error");
+      return;
+    }
+
+    // This endpoint is intentionally not guessed. It must be implemented
+    // against your actual database schema and apply user authorization.
+    setStatus(
+      "paymentStatus",
+      "Login verified. Transaction history endpoint still needs to be connected to your actual Supabase schema."
+    );
+  }
+
+  $("payBtn").addEventListener("click", initiatePayment);
+  $("refreshBtn").addEventListener("click", loadTransactions);
+
+  $("homeBtn").addEventListener("click", () => {
+    window.location.href = "./index.html";
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    const { error } = await db.auth.signOut();
+
+    if (error) {
+      setStatus("authStatus", "Logout failed: " + error.message, "error");
+      return;
+    }
+
+    window.location.href = "./index.html";
+  });
+
+  checkLogin();
+})();
+</script>
+</body>
+</html>
