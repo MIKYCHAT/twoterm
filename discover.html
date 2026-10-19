@@ -1,0 +1,753 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100b20">
+  <title>TWOTERM Discover</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg:#100b20;
+      --panel:#1b1430;
+      --panel2:#251b40;
+      --pink:#ff3d9a;
+      --purple:#a855f7;
+      --text:#fff;
+      --muted:#bcb2d0;
+      --border:#392a55;
+      --green:#42e8a5;
+    }
+
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      color:var(--text);
+      background:radial-gradient(ellipse at top,#291342,var(--bg) 65%);
+      font-family:Arial,Helvetica,sans-serif;
+      min-height:100vh;
+    }
+
+    button,input,select { font:inherit; }
+
+    button {
+      cursor:pointer;
+      border:0;
+      border-radius:11px;
+      padding:11px 14px;
+      font-weight:700;
+    }
+
+    button:disabled { opacity:.5; cursor:not-allowed; }
+
+    .primary {
+      color:white;
+      background:linear-gradient(110deg,var(--pink),var(--purple));
+    }
+
+    .secondary {
+      color:white;
+      background:var(--panel2);
+      border:1px solid var(--border);
+    }
+
+    header {
+      position:sticky;
+      top:0;
+      z-index:5;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 5%;
+      background:rgba(16,11,32,.95);
+      border-bottom:1px solid var(--border);
+      backdrop-filter:blur(12px);
+    }
+
+    .brand { font-size:22px; font-weight:900; }
+    .brand span { color:var(--pink); }
+
+    .head-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+    main { width:min(1120px,92%); margin:26px auto 60px; }
+
+    h1 { font-size:clamp(30px,5vw,44px); margin:8px 0; }
+    h2 { font-size:20px; margin:0 0 15px; }
+
+    .eyebrow {
+      color:#f4a2d0;
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:2px;
+    }
+
+    .muted { color:var(--muted); line-height:1.6; }
+
+    .card {
+      background:rgba(27,20,48,.96);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:19px;
+      margin-bottom:18px;
+    }
+
+    .search-row { display:flex; gap:10px; }
+
+    input,select {
+      width:100%;
+      min-width:0;
+      color:white;
+      background:#100b20;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:14px;
+      outline:none;
+    }
+
+    input:focus,select:focus { border-color:var(--purple); }
+
+    .search-row input { flex:1; }
+
+    .filters {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .chip {
+      color:#e7ddf7;
+      background:#241a3b;
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+    }
+
+    .chip.active {
+      background:#58214d;
+      border-color:var(--pink);
+    }
+
+    .section-head {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .section-head h2 { margin:0; }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:13px;
+    }
+
+    .tile {
+      min-width:0;
+      padding:14px;
+      border-radius:15px;
+      border:1px solid var(--border);
+      background:#120d23;
+    }
+
+    .tile h3 { margin:8px 0; font-size:15px; overflow-wrap:anywhere; }
+    .tile p { margin:5px 0; color:var(--muted); font-size:12px; line-height:1.5; }
+
+    .avatar {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:55px;
+      height:55px;
+      border-radius:50%;
+      background:linear-gradient(130deg,var(--pink),var(--purple));
+      font-size:25px;
+      font-weight:900;
+    }
+
+    .video-art {
+      aspect-ratio:3/4;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:48px;
+      border-radius:12px;
+      background:linear-gradient(155deg,#54244f,#2a2054,#120d23);
+      margin-bottom:10px;
+    }
+
+    .two-col {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .list { display:flex; flex-direction:column; gap:9px; }
+
+    .list-item {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      background:#120d23;
+      border:1px solid var(--border);
+      padding:11px 12px;
+      border-radius:12px;
+    }
+
+    .list-item strong { font-size:13px; }
+    .list-item small { display:block; color:var(--muted); margin-top:4px; }
+
+    .tag {
+      color:#f5a1d1;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .result-count { color:var(--muted); font-size:12px; }
+
+    .empty {
+      padding:25px;
+      text-align:center;
+      color:var(--muted);
+      border:1px dashed var(--border);
+      border-radius:14px;
+    }
+
+    .status {
+      color:var(--muted);
+      background:#120d23;
+      border:1px solid var(--border);
+      padding:12px;
+      border-radius:12px;
+      font-size:13px;
+      line-height:1.6;
+      overflow-wrap:anywhere;
+    }
+
+    footer {
+      text-align:center;
+      padding:25px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    @media(max-width:800px) {
+      header { padding:12px 4%; }
+      main { width:94%; }
+      .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .two-col { grid-template-columns:1fr; }
+    }
+
+    @media(max-width:460px) {
+      .brand { font-size:18px; }
+      .head-actions button { padding:9px; font-size:12px; }
+      .search-row { flex-wrap:wrap; }
+      .search-row button { width:100%; }
+      .card { padding:14px; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="brand">TWO<span>TERM</span></div>
+  <div class="head-actions">
+    <button class="secondary" id="homeBtn">Home</button>
+    <button class="secondary" id="profileBtn">My profile</button>
+  </div>
+</header>
+
+<main>
+  <div class="eyebrow">Explore the community</div>
+  <h1>Discover something new ✨</h1>
+  <p class="muted">
+    Find creators, videos, topics, hashtags, and new communities across TWOTERM.
+  </p>
+
+  <section class="card">
+    <div class="search-row">
+      <input id="searchInput" type="search"
+        placeholder="Search creators, videos, sounds or hashtags..."
+        autocomplete="off">
+      <button class="primary" id="searchBtn">Search</button>
+    </div>
+
+    <div class="filters" id="searchFilters">
+      <button class="chip active" data-type="all">All</button>
+      <button class="chip" data-type="creator">Creators</button>
+      <button class="chip" data-type="video">Videos</button>
+      <button class="chip" data-type="hashtag">Hashtags</button>
+      <button class="chip" data-type="sound">Sounds</button>
+    </div>
+
+    <div class="filters" id="suggestions"></div>
+    <div id="searchStatus" class="status" style="margin-top:12px">
+      Search the sample discovery content below.
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>🔥 Trending hashtags</h2>
+      <span class="result-count">Example topics</span>
+    </div>
+    <div class="filters" id="trendingTags"></div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>Popular creators</h2>
+      <span class="result-count">Sample profiles</span>
+    </div>
+    <div class="grid" id="creatorGrid"></div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>Discover videos</h2>
+      <select id="videoSort" style="max-width:190px">
+        <option value="recommended">Recommended demo</option>
+        <option value="recent">Recently uploaded demo</option>
+        <option value="popular">Popular demo</option>
+      </select>
+    </div>
+    <div class="filters" id="categoryFilters"></div>
+    <div class="grid" id="videoGrid"></div>
+  </section>
+
+  <section class="two-col">
+    <div class="card">
+      <div class="section-head">
+        <h2>Search history</h2>
+        <button class="secondary" id="clearHistoryBtn">Clear</button>
+      </div>
+      <div id="historyList" class="list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Recommendation feedback</h2>
+      <p class="muted">
+        Tell TWOTERM which demo topics you want to see less often.
+        Feedback is saved locally in this browser in this version.
+      </p>
+      <div class="list" id="feedbackList"></div>
+      <div id="feedbackStatus" class="status" style="margin-top:12px">
+        No feedback submitted.
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Account status</h2>
+    <div id="authStatus" class="status">Checking your login...</div>
+    <p class="muted">
+      Search history is stored locally in this browser. Actual global search,
+      public profiles, video metadata, and personalized recommendations need
+      verified database queries and appropriate access policies.
+    </p>
+  </section>
+</main>
+
+<footer>© TWOTERM — Connect. Stream. Earn.</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  const $ = id => document.getElementById(id);
+
+  const HISTORY_KEY = "twoterm_discover_history_v1";
+  const FEEDBACK_KEY = "twoterm_discover_feedback_v1";
+
+  let activeType = "all";
+  let activeCategory = "All";
+  let searchTerm = "";
+
+  // Sample content only; replace with verified public database records later.
+  const creators = [
+    { id:"creator-luna", name:"Luna Rose", username:"@lunarose", bio:"Beauty, lifestyle and daily moments", icon:"🌸", category:"Lifestyle" },
+    { id:"creator-kai", name:"Kai Rivers", username:"@kairivers", bio:"Gaming, challenges and live sessions", icon:"🎮", category:"Gaming" },
+    { id:"creator-mira", name:"Mira Jade", username:"@mirajade", bio:"Dance, music and creative videos", icon:"💃", category:"Dance" },
+    { id:"creator-alex", name:"Alex Skye", username:"@alexskye", bio:"Comedy, reactions and stories", icon:"🎭", category:"Comedy" }
+  ];
+
+  const videos = [
+    { id:"video-1", title:"A day full of good energy", creator:"Luna Rose", icon:"🌅", category:"Lifestyle", hashtags:["goodvibes","daily"], popularity:88, date:4 },
+    { id:"video-2", title:"Quick gaming challenge", creator:"Kai Rivers", icon:"🎮", category:"Gaming", hashtags:["gaming","challenge"], popularity:96, date:2 },
+    { id:"video-3", title:"Dance move of the day", creator:"Mira Jade", icon:"💃", category:"Dance", hashtags:["dance","music"], popularity:92, date:1 },
+    { id:"video-4", title:"When your friend says five minutes", creator:"Alex Skye", icon:"😂", category:"Comedy", hashtags:["comedy","relatable"], popularity:99, date:3 },
+    { id:"video-5", title:"Easy meal inspiration", creator:"Luna Rose", icon:"🍲", category:"Food", hashtags:["food","cooking"], popularity:77, date:5 },
+    { id:"video-6", title:"Creative mobile editing tips", creator:"Mira Jade", icon:"📱", category:"Education", hashtags:["creator","editing"], popularity:84, date:0 },
+    { id:"video-7", title:"Travel inspiration", creator:"Kai Rivers", icon:"🌍", category:"Travel", hashtags:["travel","explore"], popularity:81, date:6 },
+    { id:"video-8", title:"Try this fun challenge", creator:"Alex Skye", icon:"✨", category:"Challenges", hashtags:["challenge","fun"], popularity:90, date:7 }
+  ];
+
+  const categories = ["All","Comedy","Dance","Gaming","Lifestyle","Food","Education","Travel","Challenges"];
+
+  const trending = [
+    { tag:"#ForYou", count:"Popular topic" },
+    { tag:"#Comedy", count:"Comedy videos" },
+    { tag:"#Dance", count:"Dance videos" },
+    { tag:"#Gaming", count:"Gaming videos" },
+    { tag:"#CreatorTips", count:"Creator education" },
+    { tag:"#DailyLife", count:"Lifestyle videos" },
+    { tag:"#Travel", count:"Travel videos" },
+    { tag:"#Challenges", count:"Challenge videos" }
+  ];
+
+  const feedbackTopics = [
+    "Comedy",
+    "Dance",
+    "Gaming",
+    "Lifestyle",
+    "Food",
+    "Education",
+    "Travel",
+    "Challenges"
+  ];
+
+  function readArray(key) {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(value) ? value : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function saveArray(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_) {}
+  }
+
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function addButton(parent, label, className, callback) {
+    const button = element("button", className || "secondary", label);
+    button.addEventListener("click", callback);
+    parent.appendChild(button);
+    return button;
+  }
+
+  function renderTrending() {
+    const container = $("trendingTags");
+    container.replaceChildren();
+
+    trending.forEach(item => {
+      addButton(container, item.tag, "chip", () => {
+        $("searchInput").value = item.tag;
+        runSearch();
+      });
+    });
+  }
+
+  function renderCategories() {
+    const container = $("categoryFilters");
+    container.replaceChildren();
+
+    categories.forEach(category => {
+      addButton(
+        container,
+        category,
+        "chip" + (activeCategory === category ? " active" : ""),
+        () => {
+          activeCategory = category;
+          renderCategories();
+          renderVideos();
+        }
+      );
+    });
+  }
+
+  function renderCreators(list = creators) {
+    const container = $("creatorGrid");
+    container.replaceChildren();
+
+    if (!list.length) {
+      container.appendChild(element("div", "empty", "No matching sample creators found."));
+      return;
+    }
+
+    list.forEach(creator => {
+      const card = element("article", "tile");
+      card.appendChild(element("div", "avatar", creator.icon));
+      card.appendChild(element("h3", "", creator.name));
+      card.appendChild(element("p", "", creator.username));
+      card.appendChild(element("p", "", creator.bio));
+
+      addButton(card, "View sample profile", "secondary", () => {
+        statusMessage("Sample profile selected: " + creator.username +
+          ". Real profile pages need to be connected to your database.");
+      });
+
+      container.appendChild(card);
+    });
+  }
+
+  function renderVideos(list = videos) {
+    const container = $("videoGrid");
+    container.replaceChildren();
+
+    let filtered = list.filter(video =>
+      activeCategory === "All" || video.category === activeCategory
+    );
+
+    const sort = $("videoSort").value;
+    if (sort === "popular") {
+      filtered.sort((a,b) => b.popularity - a.popularity);
+    } else if (sort === "recent") {
+      filtered.sort((a,b) => a.date - b.date);
+    }
+
+    if (!filtered.length) {
+      container.appendChild(element("div", "empty", "No matching sample videos found."));
+      return;
+    }
+
+    filtered.forEach(video => {
+      const card = element("article", "tile");
+      card.appendChild(element("div", "video-art", video.icon));
+      card.appendChild(element("h3", "", video.title));
+      card.appendChild(element("p", "", "By " + video.creator));
+      card.appendChild(element("p", "", video.category));
+
+      const tagRow = element("p");
+      video.hashtags.forEach(tag => {
+        const link = element("span", "tag", "#" + tag + " ");
+        link.addEventListener("click", () => {
+          $("searchInput").value = "#" + tag;
+          runSearch();
+        });
+        tagRow.appendChild(link);
+      });
+      card.appendChild(tagRow);
+
+      addButton(card, "Not interested", "secondary", () => saveFeedback(video.category));
+
+      container.appendChild(card);
+    });
+  }
+
+  function statusMessage(message) {
+    $("searchStatus").textContent = message;
+  }
+
+  function renderHistory() {
+    const container = $("historyList");
+    container.replaceChildren();
+
+    const history = readArray(HISTORY_KEY);
+
+    if (!history.length) {
+      container.appendChild(element("div", "empty", "Your searches will appear here."));
+      return;
+    }
+
+    history.forEach(query => {
+      const item = element("div", "list-item");
+      const label = element("strong", "", query);
+      item.appendChild(label);
+
+      addButton(item, "Search", "secondary", () => {
+        $("searchInput").value = query;
+        runSearch(false);
+      });
+
+      container.appendChild(item);
+    });
+  }
+
+  function renderFeedback() {
+    const container = $("feedbackList");
+    container.replaceChildren();
+
+    const feedback = readArray(FEEDBACK_KEY);
+
+    feedbackTopics.forEach(topic => {
+      const item = element("div", "list-item");
+      const details = document.createElement("div");
+      details.appendChild(element("strong", "", topic));
+      details.appendChild(element("small", "", "Hide this topic from demo recommendations"));
+      item.appendChild(details);
+
+      const button = addButton(
+        item,
+        feedback.includes(topic) ? "Hidden" : "Not interested",
+        "secondary",
+        () => saveFeedback(topic)
+      );
+
+      button.disabled = feedback.includes(topic);
+      container.appendChild(item);
+    });
+  }
+
+  function saveFeedback(topic) {
+    const feedback = readArray(FEEDBACK_KEY);
+    if (!feedback.includes(topic)) feedback.push(topic);
+    saveArray(FEEDBACK_KEY, feedback);
+
+    setFeedbackStatus("Saved locally: less " + topic + " content in this demo.");
+    renderFeedback();
+    renderVideos(videos.filter(video => !feedback.includes(video.category)));
+  }
+
+  function setFeedbackStatus(message) {
+    $("feedbackStatus").textContent = message;
+  }
+
+  function updateSearchHistory(query) {
+    const history = readArray(HISTORY_KEY).filter(item => item !== query);
+    history.unshift(query);
+    saveArray(HISTORY_KEY, history.slice(0, 15));
+    renderHistory();
+  }
+
+  function runSearch(saveHistory = true) {
+    const query = $("searchInput").value.trim().toLowerCase();
+    searchTerm = query;
+
+    if (!query) {
+      statusMessage("Enter a creator, video, hashtag, or sound to search.");
+      renderCreators();
+      renderVideos();
+      return;
+    }
+
+    if (saveHistory) updateSearchHistory(query);
+
+    const clean = query.replace(/^#/, "");
+    let creatorMatches = creators.filter(item =>
+      (item.name + " " + item.username + " " + item.bio + " " + item.category)
+        .toLowerCase().includes(clean)
+    );
+
+    let videoMatches = videos.filter(item =>
+      (item.title + " " + item.creator + " " + item.category + " " +
+       item.hashtags.join(" "))
+        .toLowerCase().includes(clean)
+    );
+
+    const type = activeType;
+
+    if (type === "creator") {
+      renderCreators(creatorMatches);
+      renderVideos([]);
+    } else if (type === "video") {
+      renderCreators([]);
+      renderVideos(videoMatches);
+    } else if (type === "hashtag") {
+      videoMatches = videos.filter(item =>
+        item.hashtags.some(tag => tag.toLowerCase().includes(clean))
+      );
+      renderCreators([]);
+      renderVideos(videoMatches);
+    } else if (type === "sound") {
+      renderCreators([]);
+      renderVideos([]);
+      statusMessage(
+        "No sound catalog is connected yet. Only authorized audio tracks should be searchable."
+      );
+      return;
+    } else {
+      renderCreators(creatorMatches);
+      renderVideos(videoMatches);
+    }
+
+    const total = (type === "creator" ? creatorMatches.length :
+      type === "video" || type === "hashtag" ? videoMatches.length :
+      creatorMatches.length + videoMatches.length);
+
+    statusMessage(
+      total + " matching sample result(s) for “" + $("searchInput").value.trim() +
+      "”. These are demo results, not live database search."
+    );
+  }
+
+  async function checkAuth() {
+    try {
+      const { data, error } = await db.auth.getSession();
+      if (error) throw error;
+
+      if (data.session) {
+        $("authStatus").textContent = "Signed in to TWOTERM.";
+      } else {
+        $("authStatus").textContent =
+          "Not signed in. You can explore sample discovery content; sign in for account features.";
+      }
+    } catch (error) {
+      $("authStatus").textContent = "Could not check login: " + error.message;
+    }
+  }
+
+  $("searchBtn").addEventListener("click", () => runSearch());
+  $("searchInput").addEventListener("keydown", event => {
+    if (event.key === "Enter") runSearch();
+  });
+
+  $("searchFilters").addEventListener("click", event => {
+    const button = event.target.closest("button[data-type]");
+    if (!button) return;
+
+    activeType = button.dataset.type;
+
+    $("searchFilters").querySelectorAll("button").forEach(item => {
+      item.classList.toggle("active", item === button);
+    });
+
+    if (searchTerm) runSearch(false);
+  });
+
+  $("videoSort").addEventListener("change", renderVideos);
+
+  $("clearHistoryBtn").addEventListener("click", () => {
+    saveArray(HISTORY_KEY, []);
+    renderHistory();
+    setFeedbackStatus("Search history cleared from this browser.");
+  });
+
+  $("homeBtn").addEventListener("click", () => {
+    window.location.href = "./index.html";
+  });
+
+  $("profileBtn").addEventListener("click", () => {
+    window.location.href = "./profile.html";
+  });
+
+  renderTrending();
+  renderCategories();
+  renderCreators();
+  renderVideos();
+  renderHistory();
+  renderFeedback();
+  checkAuth();
+})();
+</script>
+</body>
+</html>
