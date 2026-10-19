@@ -1,0 +1,753 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100d1c">
+  <title>Notifications | TWOTERM</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #100d1c;
+      --panel: #1b172b;
+      --panel2: #242039;
+      --text: #f8f5ff;
+      --muted: #aaa3bd;
+      --pink: #ff4da6;
+      --purple: #9b6dff;
+      --border: #37304c;
+      --green: #65e6b2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      width: min(100%, 850px);
+      margin: auto;
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .brand span { color: var(--pink); }
+
+    .sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--panel2);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .btn.primary {
+      background: linear-gradient(120deg, var(--purple), var(--pink));
+      border: 0;
+      font-weight: bold;
+    }
+
+    h1 { font-size: 28px; margin: 24px 0 7px; }
+    .muted { color: var(--muted); }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 15px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .stat span { color: var(--muted); font-size: 12px; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 4px 0 14px;
+    }
+
+    .tab {
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 10px 14px;
+      background: var(--panel);
+      color: var(--muted);
+    }
+
+    .tab.active {
+      background: var(--pink);
+      color: #190b19;
+      border-color: var(--pink);
+      font-weight: bold;
+    }
+
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .tools input, .tools select {
+      flex: 1;
+      min-width: 150px;
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px;
+    }
+
+    .day-title {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin: 22px 0 10px;
+    }
+
+    .notification {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 9px;
+    }
+
+    .notification.unread {
+      border-left: 4px solid var(--pink);
+      background: #21192f;
+    }
+
+    .avatar {
+      flex: 0 0 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      font-size: 21px;
+    }
+
+    .content { flex: 1; min-width: 0; }
+
+    .content p {
+      line-height: 1.5;
+      font-size: 14px;
+      margin: 0 0 7px;
+      overflow-wrap: anywhere;
+    }
+
+    .time { color: var(--muted); font-size: 12px; }
+
+    .type-label {
+      display: inline-block;
+      color: #d5c5ff;
+      background: #332650;
+      border-radius: 5px;
+      padding: 4px 6px;
+      font-size: 10px;
+      margin-top: 8px;
+    }
+
+    .item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .small {
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--panel2);
+      color: var(--text);
+      padding: 7px 9px;
+      font-size: 12px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+    }
+
+    .settings {
+      display: none;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .settings.open { display: block; }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .setting-row:last-child { border-bottom: 0; }
+    .setting-row label { font-size: 14px; }
+
+    .setting-row input { accent-color: var(--pink); }
+
+    .notice {
+      padding: 12px;
+      background: #21192f;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: 18px 0;
+    }
+
+    .status { font-size: 12px; color: var(--green); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 30px;
+      padding: 20px 0;
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .app { padding: 13px; }
+      h1 { font-size: 24px; }
+      .summary { gap: 7px; }
+      .stat { padding: 11px; }
+      .stat strong { font-size: 20px; }
+      .stat span { font-size: 10px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <header>
+    <div>
+      <div class="brand">TWO<span>TERM</span></div>
+      <div class="sub">Connect. Watch. Create. Earn.</div>
+    </div>
+    <button class="btn" id="backBtn">← Back</button>
+  </header>
+
+  <main>
+    <h1>Notifications 🔔</h1>
+    <div class="muted">Your activity, updates and important account alerts.</div>
+    <p id="authStatus" class="status">Checking account…</p>
+
+    <section class="summary">
+      <div class="stat">
+        <strong id="totalCount">0</strong>
+        <span>Total shown</span>
+      </div>
+      <div class="stat">
+        <strong id="unreadCount">0</strong>
+        <span>Unread</span>
+      </div>
+      <div class="stat">
+        <strong id="todayCount">0</strong>
+        <span>Recent activity</span>
+      </div>
+    </section>
+
+    <div class="tools">
+      <button class="btn primary" id="readAllBtn">Mark all as read</button>
+      <button class="btn" id="settingsBtn">⚙ Preferences</button>
+      <button class="btn" id="clearReadBtn">Clear read</button>
+    </div>
+
+    <section class="settings" id="settingsPanel">
+      <h3>Notification preferences</h3>
+      <p class="muted">Choose which types of notifications to show in this browser prototype.</p>
+      <div id="preferences"></div>
+      <div style="margin-top:14px">
+        <label for="retention" class="muted">History display period</label>
+        <select id="retention" class="btn" style="width:100%;margin-top:8px">
+          <option value="all">Show all history</option>
+          <option value="30">Last 30 days</option>
+          <option value="7">Last 7 days</option>
+        </select>
+      </div>
+      <p class="muted" style="font-size:12px">
+        These preferences are saved in this browser only, not to your Supabase account.
+      </p>
+    </section>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-filter="all">All</button>
+      <button class="tab" data-filter="unread">Unread</button>
+      <button class="tab" data-filter="followers">Followers</button>
+      <button class="tab" data-filter="engagement">Likes & comments</button>
+      <button class="tab" data-filter="messages">Messages</button>
+      <button class="tab" data-filter="live">LIVE & gifts</button>
+      <button class="tab" data-filter="system">System & security</button>
+    </div>
+
+    <div class="tools">
+      <input id="searchInput" type="search" placeholder="Search activity…">
+      <select id="sortSelect" aria-label="Sort notifications">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+      </select>
+    </div>
+
+    <div class="notice">
+      <strong>Prototype mode:</strong> The example notifications below are demonstration data.
+      They are not real user activity. Actions on this page are saved locally in this browser.
+      Live notifications require a verified database and backend event triggers.
+    </div>
+
+    <section id="notificationList" aria-live="polite"></section>
+  </main>
+
+  <footer>
+    TWOTERM © 2026 · Notifications and Activity · Account safety matters.
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // Existing TWOTERM Supabase project configuration.
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+  let supabaseClient = null;
+
+  try {
+    if (window.supabase && window.supabase.createClient) {
+      supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+    }
+  } catch (error) {
+    console.warn("Supabase initialization issue:", error.message);
+  }
+
+  const STORAGE_KEY = "twoterm_notifications_demo_v1";
+  const PREF_KEY = "twoterm_notification_preferences_v1";
+
+  const categories = [
+    ["followers", "New followers"],
+    ["likes", "Likes"],
+    ["comments", "Comments and replies"],
+    ["mentions", "Mentions"],
+    ["live", "LIVE-start notifications"],
+    ["messages", "Direct messages"],
+    ["gifts", "Gifts"],
+    ["system", "System announcements"],
+    ["security", "Security notifications"]
+  ];
+
+  const demoNotifications = [
+    {
+      id: "demo-1",
+      category: "followers",
+      icon: "👤",
+      title: "New follower",
+      message: "Creator Nova followed your profile.",
+      createdAt: Date.now() - 4 * 60 * 1000,
+      read: false
+    },
+    {
+      id: "demo-2",
+      category: "likes",
+      icon: "❤️",
+      title: "Video liked",
+      message: "A viewer liked one of your videos.",
+      createdAt: Date.now() - 22 * 60 * 1000,
+      read: false
+    },
+    {
+      id: "demo-3",
+      category: "comments",
+      icon: "💬",
+      title: "New comment",
+      message: "A viewer commented on your latest video.",
+      createdAt: Date.now() - 65 * 60 * 1000,
+      read: false
+    },
+    {
+      id: "demo-4",
+      category: "mentions",
+      icon: "📣",
+      title: "You were mentioned",
+      message: "A creator mentioned you in a post.",
+      createdAt: Date.now() - 3 * 60 * 60 * 1000,
+      read: true
+    },
+    {
+      id: "demo-5",
+      category: "live",
+      icon: "🔴",
+      title: "Creator is LIVE",
+      message: "A creator you follow has started a live stream.",
+      createdAt: Date.now() - 5 * 60 * 60 * 1000,
+      read: false
+    },
+    {
+      id: "demo-6",
+      category: "messages",
+      icon: "✉️",
+      title: "New message",
+      message: "You have a new direct message waiting in your inbox.",
+      createdAt: Date.now() - 8 * 60 * 60 * 1000,
+      read: true
+    },
+    {
+      id: "demo-7",
+      category: "gifts",
+      icon: "🎁",
+      title: "Gift received",
+      message: "A viewer sent a gift during a live stream.",
+      createdAt: Date.now() - 24 * 60 * 60 * 1000,
+      read: true
+    },
+    {
+      id: "demo-8",
+      category: "system",
+      icon: "📢",
+      title: "Platform announcement",
+      message: "Check your account settings and keep your profile information up to date.",
+      createdAt: Date.now() - 2 * 24 * 60 * 60 * 1000,
+      read: true
+    },
+    {
+      id: "demo-9",
+      category: "security",
+      icon: "🔐",
+      title: "Security reminder",
+      message: "Use a strong password and never share your login credentials.",
+      createdAt: Date.now() - 4 * 24 * 60 * 60 * 1000,
+      read: true
+    }
+  ];
+
+  function loadNotifications() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved !== null) return JSON.parse(saved);
+    } catch (error) {
+      console.warn("Could not load demo notifications.");
+    }
+    return demoNotifications;
+  }
+
+  function saveNotifications() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+    } catch (error) {
+      alert("This browser could not save notification changes.");
+    }
+  }
+
+  function loadPreferences() {
+    const defaults = {};
+    categories.forEach(([key]) => defaults[key] = true);
+
+    try {
+      return {
+        ...defaults,
+        ...JSON.parse(localStorage.getItem(PREF_KEY) || "{}")
+      };
+    } catch {
+      return defaults;
+    }
+  }
+
+  let notifications = loadNotifications();
+  let preferences = loadPreferences();
+  let activeFilter = "all";
+
+  const list = document.getElementById("notificationList");
+  const searchInput = document.getElementById("searchInput");
+  const sortSelect = document.getElementById("sortSelect");
+
+  function categoryName(key) {
+    const found = categories.find(item => item[0] === key);
+    return found ? found[1] : "Activity";
+  }
+
+  function formatTime(timestamp) {
+    const difference = Date.now() - timestamp;
+    if (difference < 60 * 1000) return "Just now";
+    if (difference < 60 * 60 * 1000) {
+      return Math.floor(difference / 60000) + " min ago";
+    }
+    if (difference < 24 * 60 * 60 * 1000) {
+      return Math.floor(difference / 3600000) + " hr ago";
+    }
+    if (difference < 7 * 24 * 60 * 60 * 1000) {
+      return Math.floor(difference / 86400000) + " day(s) ago";
+    }
+    return new Date(timestamp).toLocaleDateString();
+  }
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  function retentionCutoff() {
+    const value = document.getElementById("retention").value;
+    if (value === "all") return 0;
+    return Date.now() - Number(value) * 86400000;
+  }
+
+  function matchesFilter(item) {
+    if (activeFilter === "unread") return !item.read;
+    if (activeFilter === "followers") return item.category === "followers";
+    if (activeFilter === "engagement") {
+      return ["likes", "comments", "mentions"].includes(item.category);
+    }
+    if (activeFilter === "messages") return item.category === "messages";
+    if (activeFilter === "live") {
+      return ["live", "gifts"].includes(item.category);
+    }
+    if (activeFilter === "system") {
+      return ["system", "security"].includes(item.category);
+    }
+    return true;
+  }
+
+  function renderPreferences() {
+    const target = document.getElementById("preferences");
+
+    target.innerHTML = categories.map(([key, label]) => `
+      <div class="setting-row">
+        <label for="pref-${key}">${escapeHTML(label)}</label>
+        <input type="checkbox" id="pref-${key}"
+          data-pref="${key}" ${preferences[key] ? "checked" : ""}>
+      </div>
+    `).join("");
+
+    target.querySelectorAll("[data-pref]").forEach(input => {
+      input.addEventListener("change", () => {
+        preferences[input.dataset.pref] = input.checked;
+        try {
+          localStorage.setItem(PREF_KEY, JSON.stringify(preferences));
+        } catch {}
+        render();
+      });
+    });
+  }
+
+  function render() {
+    const unread = notifications.filter(item => !item.read).length;
+    const today = notifications.filter(item =>
+      Date.now() - item.createdAt < 86400000
+    ).length;
+
+    document.getElementById("totalCount").textContent = notifications.length;
+    document.getElementById("unreadCount").textContent = unread;
+    document.getElementById("todayCount").textContent = today;
+
+    const query = searchInput.value.trim().toLowerCase();
+    const cutoff = retentionCutoff();
+
+    let visible = notifications.filter(item => {
+      const allowed = preferences[item.category] !== false;
+      const inHistory = item.createdAt >= cutoff;
+      const text = `${item.title} ${item.message} ${categoryName(item.category)}`.toLowerCase();
+
+      return allowed &&
+        inHistory &&
+        matchesFilter(item) &&
+        text.includes(query);
+    });
+
+    visible.sort((a, b) =>
+      sortSelect.value === "oldest"
+        ? a.createdAt - b.createdAt
+        : b.createdAt - a.createdAt
+    );
+
+    if (!visible.length) {
+      list.innerHTML = `
+        <div class="empty">
+          <div style="font-size:36px;margin-bottom:12px">🔔</div>
+          <strong>No notifications found</strong>
+          <p>Try another filter or search term.</p>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = visible.map(item => `
+      <article class="notification ${item.read ? "" : "unread"}">
+        <div class="avatar" aria-hidden="true">${escapeHTML(item.icon)}</div>
+        <div class="content">
+          <p><strong>${escapeHTML(item.title)}</strong></p>
+          <p>${escapeHTML(item.message)}</p>
+          <div class="time">${escapeHTML(formatTime(item.createdAt))}</div>
+          <span class="type-label">${escapeHTML(categoryName(item.category))}</span>
+          <div class="item-actions">
+            ${!item.read
+              ? `<button class="small" data-action="read" data-id="${escapeHTML(item.id)}">Mark as read</button>`
+              : `<button class="small" data-action="unread" data-id="${escapeHTML(item.id)}">Mark unread</button>`
+            }
+            <button class="small" data-action="delete" data-id="${escapeHTML(item.id)}">Remove</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  list.addEventListener("click", event => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+
+    const item = notifications.find(item => item.id === button.dataset.id);
+    if (!item) return;
+
+    switch (button.dataset.action) {
+      case "read":
+        item.read = true;
+        break;
+      case "unread":
+        item.read = false;
+        break;
+      case "delete":
+        notifications = notifications.filter(n => n.id !== item.id);
+        break;
+    }
+
+    saveNotifications();
+    render();
+  });
+
+  document.getElementById("readAllBtn").addEventListener("click", () => {
+    notifications.forEach(item => item.read = true);
+    saveNotifications();
+    render();
+  });
+
+  document.getElementById("clearReadBtn").addEventListener("click", () => {
+    if (!confirm("Remove all read notifications from this browser prototype?")) return;
+    notifications = notifications.filter(item => !item.read);
+    saveNotifications();
+    render();
+  });
+
+  document.getElementById("settingsBtn").addEventListener("click", () => {
+    document.getElementById("settingsPanel").classList.toggle("open");
+  });
+
+  document.getElementById("tabs").addEventListener("click", event => {
+    const button = event.target.closest("button[data-filter]");
+    if (!button) return;
+
+    activeFilter = button.dataset.filter;
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.classList.toggle("active", tab === button);
+    });
+    render();
+  });
+
+  searchInput.addEventListener("input", render);
+  sortSelect.addEventListener("change", render);
+  document.getElementById("retention").addEventListener("change", render);
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    if (history.length > 1) history.back();
+    else window.location.href = "index.html";
+  });
+
+  async function checkAccount() {
+    const status = document.getElementById("authStatus");
+
+    if (!supabaseClient) {
+      status.textContent = "Demo mode · Supabase did not initialize";
+      return;
+    }
+
+    try {
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error) throw error;
+
+      if (data.session) {
+        status.textContent = "Supabase connected · Signed in";
+      } else {
+        status.textContent = "Demo mode · Sign in to your TWOTERM account to continue";
+      }
+    } catch (error) {
+      status.textContent = "Demo mode · Account status could not be checked";
+      console.warn("Account check:", error.message);
+    }
+  }
+
+  renderPreferences();
+  render();
+  checkAccount();
+})();
+</script>
+</body>
+</html>
