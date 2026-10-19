@@ -124,10 +124,27 @@ footer{text-align:center;color:var(--muted);padding:25px}
 </div>
 
 <div class="field">
-<label for="videoUrl">Direct video URL</label>
-<input id="videoUrl" type="url" placeholder="https://example.com/video.mp4" required>
-<p class="muted">Use a direct video-file link, not an ordinary webpage link. This form does not upload files from your phone.</p>
 </div>
+<div class="field">
+  <label for="videoFile">Upload from gallery</label>
+  <input
+    id="videoFile"
+    type="file"
+    accept="video/*"
+  >
+</div>
+
+<div class="field">
+  <label for="cameraInput">Record with camera</label>
+  <input
+    id="cameraInput"
+    type="file"
+    accept="video/*"
+    capture="environment"
+  >
+  <p class="muted">Tap to record a new video using your phone camera.</p>
+</div>
+
 <div class="actions" style="justify-content:flex-start">
 <button class="btn primary" id="publishVideoBtn" type="submit">Publish video</button>
 <button class="btn" id="cancelVideoBtn" type="button">Cancel</button>
