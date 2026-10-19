@@ -658,7 +658,10 @@
 
 
 <div class="section-head">
-  <span class="muted" id="resultsLabel">Discover something new</span>
+  <span class="muted" id="resultsLabel">
+    Discover something new
+  </span>
+
   <select id="sortSelect" aria-label="Sort videos">
     <option value="recommended">Recommended</option>
     <option value="popular">Popular</option>
@@ -671,6 +674,27 @@
   <button class="btn primary" id="toggleUploadBtn" type="button">
     + Create
   </button>
+</div>
+
+<div id="uploadPanel" class="empty-state"
+     style="margin-bottom:20px;text-align:left" hidden>
+  <form id="videoUploadForm">
+    <label for="videoCaption">Video caption</label>
+    <input id="videoCaption" type="text" maxlength="500"
+           placeholder="Write a caption..." required>
+
+    <label for="videoFile">Choose a video</label>
+    <input id="videoFile" type="file"
+           accept="video/mp4,video/webm,video/quicktime" required>
+
+    <button class="btn primary" id="uploadVideoBtn" type="submit">
+      Upload video
+    </button>
+
+    <p class="muted" id="uploadStatus">
+      Sign in to upload. Only upload videos you have permission to share.
+    </p>
+  </form>
 </div>
 
 <div id="uploadPanel" class="empty-state"
