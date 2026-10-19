@@ -1,0 +1,570 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10091f">
+  <title>TWOTERM — Discover Videos</title>
+
+  <style>
+    :root {
+      --bg: #10091f;
+      --panel: #1b1230;
+      --pink: #ff3e9d;
+      --purple: #9b5cff;
+      --text: #ffffff;
+      --muted: #bcb2cf;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(16, 9, 31, .96);
+      border-bottom: 1px solid #35234b;
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .brand span { color: var(--pink); }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 13px;
+      color: white;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .layout {
+      max-width: 1200px;
+      margin: auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 210px minmax(0, 650px) 230px;
+      gap: 18px;
+    }
+
+    .sidebar, .right-panel {
+      background: var(--panel);
+      border: 1px solid #35234b;
+      border-radius: 16px;
+      padding: 16px;
+      height: max-content;
+      position: sticky;
+      top: 80px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 12px 10px;
+      margin: 4px 0;
+      border-radius: 10px;
+      color: var(--muted);
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: white;
+      background: #35204c;
+    }
+
+    h2 { font-size: 19px; }
+
+    .feed-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 14px;
+    }
+
+    .feed-heading p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .video-card {
+      background: var(--panel);
+      border: 1px solid #35234b;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .video-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 12;
+      max-height: 620px;
+      background: #080611;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-stage video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #080611;
+    }
+
+    .empty-video {
+      max-width: 300px;
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .empty-video .symbol {
+      font-size: 50px;
+      margin-bottom: 12px;
+    }
+
+    .video-info { padding: 15px; }
+
+    .creator-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 43px;
+      height: 43px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+    }
+
+    .creator-name { font-weight: bold; }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .follow-btn {
+      margin-left: auto;
+      background: #38214f;
+      border: 1px solid #7440a3;
+    }
+
+    .caption {
+      line-height: 1.5;
+      margin: 13px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .video-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .video-actions button {
+      background: #30203f;
+      border: 1px solid #49315c;
+    }
+
+    .video-actions button.liked {
+      background: #6b204d;
+      border-color: var(--pink);
+    }
+
+    .upload-box {
+      border: 1px dashed #7950a4;
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .upload-box input {
+      width: 100%;
+      margin: 10px 0;
+      color: var(--muted);
+    }
+
+    .upload-box small {
+      display: block;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .status {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #e7d8ff;
+      overflow-wrap: anywhere;
+    }
+
+    .mobile-nav { display: none; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 16px 90px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 680px;
+      }
+
+      .sidebar, .right-panel { display: none; }
+
+      .mobile-nav {
+        position: fixed;
+        display: flex;
+        justify-content: space-around;
+        gap: 4px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+        padding: 10px 4px calc(10px + env(safe-area-inset-bottom));
+        background: #160d26;
+        border-top: 1px solid #35234b;
+      }
+
+      .mobile-nav a {
+        text-align: center;
+        font-size: 12px;
+        padding: 6px 4px;
+        color: var(--muted);
+      }
+
+      .mobile-nav a span {
+        display: block;
+        font-size: 20px;
+        margin-bottom: 3px;
+      }
+
+      header { padding: 12px; }
+      .brand { font-size: 20px; }
+      .layout { padding: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <a class="brand" href="feed.html">TWO<span>TERM</span></a>
+
+    <div class="header-actions">
+      <a href="profile.html"><button type="button">My Profile</button></a>
+      <button id="signOutBtn" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <h2>Discover</h2>
+      <a class="nav-link active" href="feed.html">▶ Video feed</a>
+      <a class="nav-link" href="profile.html">👤 My profile</a>
+      <a class="nav-link" href="account.html">🔐 Account</a>
+      <a class="nav-link" href="index.html">🏠 Home</a>
+      <p class="muted">Connect. Create. Stream. Earn.</p>
+    </aside>
+
+    <section>
+      <div class="feed-heading">
+        <div>
+          <h2>Discover videos ✨</h2>
+          <p>Find creators and content from around the world.</p>
+        </div>
+        <button id="refreshBtn" type="button">Refresh</button>
+      </div>
+
+      <div id="feedStatus" class="status" role="status" aria-live="polite">
+        Connecting to TWOTERM…
+      </div>
+
+      <article class="video-card">
+        <div class="video-stage">
+          <div class="empty-video" id="emptyVideo">
+            <div class="symbol">🎬</div>
+            <strong>Your video feed starts here</strong>
+            <p>Once videos are uploaded and saved in your database, they can appear here.</p>
+          </div>
+          <video id="videoPlayer" controls playsinline hidden></video>
+        </div>
+
+        <div class="video-info">
+          <div class="creator-line">
+            <div class="avatar">T</div>
+            <div>
+              <div class="creator-name" id="creatorName">TWOTERM Creators</div>
+              <div class="muted" id="creatorHandle">@twoterm</div>
+            </div>
+            <button class="follow-btn" id="followBtn" type="button">Follow</button>
+          </div>
+
+          <p class="caption" id="videoCaption">
+            Welcome to TWOTERM. Discover creators, share your talent, and build your community.
+          </p>
+
+          <div class="video-actions">
+            <button id="likeBtn" type="button">♡ Like <span id="likeCount">0</span></button>
+            <button id="shareBtn" type="button">↗ Share</button>
+            <button id="copyLinkBtn" type="button">🔗 Copy link</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="video-card">
+        <div class="video-info">
+          <h2>Upload a video</h2>
+          <p class="muted">
+            Choose a video file to preview it. Uploading it publicly requires a configured
+            Supabase Storage bucket and database table.
+          </p>
+
+          <div class="upload-box">
+            <label for="videoFile">Select a video file</label>
+            <input id="videoFile" type="file" accept="video/*">
+            <button id="previewBtn" type="button">Preview selected video</button>
+            <p id="uploadStatus" class="status" role="status" aria-live="polite">
+              Preview only — this does not publish a video.
+            </p>
+            <small>
+              Never put your Supabase service-role key in this HTML file.
+              A public video upload needs Storage policies and database security rules.
+            </small>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <aside class="right-panel">
+      <h2>Creator tools</h2>
+      <p class="muted">Build your presence on TWOTERM.</p>
+      <a class="nav-link" href="profile.html">Edit your profile</a>
+      <a class="nav-link" href="account.html">Account security</a>
+      <a class="nav-link" href="index.html">Platform home</a>
+      <hr style="border-color:#35234b">
+
+      <h2>Community</h2>
+      <p class="muted">
+        Respect other users. Do not post illegal, abusive, or non-consensual content.
+        Report harmful content when reporting tools become available.
+      </p>
+    </aside>
+  </main>
+
+  <nav class="mobile-nav" aria-label="Main navigation">
+    <a href="index.html"><span>🏠</span>Home</a>
+    <a href="feed.html"><span>▶️</span>Videos</a>
+    <a href="profile.html"><span>👤</span>Profile</a>
+    <a href="account.html"><span>🔐</span>Account</a>
+  </nav>
+
+  <footer>
+    TWOTERM © 2026 · Connect. Create. Stream. Earn.
+  </footer>
+
+  <script type="module">
+    import { createClient } from
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const $ = (id) => document.getElementById(id);
+
+    const feedStatus = $("feedStatus");
+    const videoPlayer = $("videoPlayer");
+    const emptyVideo = $("emptyVideo");
+    const uploadStatus = $("uploadStatus");
+
+    let currentVideoUrl = "";
+    let selectedFileUrl = "";
+    let liked = false;
+    let following = false;
+
+    async function checkSession() {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        feedStatus.textContent =
+          "Could not check your login: " + error.message;
+        return;
+      }
+
+      if (!data.session) {
+        feedStatus.textContent =
+          "You are browsing without an active login. Sign in to use account features.";
+        $("signOutBtn").textContent = "Log in";
+        $("signOutBtn").onclick = () => {
+          window.location.href = "account.html";
+        };
+        return;
+      }
+
+      feedStatus.textContent =
+        "Signed in as " +
+        (data.session.user.email || "TWOTERM member") +
+        ". Your feed is ready for database integration.";
+    }
+
+    $("signOutBtn").addEventListener("click", async () => {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        feedStatus.textContent = "Log out failed: " + error.message;
+        return;
+      }
+
+      window.location.href = "account.html";
+    });
+
+    $("refreshBtn").addEventListener("click", async () => {
+      await checkSession();
+      feedStatus.textContent +=
+        " No published videos are connected yet.";
+    });
+
+    $("previewBtn").addEventListener("click", () => {
+      const file = $("videoFile").files[0];
+
+      if (!file) {
+        uploadStatus.textContent = "Please select a video first.";
+        return;
+      }
+
+      if (!file.type.startsWith("video/")) {
+        uploadStatus.textContent = "Please select a valid video file.";
+        return;
+      }
+
+      if (selectedFileUrl) {
+        URL.revokeObjectURL(selectedFileUrl);
+      }
+
+      selectedFileUrl = URL.createObjectURL(file);
+      videoPlayer.src = selectedFileUrl;
+      videoPlayer.hidden = false;
+      emptyVideo.hidden = true;
+      videoPlayer.load();
+
+      uploadStatus.textContent =
+        "Local preview ready: " + file.name +
+        ". This video has not been uploaded or published.";
+    });
+
+    $("likeBtn").addEventListener("click", () => {
+      liked = !liked;
+      $("likeBtn").classList.toggle("liked", liked);
+      $("likeBtn").innerHTML =
+        (liked ? "♥ Liked " : "♡ Like ") +
+        '<span id="likeCount">0</span>';
+
+      feedStatus.textContent =
+        liked
+          ? "Like preview selected. It will not be saved until likes are connected to the database."
+          : "Like preview removed. This change has not been saved.";
+    });
+
+    $("followBtn").addEventListener("click", () => {
+      following = !following;
+      $("followBtn").textContent = following ? "Following" : "Follow";
+      feedStatus.textContent =
+        "Follow preview only. A follow table and database policies are needed to save this action.";
+    });
+
+    async function sharePage() {
+      const shareData = {
+        title: "TWOTERM",
+        text: "Discover videos on TWOTERM",
+        url: window.location.href
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (error) {
+          if (error.name !== "AbortError") {
+            feedStatus.textContent = "Sharing was not completed.";
+          }
+        }
+      } else {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          feedStatus.textContent = "Page link copied.";
+        } catch {
+          feedStatus.textContent =
+            "Copy this page URL from your browser address bar.";
+        }
+      }
+    }
+
+    $("shareBtn").addEventListener("click", sharePage);
+
+    $("copyLinkBtn").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        feedStatus.textContent = "TWOTERM feed link copied.";
+      } catch {
+        feedStatus.textContent =
+          "Copy this page URL from your browser address bar.";
+      }
+    });
+
+    supabase.auth.onAuthStateChange((_event, _session) => {
+      // Keep this page in sync with Supabase authentication.
+      // Do not force a redirect here, so refreshes and email callbacks
+      // do not create unexpected navigation loops.
+    });
+
+    await checkSession();
+  </script>
+</body>
+</html>
