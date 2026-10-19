@@ -656,33 +656,33 @@
           <button class="category" data-category="Business">💼 Business</button>
         </div>
 
-        <div class="section-head">
-          <span class="muted" id="resultsLabel">Discover something new</span>
-          <select id="sortSelect" aria-label="Sort videos"><div class="section-head" style="margin-top:20px">
+
+<div class="section-head">
+  <span class="muted" id="resultsLabel">Discover something new</span>
+  <select id="sortSelect" aria-label="Sort videos">
+    <option value="recommended">Recommended</option>
+    <option value="popular">Popular</option>
+    <option value="recent">Recent</option>
+  </select>
+</div>
+
+<div class="section-head" style="margin-top:20px">
   <h2>Upload a video</h2>
   <button class="btn primary" id="toggleUploadBtn" type="button">
     + Create
   </button>
 </div>
 
-<div id="uploadPanel" class="empty-state" style="margin-bottom:20px;text-align:left">
+<div id="uploadPanel" class="empty-state"
+     style="margin-bottom:20px;text-align:left" hidden>
   <form id="videoUploadForm">
     <label for="videoCaption">Video caption</label>
-    <input
-      id="videoCaption"
-      type="text"
-      maxlength="500"
-      placeholder="Write a caption..."
-      required
-    >
+    <input id="videoCaption" type="text" maxlength="500"
+           placeholder="Write a caption..." required>
 
     <label for="videoFile">Choose a video</label>
-    <input
-      id="videoFile"
-      type="file"
-      accept="video/mp4,video/webm,video/quicktime"
-      required
-    >
+    <input id="videoFile" type="file"
+           accept="video/mp4,video/webm,video/quicktime" required>
 
     <button class="btn primary" id="uploadVideoBtn" type="submit">
       Upload video
@@ -693,11 +693,9 @@
     </p>
   </form>
 </div>
-            <option value="recommended">Recommended</option>
-            <option value="popular">Popular</option>
-            <option value="recent">Recent</option>
-          </select>
-        </div>
+
+  <form id="videoUploadForm">
+    <label for="videoCaption">Video capt
 
         <div class="video-grid" id="videoGrid" aria-live="polite"></div>
         <div id="emptyState" class="empty-state" hidden>
