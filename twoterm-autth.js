@@ -13,7 +13,7 @@
   // Use the existing PUBLIC publishable key.
   // Never place a service-role key or secret key here.
   const SUPABASE_PUBLISHABLE_KEY =
-    "PASTE_YOUR_EXISTING_SUPABASE_PUBLISHABLE_KEY_HERE";
+    "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
 
   if (!window.supabase) {
     console.error(
