@@ -326,7 +326,7 @@ $("profileForm").addEventListener("submit",async event=>{
   $("saveBtn").textContent="Saving...";
 
   try{
-    let avatarUrl=profile.avatar_url||"";
+    let avatarUrl=profile.twoterm-media_url||"";
 
     // Upload requires a configured Storage bucket named "avatars".
     if(selectedPhoto){
@@ -334,12 +334,12 @@ $("profileForm").addEventListener("submit",async event=>{
       const path=user.id+"/avatar-"+Date.now()+"."+extension;
 
       const {error:uploadError}=await client.storage
-        .from("avatars")
+        .from("twoterm-media")
         .upload(path,selectedPhoto,{upsert:true,contentType:selectedPhoto.type});
 
       if(uploadError)throw uploadError;
 
-      const {data:urlData}=client.storage.from("avatars").getPublicUrl(path);
+      const {data:urlData}=client.storage.from("twoterm-media").getPublicUrl(path);
       avatarUrl=urlData.publicUrl;
     }
 
