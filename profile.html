@@ -110,17 +110,6 @@ footer{text-align:center;color:var(--muted);padding:25px}
 <div class="field"><label for="videoTitle">Video title</label><input id="videoTitle" maxlength="100" required></div>
 <div class="field"><label for="videoDescription">Caption / description</label><textarea id="videoDescription" maxlength="1000"></textarea></div>
 <div class="field"><div class="field">
-  <label for="videoFile">Option 1 — Upload from gallery</label>
-  <input id="videoFile" type="file" accept="video/*">
-</div><div class="field">
-  <label for="videoFile">Option 1 — Upload from gallery</label>
-  <input id="videoFile" type="file" accept="video/*">
-</div>
-
-<div class="field">
-  <label for="cameraInput">Option 2 — Record a video</label>
-  <input id="cameraInput" type="file" accept="video/*" capture="environment">
-  <p class="muted">Your phone may open its camera to record a video.</p>
 </div>
 
 <div class="field">
@@ -135,10 +124,10 @@ footer{text-align:center;color:var(--muted);padding:25px}
 </div>
 
 <div class="field">
-  <label for="cameraInput">Record with camera</label>
+  <label for="cameraInput">upload with camera</label>
   <input
     id="cameraInput"
-    type="file"
+    type="upload"
     accept="video/*"
     capture="environment"
   >
