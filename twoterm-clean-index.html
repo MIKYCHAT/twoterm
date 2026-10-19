@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100d20">
+<meta name="description" content="TWOTERM — Connect. Create. Stream. Earn.">
+<title>TWOTERM — Connect. Create. Stream. Earn.</title>
+<style>
+:root{--bg:#100d20;--panel:#1b1730;--panel2:#25203c;--text:#f8f7ff;--muted:#aaa5c0;--border:#35304c;--purple:#a855f7;--pink:#ec4899;--danger:#ff646e;--success:#40d6a0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}body.light{--bg:#f6f5fb;--panel:#fff;--panel2:#efedf7;--text:#201b32;--muted:#69647b;--border:#e1ddec}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.6;cursor:wait}a{color:inherit;text-decoration:none}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:12px 18px;background:var(--bg);border-bottom:1px solid var(--border)}
+.logo{font-size:24px;font-weight:900;white-space:nowrap}.mark{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:12px;margin-right:6px;background:linear-gradient(135deg,var(--purple),var(--pink));color:white}
+.search{flex:1;max-width:560px}.search input{width:100%;padding:11px 15px;border:1px solid var(--border);border-radius:25px;background:var(--panel);color:var(--text)}
+.actions{margin-left:auto;display:flex;gap:7px;align-items:center}.btn{padding:10px 13px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:var(--text);font-weight:700}.primary{border:0;color:white;background:linear-gradient(110deg,var(--purple),var(--pink))}
+.status-pill{font-size:11px;color:var(--muted);padding:7px 9px;background:var(--panel2);border-radius:8px}
+.layout{max-width:1450px;margin:auto;display:grid;grid-template-columns:215px minmax(0,1fr)}aside{height:calc(100vh - 61px);position:sticky;top:61px;overflow:auto;padding:18px 12px;border-right:1px solid var(--border)}.nav-label{font-size:11px;letter-spacing:1px;color:var(--muted);margin:18px 10px 8px}.nav-item{width:100%;padding:11px;text-align:left;border:0;border-radius:10px;background:transparent;color:var(--text);font-weight:650;margin:2px 0}.nav-item.active,.nav-item:hover{background:var(--panel2)}
+main{padding:22px;min-width:0}.welcome{padding:24px;border:1px solid var(--border);border-radius:20px;background:radial-gradient(ellipse at 90% 0%,#ec489930,transparent 48%),var(--panel);margin-bottom:24px}.welcome h1{font-size:clamp(27px,4vw,40px);margin:8px 0}.welcome p{color:var(--muted);line-height:1.6}.gradient{background:linear-gradient(90deg,#c084fc,#f472b6);color:transparent;background-clip:text}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 12px}.section-head h2{font-size:20px;margin:0}.muted{color:var(--muted)}.categories,.tabs{display:flex;gap:8px;overflow:auto;padding-bottom:7px}.category,.tab{white-space:nowrap;border:1px solid var(--border);border-radius:22px;padding:8px 12px;background:var(--panel);color:var(--text)}.category.active,.tab.active{background:var(--purple);color:white;border-color:var(--purple)}
+.live-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.live-card,.video-card,.panel{background:var(--panel);border:1px solid var(--border);border-radius:15px;overflow:hidden}.live-card{text-align:center;padding:15px 7px}.live-avatar{width:52px;height:52px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--purple),var(--pink));font-weight:900}.live-tag{font-size:10px;background:#e83e61;color:white;border-radius:5px;padding:4px 7px}
+.video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.video-card{min-width:0}.video-frame{aspect-ratio:9/12;background:#211834;position:relative}.video-frame video{width:100%;height:100%;object-fit:cover;display:block}.video-placeholder{height:100%;display:grid;place-items:center;text-align:center;background:linear-gradient(145deg,#713b9e,#151225);font-size:22px;font-weight:800}.video-overlay{position:absolute;inset:auto 0 0;padding:35px 10px 10px;color:white;background:linear-gradient(transparent,#000d);pointer-events:none}.video-overlay h3{font-size:14px;margin:0 0 5px}.video-overlay p{font-size:11px;margin:0}.video-info{padding:11px}.creator-line{display:flex;gap:8px;align-items:center}.avatar{width:33px;height:33px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:linear-gradient(135deg,var(--purple),var(--pink));font-size:11px;font-weight:900}.creator-name{font-size:12px;font-weight:800}.creator-handle{font-size:11px;color:var(--muted);margin-top:3px}.follow-btn{margin-left:auto;padding:6px 8px;font-size:11px}.video-actions{display:flex;justify-content:space-between;margin-top:12px}.action-btn{border:0;background:transparent;color:var(--muted);font-size:12px;padding:3px}
+.panel{padding:16px;margin:16px 0}.panel label,.modal label{display:block;margin:12px 0 6px;font-size:13px}.panel input,.modal input{width:100%;padding:11px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text)}.empty-state{padding:35px 15px;text-align:center;border:1px dashed var(--border);border-radius:15px;color:var(--muted)}footer{border-top:1px solid var(--border);padding:20px 0;color:var(--muted);font-size:12px;margin-top:28px}
+.toast{position:fixed;z-index:60;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 16px;border:1px solid var(--border);border-radius:12px;background:var(--panel);display:none;max-width:90vw}.toast.show{display:block}.toast.error{border-color:var(--danger)}.toast.success{border-color:var(--success)}
+.modal{display:none;position:fixed;inset:0;z-index:50;background:#000b;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}.modal-box{width:100%;max-width:430px;max-height:90vh;overflow:auto;padding:22px;border:1px solid var(--border);border-radius:18px;background:var(--panel)}.modal-top{display:flex;justify-content:space-between;align-items:center}.modal h2{margin:0}.modal-note{font-size:12px;color:var(--muted);line-height:1.6}.mobile-nav{display:none}
+@media(max-width:1000px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:180px minmax(0,1fr)}.live-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.topbar{padding:10px;flex-wrap:wrap;gap:9px}.logo{font-size:20px}.search{order:3;flex-basis:100%;max-width:none}.actions{gap:5px}.status-pill,.desktop-only{display:none}.layout{display:block}aside{display:none}main{padding:13px 11px 85px}.welcome{padding:18px}.video-grid{gap:9px}.video-info{padding:8px}.creator-name{font-size:11px}.creator-handle{font-size:10px}.follow-btn{font-size:10px;padding:5px}.video-actions{font-size:10px}.mobile-nav{display:flex;position:fixed;z-index:30;bottom:0;left:0;right:0;justify-content:space-around;padding:8px 4px;background:var(--bg);border-top:1px solid var(--border)}.mobile-nav button{border:0;background:transparent;color:var(--muted);font-size:11px;padding:4px}.mobile-nav button.active{color:#d8a9ff}}
+@media(max-width:360px){.video-grid{grid-template-columns:1fr}.actions .btn{padding:8px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="logo" href="#" data-home><span class="mark">T</span>TWOTERM<span class="gradient">.</span></a>
+  <div class="search"><input id="searchInput" type="search" placeholder="Search videos and creators..." aria-label="Search videos"></div>
+  <div class="actions">
+    <span class="status-pill" id="connectionStatus">Connecting...</span>
+    <button class="btn desktop-only" id="themeBtn" type="button">☀️ Theme</button>
+    <button class="btn" id="loginBtn" type="button">Log in</button>
+    <button class="btn primary" id="joinBtn" type="button">Join</button>
+    <button class="btn" id="logoutBtn" type="button" hidden>Log out</button>
+  </div>
+</header>
+<div class="layout">
+<aside>
+  <div class="nav-label">DISCOVER</div>
+  <button class="nav-item active" data-page="Home">⌂ Home</button>
+  <button class="nav-item" data-page="For You">✦ For You</button>
+  <button class="nav-item" data-page="Following">♡ Following</button>
+  <button class="nav-item" data-page="Explore">⌕ Explore</button>
+  <button class="nav-item" data-page="Trending">↗ Trending</button>
+  <button class="nav-item" data-page="LIVE">◉ LIVE</button>
+  <div class="nav-label">YOUR ACCOUNT</div>
+  <button class="nav-item" data-page="Profile">☺ My profile</button>
+  <button class="nav-item" data-page="Saved">▣ Saved videos</button>
+  <div class="nav-label">PREFERENCES</div>
+  <label for="languageSelect" class="muted">Language</label>
+  <select id="languageSelect"><option value="en">English</option><option value="fr">Français</option><option value="sw">Kiswahili</option></select>
+  <label for="regionSelect" class="muted">Region</label>
+  <select id="regionSelect"><option value="KE">Kenya</option><option value="TZ">Tanzania</option><option value="NG">Nigeria</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="FR">France</option><option value="global">Global</option></select>
+  <footer>TWOTERM<br>Connect. Create. Stream. Earn.<br>Adults 18+ · <a href="#safety">Safety</a><br>© <span id="year"></span></footer>
+</aside>
+<main>
+  <section class="welcome" id="homeWelcome">
+    <p class="gradient"><strong>YOUR WORLD. YOUR CREATIVITY.</strong></p>
+    <h1>Welcome to <span class="gradient">TWOTERM</span></h1>
+    <p>Discover videos, find your community, connect with creators and explore new ideas from around the world.</p>
+    <div class="section-head"><button class="btn primary" id="welcomeJoin" type="button">Get started free →</button><button class="btn" id="exploreBtn" type="button">Explore videos</button></div>
+  </section>
+  <section id="liveSection">
+    <div class="section-head"><h2>🔴 LIVE creators</h2><button class="btn" data-page="LIVE" type="button">See all →</button></div>
+    <div class="live-strip" id="liveStrip"></div>
+  </section>
+  <section>
+    <div class="section-head"><h2 id="feedTitle">Recommended for you</h2><div class="tabs" id="feedTabs"><button class="tab active" data-feed="For You">For You</button><button class="tab" data-feed="Following">Following</button></div></div>
+    <div class="categories" id="categories">
+      <button class="category active" data-category="All">✨ All</button><button class="category" data-category="Comedy">😂 Comedy</button><button class="category" data-category="Education">📚 Education</button><button class="category" data-category="Music">🎵 Music</button><button class="category" data-category="Sports">⚽ Sports</button><button class="category" data-category="Gaming">🎮 Gaming</button><button class="category" data-category="Lifestyle">🌿 Lifestyle</button><button class="category" data-category="Business">💼 Business</button>
+    </div>
+    <div class="section-head"><span class="muted" id="resultsLabel">Discover videos</span><select id="sortSelect" aria-label="Sort videos"><option value="recommended">Recommended</option><option value="popular">Popular</option><option value="recent">Recent</option></select></div>
+    <div class="section-head"><h2>Upload a video</h2><button class="btn primary" id="toggleUploadBtn" type="button">+ Create</button></div>
+    <div id="uploadPanel" class="panel" hidden>
+      <form id="videoUploadForm">
+        <label for="videoCaption">Video caption</label><input id="videoCaption" maxlength="500" placeholder="Write a caption..." required>
+        <label for="videoFile">Choose a video (max 50 MB)</label><input id="videoFile" type="file" accept="video/mp4,video/webm,video/quicktime" required>
+        <button class="btn primary" id="uploadVideoBtn" type="submit">Upload video</button>
+        <p class="muted" id="uploadStatus">Sign in to upload. Only upload videos you have permission to share.</p>
+      </form>
+    </div>
+    <div class="video-grid" id="videoGrid" aria-live="polite"></div>
+    <div class="empty-state" id="emptyState" hidden><h3 id="emptyTitle">No videos found</h3><p id="emptyText">Try another search or category.</p><button class="btn" id="resetFilters" type="button">Clear filters</button></div>
+  </section>
+  <section id="safety" class="panel"><h2>🛡️ Safety & Trust</h2><p class="muted">TWOTERM is intended for adults aged 18 and over. Respect other users, protect your account and report harmful content. Never share passwords or verification codes.</p></section>
+  <footer><button class="btn" id="themeBtnBottom" type="button">Switch dark/light theme</button><p>TWOTERM · Connect. Create. Stream. Earn.</p><p class="muted">Demo creator cards are shown until real video records are available.</p></footer>
+</main>
+</div>
+<nav class="mobile-nav" aria-label="Mobile navigation"><button class="active" data-page="Home">⌂<br>Home</button><button data-page="Explore">⌕<br>Explore</button><button data-page="Following">♡<br>Following</button><button data-page="LIVE">◉<br>LIVE</button><button data-page="Profile">☺<br>Profile</button></nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal-box">
+    <div class="modal-top"><h2 id="authTitle">Welcome to TWOTERM</h2><button class="btn" id="closeModal" type="button" aria-label="Close">✕</button></div>
+    <p class="muted">Sign in or create your account.</p>
+    <form id="authForm"><label for="authEmail">Email address</label><input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com"><label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters"><button class="btn primary" id="authSubmit" type="submit" style="width:100%;margin-top:15px">Log in</button></form>
+    <button class="btn" id="switchAuth" type="button" style="width:100%;margin-top:10px">Create a new account instead</button>
+    <p class="modal-note" id="authNotice">For adults aged 18 and over. Use TWOTERM responsibly.</p>
+  </div>
+</div>
+<script>
+(() => {
+"use strict";
+const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+const $ = id => document.getElementById(id);
+let supabaseClient = null, currentUser = null, authMode = "login";
+let activePage = "Home", activeFeed = "For You", activeCategory = "All", searchQuery = "";
+const savedVideos = new Set(), followedCreators = new Set();
+let realVideos = [];
+const demoVideos = [
+{id:"demo1",title:"A little creativity goes a long way ✨",creator:"Luna Rose",handle:"@lunarose",category:"Lifestyle",likes:12400,views:86000,badge:"FEATURED",initials:"LR",color:"#713b9e"},
+{id:"demo2",title:"Learn something new every day 📚",creator:"Kai Rivers",handle:"@kairivers",category:"Education",likes:8200,views:42000,badge:"LEARN",initials:"KR",color:"#235d83"},
+{id:"demo3",title:"When your friends say one more game 😂",creator:"Mira Jade",handle:"@mirajade",category:"Comedy",likes:28700,views:193000,badge:"POPULAR",initials:"MJ",color:"#a63c76"},
+{id:"demo4",title:"Make your next idea happen 💼",creator:"Alex Skye",handle:"@alexskye",category:"Business",likes:6100,views:31000,badge:"CREATOR TIPS",initials:"AS",color:"#246c5b"},
+{id:"demo5",title:"Your daily music discovery 🎵",creator:"Nova Beats",handle:"@novabeats",category:"Music",likes:17900,views:99000,badge:"MUSIC",initials:"NB",color:"#a45b28"},
+{id:"demo6",title:"Never stop moving forward ⚽",creator:"Jay Motion",handle:"@jaymotion",category:"Sports",likes:9500,views:53000,badge:"SPORTS",initials:"JM",color:"#315d9c"},
+{id:"demo7",title:"A new world to explore 🎮",creator:"Pixel World",handle:"@pixelworld",category:"Gaming",likes:14300,views:78000,badge:"GAMING",initials:"PW",color:"#5d3d9a"},
+{id:"demo8",title:"Small steps, big dreams 🌍",creator:"City Creator",handle:"@citycreator",category:"Lifestyle",likes:7300,views:38000,badge:"DISCOVER",initials:"CC",color:"#a34d52"}
+];
+const demoLives=[["LR","Luna Rose","Chat & chill"],["KR","Kai Rivers","Learning together"],["MJ","Mira Jade","Entertainment"],["AS","Alex Skye","Creator talk"]];
+function notify(message,type=""){const t=$("toast");t.textContent=message;t.className="toast show "+type;clearTimeout(notify.timer);notify.timer=setTimeout(()=>t.classList.remove("show"),4000);}
+function setConnection(message,error=false){$("connectionStatus").textContent=message;$("connectionStatus").style.color=error?"var(--danger)":"var(--muted)";}
+function updateAuthUI(){ $("loginBtn").hidden=!!currentUser;$("joinBtn").hidden=!!currentUser;$("logoutBtn").hidden=!currentUser;$("welcomeJoin").textContent=currentUser?"Explore videos →":"Get started free →";if(currentUser)$("authNotice").textContent="Signed in as "+(currentUser.email||"your account");}
+function openAuth(mode){authMode=mode;$("authTitle").textContent=mode==="login"?"Welcome back":"Join TWOTERM";$("authSubmit").textContent=mode==="login"?"Log in":"Create account";$("switchAuth").textContent=mode==="login"?"Create a new account instead":"I already have an account";$("authPassword").autocomplete=mode==="login"?"current-password":"new-password";$("authModal").classList.add("open");}
+function closeAuth(){$("authModal").classList.remove("open");}
+async function handleAuth(event){event.preventDefault();if(!supabaseClient){notify("Supabase is not ready. Check connection status.","error");return;}const email=$("authEmail").value.trim(),password=$("authPassword").value,button=$("authSubmit");button.disabled=true;button.textContent="Please wait...";
+try{const result=authMode==="login"?await supabaseClient.auth.signInWithPassword({email,password}):await supabaseClient.auth.signUp({email,password});if(result.error)throw result.error;if(authMode==="signup"&&!result.data.session){notify("Account created. Check your email to confirm your account.","success");return;}currentUser=result.data.user||result.data.session?.user||null;closeAuth();updateAuthUI();notify(authMode==="login"?"You are signed in.":"Your account has been created.","success");showPage("For You");}
+catch(e){console.error("TWOTERM authentication:",e);notify(e.message||"Authentication failed.","error");}
+finally{button.disabled=false;button.textContent=authMode==="login"?"Log in":"Create account";}}
+async function logout(){if(!supabaseClient)return notify("Supabase is not ready.","error");const {error}=await supabaseClient.auth.signOut();if(error){notify(error.message,"error");return;}currentUser=null;updateAuthUI();notify("You have logged out.","success");showPage("Home");}
+function formatNumber(n){return n>=1e6?(n/1e6).toFixed(1).replace(/\.0$/,"")+"M":n>=1000?(n/1000).toFixed(1).replace(/\.0$/,"")+"K":String(n);}
+async function loadRealVideos(){if(!supabaseClient)return;try{const {data,error}=await supabaseClient.from("videos").select("id,user_id,caption,video_url,visibility,status,views_count,created_at").eq("visibility","public").eq("status","published").order("created_at",{ascending:false});if(error)throw error;const ids=[...new Set((data||[]).map(v=>v.user_id).filter(Boolean))];let profiles={};if(ids.length){const result=await supabaseClient.from("profiles").select("id,username,display_name,avatar_url").in("id",ids);if(result.error)throw result.error;(result.data||[]).forEach(p=>profiles[p.id]=p);}
+realVideos=(data||[]).map(v=>{const p=profiles[v.user_id]||{},name=p.display_name||p.username||"TWOTERM Creator";let url=v.video_url||"";if(url&&!/^https?:\/\//i.test(url)){const publicUrl=supabaseClient.storage.from("twoterm-videos").getPublicUrl(url);url=publicUrl.data?.publicUrl||url;}return{id:v.id,title:v.caption||"Untitled video",creator:name,handle:p.username?"@"+p.username:"@creator",category:"All",likes:0,views:Number(v.views_count||0),badge:"VIDEO",initials:name.slice(0,2).toUpperCase(),color:"#713b9e",videoUrl:url,createdAt:v.created_at};});renderVideos();}
+catch(e){console.error("TWOTERM feed loading failed:",e);notify("Could not load database videos. Demo videos remain available.","error");}}
+function renderLives(){$("liveStrip").innerHTML=demoLives.map(([initials,name,topic])=>`<article class="live-card"><div class="live-avatar">${initials}</div><strong>${name}</strong><p class="muted">${topic}</p><span class="live-tag">LIVE DEMO</span></article>`).join("");}
+function getVideos(){let videos=realVideos.length?[...realVideos]:[...demoVideos];if(activeFeed==="Following"||activePage==="Following")videos=videos.filter(v=>followedCreators.has(v.handle));if(activePage==="Saved")videos=videos.filter(v=>savedVideos.has(v.id));if(activeCategory!=="All")videos=videos.filter(v=>v.category===activeCategory);if(searchQuery){const q=searchQuery.toLowerCase().replace(/^#/,"");videos=videos.filter(v=>`${v.title} ${v.creator} ${v.handle} ${v.category}`.toLowerCase().includes(q));}if(activePage==="Trending"||$("sortSelect").value==="popular")videos.sort((a,b)=>b.likes-a.likes);if($("sortSelect").value==="recent")videos.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));return videos;}
+function renderVideos(){const videos=getVideos(),grid=$("videoGrid"),empty=$("emptyState");$("feedTitle").textContent=activePage==="Trending"?"Trending videos":activePage==="Explore"?"Explore videos":activePage==="Following"?"Videos from creators you follow":activePage==="Saved"?"Your saved videos":activePage==="Profile"?"My profile":activePage==="LIVE"?"LIVE creators":activeFeed==="Following"?"Your Following feed":"Recommended for you";$("resultsLabel").textContent=`${videos.length} video${videos.length===1?"":"s"}${realVideos.length?"":" · demo content"}`;grid.innerHTML="";empty.hidden=videos.length>0;grid.hidden=videos.length===0;if(!videos.length){$("emptyTitle").textContent=activePage==="Saved"?"No saved videos yet":activePage==="Following"?"Your Following feed is empty":"No videos found";$("emptyText").textContent=activePage==="Saved"?"Save videos using the bookmark button.":"Try another search, category or follow creators.";return;}
+videos.forEach(v=>{const card=document.createElement("article");card.className="video-card";const media=v.videoUrl?`<video src="${escapeAttr(v.videoUrl)}" controls playsinline preload="metadata"></video>`:`<div class="video-placeholder" style="background:linear-gradient(145deg,${escapeAttr(v.color||"#713b9e")},#151225)"><div>${escapeHtml(v.initials||"TW")}<br><small>${escapeHtml(v.category||"VIDEO")}</small></div></div>`;card.innerHTML=`<div class="video-frame">${media}<div class="video-overlay"><h3>${escapeHtml(v.title)}</h3><p>${formatNumber(v.views||0)} views</p></div></div><div class="video-info"><div class="creator-line"><div class="avatar">${escapeHtml(v.initials||"TW")}</div><div><div class="creator-name">${escapeHtml(v.creator)}</div><div class="creator-handle">${escapeHtml(v.handle)}</div></div><button class="btn follow-btn" data-follow="${escapeAttr(v.handle)}">${followedCreators.has(v.handle)?"Following":"Follow"}</button></div><div class="video-actions"><button class="action-btn" data-like="${escapeAttr(v.id)}">♡ ${formatNumber(v.likes||0)}</button><button class="action-btn" data-save="${escapeAttr(v.id)}">${savedVideos.has(v.id)?"▣ Saved":"▢ Save"}</button><button class="action-btn" data-share="${escapeAttr(v.id)}">↗ Share</button></div></div>`;grid.appendChild(card);});}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function escapeAttr(v){return escapeHtml(v);}
+function showPage(page){activePage=page;if(page==="For You")activeFeed="For You";if(page==="Following")activeFeed="Following";if(page==="Explore"||page==="Trending")activeCategory="All";document.querySelectorAll("[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));document.querySelectorAll("[data-feed]").forEach(b=>b.classList.toggle("active",b.dataset.feed===activeFeed));$("homeWelcome").hidden=page!=="Home";$("liveSection").hidden=["Saved","Profile"].includes(page);$("feedTabs").hidden=!["Home","For You","Following"].includes(page);$("categories").hidden=["Profile","LIVE"].includes(page);$("sortSelect").hidden=page==="Profile";if(page==="Profile"&&!currentUser){openAuth("login");return;}if(page==="LIVE")notify("LIVE cards are demonstrations. Real broadcasting needs LiveKit integration.");if(page==="Profile"){const grid=$("videoGrid");grid.hidden=false;$("emptyState").hidden=true;grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1"><h3>Your TWOTERM account</h3><p>${escapeHtml(currentUser.email||"Signed in")}</p><p>Profile details can be connected to your profiles table.</p></div>`;return;}renderVideos();window.scrollTo({top:0,behavior:"smooth"});}
+function toggleTheme(){document.body.classList.toggle("light");const label=document.body.classList.contains("light")?"🌙 Theme":"☀️ Theme";$("themeBtn").textContent=label;try{localStorage.setItem("twoterm-theme",document.body.classList.contains("light")?"light":"dark");}catch(e){}}
+async function uploadVideo(event){event.preventDefault();if(!currentUser){openAuth("login");notify("Log in before uploading.");return;}if(!supabaseClient){notify("Supabase is not ready.","error");return;}const file=$("videoFile").files[0],caption=$("videoCaption").value.trim(),status=$("uploadStatus"),button=$("uploadVideoBtn");if(!file||!file.type.startsWith("video/")){status.textContent="Choose a valid video file.";return;}if(file.size>50*1024*1024){status.textContent="Videos must be 50 MB or smaller.";return;}button.disabled=true;status.textContent="Uploading...";const path=`${currentUser.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;try{const {error:upErr}=await supabaseClient.storage.from("twoterm-videos").upload(path,file,{contentType:file.type,upsert:false});if(upErr)throw upErr;const {error:dbErr}=await supabaseClient.from("videos").insert({user_id:currentUser.id,caption,video_url:path,visibility:"public",status:"published"});if(dbErr){await supabaseClient.storage.from("twoterm-videos").remove([path]);throw dbErr;}status.textContent="Upload complete."; $("videoUploadForm").reset();notify("Video uploaded successfully.","success");await loadRealVideos();}catch(e){console.error("Upload failed:",e);status.textContent=e.message||"Upload failed. Check Storage and database policies.";notify("Video upload failed.","error");}finally{button.disabled=false;}}
+function wireEvents(){document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));document.querySelectorAll("[data-feed]").forEach(b=>b.addEventListener("click",()=>{activeFeed=b.dataset.feed;showPage(activeFeed);}));document.querySelectorAll("[data-category]").forEach(b=>b.addEventListener("click",()=>{activeCategory=b.dataset.category;document.querySelectorAll("[data-category]").forEach(c=>c.classList.toggle("active",c===b));renderVideos();}));document.querySelectorAll("[data-home]").forEach(b=>b.addEventListener("click",e=>{e.preventDefault();showPage("Home");}));$("searchInput").addEventListener("input",e=>{searchQuery=e.target.value.trim();activePage="Explore";renderVideos();});$("sortSelect").addEventListener("change",renderVideos);$("resetFilters").addEventListener("click",()=>{searchQuery="";activeCategory="All";activePage="Home";activeFeed="For You";$("searchInput").value="";$("sortSelect").value="recommended";document.querySelectorAll("[data-category]").forEach(b=>b.classList.toggle("active",b.dataset.category==="All"));showPage("Home");});$("videoGrid").addEventListener("click",async e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.follow){followedCreators.has(b.dataset.follow)?followedCreators.delete(b.dataset.follow):followedCreators.add(b.dataset.follow);renderVideos();}if(b.dataset.save){savedVideos.has(b.dataset.save)?savedVideos.delete(b.dataset.save):savedVideos.add(b.dataset.save);renderVideos();}if(b.dataset.like)notify("Likes need the likes database feature to be connected.");if(b.dataset.share){try{if(navigator.share)await navigator.share({title:"TWOTERM",text:"Discover videos on TWOTERM",url:location.href});else{await navigator.clipboard.writeText(location.href);notify("Page link copied.","success");}}catch(err){if(err.name!=="AbortError")notify("Sharing was not available.");}}});$("loginBtn").addEventListener("click",()=>openAuth("login"));$("joinBtn").addEventListener("click",()=>openAuth("signup"));$("welcomeJoin").addEventListener("click",()=>currentUser?showPage("For You"):openAuth("signup"));$("exploreBtn").addEventListener("click",()=>showPage("Explore"));$("logoutBtn").addEventListener("click",logout);$("closeModal").addEventListener("click",closeAuth);$("switchAuth").addEventListener("click",()=>openAuth(authMode==="login"?"signup":"login"));$("authForm").addEventListener("submit",handleAuth);$("authModal").addEventListener("click",e=>{if(e.target===$("authModal"))closeAuth();});$("themeBtn").addEventListener("click",toggleTheme);$("themeBtnBottom").addEventListener("click",toggleTheme);$("toggleUploadBtn").addEventListener("click",()=>{if(!currentUser){openAuth("login");notify("Log in before uploading.");return;}$("uploadPanel").hidden=!$("uploadPanel").hidden;});$("videoUploadForm").addEventListener("submit",uploadVideo);$("languageSelect").addEventListener("change",e=>{try{localStorage.setItem("twoterm-language",e.target.value);}catch(err){}notify("Language preference saved. Some text remains in English.");});$("regionSelect").addEventListener("change",e=>{try{localStorage.setItem("twoterm-region",e.target.value);}catch(err){}notify("Region preference saved.");});}
+async function initSupabase(){if(!window.supabase?.createClient){setConnection("Supabase library failed to load",true);return;}try{supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);setConnection("Checking Supabase...");const health=fetch(SUPABASE_URL+"/auth/v1/health",{headers:{apikey:SUPABASE_PUBLISHABLE_KEY}}).then(r=>setConnection(r.ok?"Supabase reachable":`Supabase HTTP ${r.status}`,!r.ok)).catch(e=>{console.error("Supabase health check:",e);setConnection("Supabase check failed",true);});supabaseClient.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;updateAuthUI();});const {data,error}=await supabaseClient.auth.getSession();if(error)throw error;currentUser=data.session?.user||null;updateAuthUI();await health;await loadRealVideos();}catch(e){console.error("Supabase initialization:",e);setConnection("Supabase initialization failed",true);notify(e.message||"Could not initialize Supabase.","error");}}
+function init(){wireEvents();$("year").textContent=new Date().getFullYear();renderLives();renderVideos();try{if(localStorage.getItem("twoterm-theme")==="light")document.body.classList.add("light");const lang=localStorage.getItem("twoterm-language"),region=localStorage.getItem("twoterm-region");if(lang)$("languageSelect").value=lang;if(region)$("regionSelect").value=region;}catch(e){}initSupabase();}
+document.addEventListener("DOMContentLoaded",init);
+})();
+</script>
+</body>
+</html>
