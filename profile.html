@@ -4,47 +4,147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TWOTERM — User Profiles</title>
+<title>TWOTERM — User Profile</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
-  --bg:#100d20;--panel:#1b1730;--text:#faf8ff;
-  --muted:#aaa5bf;--border:#39324f;--accent:#a855f7;
+  --bg:#100d20;
+  --panel:#1b1730;
+  --text:#faf8ff;
+  --muted:#aaa5bf;
+  --border:#39324f;
+  --accent:#a855f7;
   --pink:#ec4899;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-header{display:flex;justify-content:space-between;align-items:center;padding:16px 5%;border-bottom:1px solid var(--border)}
-.logo{font-size:23px;font-weight:900;color:white;text-decoration:none}
-.logo span{color:#d28aff}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-.btn{border:1px solid var(--border);border-radius:10px;padding:11px 15px;background:#28213f;color:white;font-weight:bold}
-.primary{background:linear-gradient(110deg,var(--accent),var(--pink));border:0}
-main{width:min(900px,94%);margin:30px auto}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px}
-.hero{text-align:center;padding:30px 15px}
-h1{font-size:clamp(27px,5vw,40px);margin:8px}
-.muted{color:var(--muted);line-height:1.6}
-.avatar{width:110px;height:110px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 15px;background:#302342;border:3px solid var(--accent)}
-.stats{display:flex;justify-content:center;gap:35px;margin:22px 0}
-.stat{text-align:center}.stat strong{display:block;font-size:21px}
-.field{margin:15px 0}
-label{display:block;margin-bottom:7px;font-size:13px;font-weight:bold}
-input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#100d20;color:white}
-textarea{min-height:100px;resize:vertical}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.notice{display:none;padding:12px;border-radius:10px;margin-bottom:15px;overflow-wrap:anywhere}
-.notice.show{display:block;background:#28213f}
-.actions{display:flex;gap:10px;flex-wrap:wrap}
-.video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.video{aspect-ratio:3/4;border-radius:12px;background:linear-gradient(145deg,#653c89,#25203b);display:grid;place-items:center;text-align:center;padding:12px}
-footer{text-align:center;color:var(--muted);padding:25px}
-button:disabled{opacity:.6;cursor:wait}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.video-grid{grid-template-columns:repeat(2,1fr)}.stats{gap:22px}}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 5%;
+  border-bottom:1px solid var(--border);
+}
+.logo {
+  font-size:23px;
+  font-weight:900;
+  color:white;
+  text-decoration:none;
+}
+.logo span { color:#d28aff; }
+button,input,textarea,select { font:inherit; }
+button { cursor:pointer; }
+.btn {
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 15px;
+  background:#28213f;
+  color:white;
+  font-weight:bold;
+}
+.primary {
+  background:linear-gradient(110deg,var(--accent),var(--pink));
+  border:0;
+}
+main { width:min(900px,94%); margin:30px auto; }
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:18px;
+}
+.hero { text-align:center; padding:30px 15px; }
+h1 { font-size:clamp(27px,5vw,40px); margin:8px; }
+.muted { color:var(--muted); line-height:1.6; }
+.avatar {
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
+  margin:0 auto 15px;
+  background:#302342;
+  border:3px solid var(--accent);
+}
+.stats {
+  display:flex;
+  justify-content:center;
+  gap:35px;
+  margin:22px 0;
+}
+.stat { text-align:center; }
+.stat strong { display:block; font-size:21px; }
+.field { margin:15px 0; }
+label {
+  display:block;
+  margin-bottom:7px;
+  font-size:13px;
+  font-weight:bold;
+}
+input,textarea,select {
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#100d20;
+  color:white;
+}
+input[type="checkbox"] { width:auto; }
+input[type="file"] { max-width:100%; }
+textarea { min-height:100px; resize:vertical; }
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+.notice {
+  display:none;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:15px;
+  overflow-wrap:anywhere;
+}
+.notice.show { display:block; background:#28213f; }
+.actions {
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.video-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.video {
+  aspect-ratio:3/4;
+  border-radius:12px;
+  background:linear-gradient(145deg,#653c89,#25203b);
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:12px;
+}
+footer {
+  text-align:center;
+  color:var(--muted);
+  padding:25px;
+}
+button:disabled { opacity:.6; cursor:wait; }
+[hidden] { display:none !important; }
+@media(max-width:600px) {
+  .grid { grid-template-columns:1fr; }
+  .video-grid { grid-template-columns:repeat(2,1fr); }
+  .stats { gap:22px; }
+}
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -54,118 +154,137 @@ button:disabled{opacity:.6;cursor:wait}
 </header>
 
 <main>
-<div id="notice" class="notice" role="status" aria-live="polite"></div>
+  <div id="notice" class="notice" role="status" aria-live="polite"></div>
 
-<section class="card hero">
-  <img id="avatar" class="avatar" alt="Profile photo"
-    src="https://placehold.co/220x220/302342/ffffff?text=TWOTERM">
-  <h1 id="publicName">Your TWOTERM Profile</h1>
-  <p class="muted" id="publicUsername">@username</p>
-  <p id="bioText" class="muted">Your story starts here. Add a bio to introduce yourself.</p>
+  <section class="card hero">
+    <img
+      id="avatar"
+      class="avatar"
+      alt="Profile photo"
+      src="https://placehold.co/220x220/302342/ffffff?text=TWOTERM"
+    >
 
-  <div class="stats">
-    <div class="stat"><strong id="postsCount">0</strong><span class="muted">Posts</span></div>
-    <div class="stat"><strong id="followersCount">0</strong><span class="muted">Followers</span></div>
-    <div class="stat"><strong id="followingCount">0</strong><span class="muted">Following</span></div>
-  </div>
+    <h1 id="publicName">Your TWOTERM Profile</h1>
+    <p class="muted" id="publicUsername">@username</p>
+    <p id="bioText" class="muted">Your story starts here.</p>
 
-  <div class="actions" style="justify-content:center">
-    <button class="btn primary" id="editBtn" type="button">Edit profile</button>
-    <button class="btn" id="followBtn" type="button">Follow</button>
-    <button class="btn" id="shareBtn" type="button">Share profile</button>
-  </div>
-  <p class="muted" id="accountStatus">Connecting to your account…</p>
-</section>
-
-<section class="card" id="editor" hidden>
-  <h2>Edit your profile</h2>
-  <p class="muted">Sign in to update your public profile information.</p>
-
-  <form id="profileForm">
-    <div class="field">
-      <label for="photo">Profile photo</label>
-      <input id="photo" type="file" accept="image/png,image/jpeg,image/webp">
+    <div class="stats">
+      <div class="stat"><strong id="postsCount">0</strong><span class="muted">Posts</span></div>
+      <div class="stat"><strong id="followersCount">0</strong><span class="muted">Followers</span></div>
+      <div class="stat"><strong id="followingCount">0</strong><span class="muted">Following</span></div>
     </div>
 
+    <div class="actions" style="justify-content:center">
+      <button class="btn primary" id="editBtn" type="button">Edit profile</button>
+      <button class="btn" id="followBtn" type="button">Follow</button>
+      <button class="btn" id="shareBtn" type="button">Share profile</button>
+    </div>
+
+    <p class="muted" id="accountStatus">Connecting to your account…</p>
+  </section>
+
+  <section class="card" id="editor" hidden>
+    <h2>Edit your profile</h2>
+    <p class="muted">Update your profile details and photo.</p>
+
+    <form id="profileForm">
+      <div class="field">
+        <label for="photo">Profile photo (JPG, PNG or WebP; maximum 5 MB)</label>
+        <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+        <p class="muted">Your selected photo appears above before you save.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="displayName">Display name</label>
+          <input id="displayName" maxlength="50" required>
+        </div>
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" maxlength="24"
+                 pattern="[A-Za-z0-9_]{3,24}" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="bio">Biography</label>
+        <textarea id="bio" maxlength="300"
+                  placeholder="Tell people about yourself..."></textarea>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="country">Country / region</label>
+          <select id="country">
+            <option value="">Choose region</option>
+            <option>Kenya</option>
+            <option>Tanzania</option>
+            <option>Nigeria</option>
+            <option>United States</option>
+            <option>United Kingdom</option>
+            <option>France</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="language">Preferred language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="sw">Kiswahili</option>
+            <option value="fr">French</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="publicProfile">
+          <input id="publicProfile" type="checkbox" checked>
+          Make my profile public
+        </label>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="submit" id="saveBtn">Save profile</button>
+        <button class="btn" type="button" id="cancelBtn">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Videos and posts</h2>
+    <p class="muted">
+      Your uploaded videos will appear here after the video database is connected.
+    </p>
+    <div class="video-grid">
+      <div class="video">🎬<br>Videos will appear here</div>
+      <div class="video">📹<br>Create your first post</div>
+      <div class="video">✨<br>Share your creativity</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Personalization</h2>
+    <p class="muted">Choose how you prefer to experience TWOTERM.</p>
     <div class="grid">
       <div class="field">
-        <label for="displayName">Display name</label>
-        <input id="displayName" maxlength="50" required>
-      </div>
-      <div class="field">
-        <label for="username">Username</label>
-        <input id="username" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" required>
-      </div>
-    </div>
-
-    <div class="field">
-      <label for="bio">Biography</label>
-      <textarea id="bio" maxlength="300" placeholder="Tell people about yourself..."></textarea>
-    </div>
-
-    <div class="grid">
-      <div class="field">
-        <label for="country">Country / region</label>
-        <select id="country">
-          <option value="">Choose region</option>
-          <option>Kenya</option><option>Tanzania</option>
-          <option>Nigeria</option><option>United States</option>
-          <option>United Kingdom</option><option>France</option>
-          <option>Other</option>
+        <label for="theme">Appearance</label>
+        <select id="theme">
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
         </select>
       </div>
       <div class="field">
-        <label for="language">Preferred language</label>
-        <select id="language">
-          <option value="en">English</option>
-          <option value="sw">Kiswahili</option>
-          <option value="fr">French</option>
+        <label for="contentLanguage">Content language</label>
+        <select id="contentLanguage">
+          <option>All languages</option>
+          <option>English</option>
+          <option>Kiswahili</option>
+          <option>French</option>
         </select>
       </div>
     </div>
-
-    <div class="field">
-      <label for="publicProfile">
-        <input id="publicProfile" type="checkbox" checked style="width:auto">
-        Make my profile public
-      </label>
-    </div>
-
-    <div class="actions">
-      <button class="btn primary" type="submit" id="saveBtn">Save profile</button>
-      <button class="btn" type="button" id="cancelBtn">Cancel</button>
-    </div>
-  </form>
-</section>
-
-<section class="card">
-  <h2>Videos and posts</h2>
-  <p class="muted">Your uploaded videos will appear here after connecting the TWOTERM video database.</p>
-  <div class="video-grid">
-    <div class="video">🎬<br>Videos will appear here</div>
-    <div class="video">📹<br>Create your first post</div>
-    <div class="video">✨<br>Share your creativity</div>
-  </div>
-</section>
-
-<section class="card">
-  <h2>Personalization</h2>
-  <p class="muted">Choose how you prefer to experience TWOTERM.</p>
-  <div class="grid">
-    <div class="field">
-      <label for="theme">Appearance</label>
-      <select id="theme"><option value="dark">Dark</option><option value="light">Light</option></select>
-    </div>
-    <div class="field">
-      <label for="contentLanguage">Content language</label>
-      <select id="contentLanguage">
-        <option>All languages</option><option>English</option>
-        <option>Kiswahili</option><option>French</option>
-      </select>
-    </div>
-  </div>
-  <button class="btn" id="savePreferences" type="button">Save preferences</button>
-</section>
+    <button class="btn" id="savePreferences" type="button">Save preferences</button>
+  </section>
 </main>
 
 <footer>TWOTERM · Connect. Create. Stream. Earn.</footer>
@@ -176,10 +295,13 @@ button:disabled{opacity:.6;cursor:wait}
 const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
 const AVATAR_BUCKET = "twoterm-media";
+const FALLBACK_AVATAR =
+  "https://placehold.co/220x220/302342/ffffff?text=TWOTERM";
 
 let client = null;
 let user = null;
 let selectedPhoto = null;
+let previewUrl = null;
 let profile = {};
 let loadingProfile = false;
 
@@ -194,49 +316,46 @@ function validUsername(name) {
   return /^[a-zA-Z0-9_]{3,24}$/.test(name);
 }
 
+function releasePreview() {
+  if (previewUrl) {
+    URL.revokeObjectURL(previewUrl);
+    previewUrl = null;
+  }
+}
+
+function showAvatar(url) {
+  const image = $("avatar");
+  image.onerror = () => {
+    image.onerror = null;
+    image.src = FALLBACK_AVATAR;
+  };
+  image.src = url || FALLBACK_AVATAR;
+}
+
 function setSignedOut() {
   user = null;
-  $("accountStatus").textContent = "Viewing profile preview — sign in to edit.";
+  $("accountStatus").textContent =
+    "Viewing profile preview — sign in to edit.";
   $("editBtn").textContent = "Sign in to edit";
   $("editor").hidden = true;
 }
 
-async function initialize() {
-  $("accountStatus").textContent = "Connecting to your account…";
+function renderProfile() {
+  $("publicName").textContent =
+    profile.display_name || "TWOTERM Creator";
+  $("publicUsername").textContent =
+    profile.username ? "@" + profile.username : "@username";
+  $("bioText").textContent =
+    profile.bio || "Your story starts here. Add a bio to introduce yourself.";
 
-  try {
-    if (!window.supabase) {
-      throw new Error("Supabase library did not load. Refresh the page and try again.");
-    }
+  $("displayName").value = profile.display_name || "";
+  $("username").value = profile.username || "";
+  $("bio").value = profile.bio || "";
+  $("country").value = profile.country || "";
+  $("language").value = profile.language || "en";
+  $("publicProfile").checked = profile.is_public !== false;
 
-    client = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
-
-    // Do not await database requests inside the auth-state callback.
-    client.auth.onAuthStateChange((_event, session) => {
-      user = session?.user || null;
-      Promise.resolve().then(() => loadProfile());
-    });
-
-    const { data, error } = await client.auth.getSession();
-
-    if (error) throw error;
-
-    user = data.session?.user || null;
-
-    if (!user) {
-      setSignedOut();
-      return;
-    }
-
-    await loadProfile();
-  } catch (error) {
-    console.error("TWOTERM profile initialization failed:", error);
-    $("accountStatus").textContent = "Could not check account.";
-    notify("Account check failed: " + (error.message || "Unknown error"));
-  }
+  showAvatar(profile.avatar_url);
 }
 
 async function loadProfile() {
@@ -253,7 +372,6 @@ async function loadProfile() {
 
   const meta = user.user_metadata || {};
 
-  // Keep Auth metadata as a fallback for fields not present in profiles.
   profile = {
     display_name: meta.display_name || "",
     username: meta.username || "",
@@ -265,7 +383,7 @@ async function loadProfile() {
   };
 
   try {
-    const { data: dbProfile, error } = await client
+    const { data, error } = await client
       .from("profiles")
       .select("username, display_name, avatar_url, bio")
       .eq("id", user.id)
@@ -273,66 +391,70 @@ async function loadProfile() {
 
     if (error) throw error;
 
-    if (dbProfile) {
-      profile = {
-        ...profile,
-        username: dbProfile.username ?? profile.username,
-        display_name: dbProfile.display_name ?? profile.display_name,
-        avatar_url: dbProfile.avatar_url ?? profile.avatar_url,
-        bio: dbProfile.bio ?? profile.bio
-      };
+    if (data) {
+      profile.username = data.username ?? profile.username;
+      profile.display_name = data.display_name ?? profile.display_name;
+      profile.avatar_url = data.avatar_url ?? profile.avatar_url;
+      profile.bio = data.bio ?? profile.bio;
     }
 
+    renderProfile();
     $("accountStatus").textContent =
       "Signed in as " + (user.email || user.phone || "TWOTERM user");
     $("editBtn").textContent = "Edit profile";
-    renderProfile();
   } catch (error) {
-    console.error("Could not load database profile:", error);
-    notify("Could not load database profile: " + error.message);
+    console.error("Profile loading failed:", error);
     renderProfile();
+    notify("Could not load profile: " + error.message);
   } finally {
     loadingProfile = false;
   }
 }
 
-function renderProfile() {
-  $("publicName").textContent = profile.display_name || "TWOTERM Creator";
-  $("publicUsername").textContent = profile.username ? "@" + profile.username : "@username";
-  $("bioText").textContent = profile.bio || "Your story starts here. Add a bio to introduce yourself.";
-  $("country").value = profile.country || "";
-  $("language").value = profile.language || "en";
-  $("displayName").value = profile.display_name || "";
-  $("username").value = profile.username || "";
-  $("bio").value = profile.bio || "";
-  $("publicProfile").checked = profile.is_public !== false;
+async function initialize() {
+  try {
+    if (!window.supabase) {
+      throw new Error("Supabase library did not load. Refresh the page.");
+    }
 
-  if (profile.avatar_url) {
-    $("avatar").src = profile.avatar_url;
-  } else {
-    $("avatar").src = "https://placehold.co/220x220/302342/ffffff?text=TWOTERM";
+    client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const { data, error } = await client.auth.getSession();
+    if (error) throw error;
+
+    user = data.session?.user || null;
+
+    client.auth.onAuthStateChange((_event, session) => {
+      user = session?.user || null;
+      Promise.resolve().then(loadProfile);
+    });
+
+    if (!user) {
+      setSignedOut();
+      return;
+    }
+
+    await loadProfile();
+  } catch (error) {
+    console.error("Profile initialization failed:", error);
+    $("accountStatus").textContent = "Could not check account.";
+    notify("Account check failed: " + error.message);
   }
 }
 
 $("editBtn").addEventListener("click", () => {
   if (!client) {
-    notify("Supabase is not ready. Refresh the page and try again.");
+    notify("Supabase is not ready. Refresh this page.");
     return;
   }
-
   if (!user) {
-    notify("Sign in through your TWOTERM homepage, then return here.");
+    notify("Sign in through your TWOTERM homepage first.");
     return;
   }
-
   $("editor").hidden = !$("editor").hidden;
-});
-
-$("cancelBtn").addEventListener("click", () => {
-  $("editor").hidden = true;
-  selectedPhoto = null;
-  $("photo").value = "";
-  renderProfile();
 });
 
 $("photo").addEventListener("change", event => {
@@ -341,15 +463,29 @@ $("photo").addEventListener("change", event => {
 
   if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
     event.target.value = "";
-    return notify("Choose a JPG, PNG or WebP image.");
+    notify("Choose a JPG, PNG or WebP image.");
+    return;
   }
 
   if (file.size > 5 * 1024 * 1024) {
     event.target.value = "";
-    return notify("Image must be smaller than 5 MB.");
-  {
-  selectedphoto = file;
-  $("avatar").src = URL.createObjectURL(file);
+    notify("Your image must be smaller than 5 MB.");
+    return;
+  }
+
+  selectedPhoto = file;
+  releasePreview();
+  previewUrl = URL.createObjectURL(file);
+  showAvatar(previewUrl);
+  notify("Photo selected. Tap Save profile to upload it.");
+});
+
+$("cancelBtn").addEventListener("click", () => {
+  $("editor").hidden = true;
+  selectedPhoto = null;
+  $("photo").value = "";
+  releasePreview();
+  renderProfile();
 });
 
 $("profileForm").addEventListener("submit", async event => {
@@ -364,8 +500,14 @@ $("profileForm").addEventListener("submit", async event => {
   const username = $("username").value.trim().toLowerCase();
   const bio = $("bio").value.trim();
 
+  if (!displayName) {
+    notify("Enter your display name.");
+    return;
+  }
+
   if (!validUsername(username)) {
-    return notify("Username must contain 3–24 letters, numbers or underscores.");
+    notify("Username must contain 3–24 letters, numbers or underscores.");
+    return;
   }
 
   $("saveBtn").disabled = true;
@@ -375,20 +517,23 @@ $("profileForm").addEventListener("submit", async event => {
     let avatarUrl = profile.avatar_url || "";
 
     if (selectedPhoto) {
-      const extension = selectedPhoto.name.split(".").pop().toLowerCase();
+      const extension = selectedPhoto.type === "image/png" ? "png"
+        : selectedPhoto.type === "image/webp" ? "webp" : "jpg";
+
       const path = user.id + "/avatar-" + Date.now() + "." + extension;
 
       const { error: uploadError } = await client.storage
-        .from(AVATAR-BUCKET)
+        .from(AVATAR_BUCKET)
         .upload(path, selectedPhoto, {
-          upsert: true,
-          contentType: selectedPhoto.type
+          upsert: false,
+          contentType: selectedPhoto.type,
+          cacheControl: "3600"
         });
 
       if (uploadError) throw uploadError;
 
       const { data: urlData } = client.storage
-        .from(AVATAR-BUCKET)
+        .from(AVATAR_BUCKET)
         .getPublicUrl(path);
 
       avatarUrl = urlData.publicUrl;
@@ -404,14 +549,6 @@ $("profileForm").addEventListener("submit", async event => {
       is_public: $("publicProfile").checked
     };
 
-    // Save additional profile preferences to Auth metadata.
-    const { error: authError } = await client.auth.updateUser({
-      data: updated
-    });
-
-    if (authError) throw authError;
-
-    // Save the columns that actually exist in public.profiles.
     const { error: dbError } = await client
       .from("profiles")
       .upsert({
@@ -425,15 +562,27 @@ $("profileForm").addEventListener("submit", async event => {
 
     if (dbError) throw dbError;
 
-    const { data: sessionData } = await client.auth.getSession();
-    user = sessionData.session?.user || user;
+    const { error: authError } = await client.auth.updateUser({
+      data: updated
+    });
+
+    if (authError) {
+      notify("Profile saved, but some account preferences failed to save: "
+        + authError.message);
+    } else {
+      notify("Profile and photo saved successfully.");
+    }
 
     profile = updated;
     selectedPhoto = null;
     $("photo").value = "";
+    releasePreview();
     renderProfile();
     $("editor").hidden = true;
-    notify("Profile information saved.");
+
+    const { data: sessionData } = await client.auth.getSession();
+    user = sessionData.session?.user || user;
+
   } catch (error) {
     console.error("Profile save failed:", error);
     notify("Could not save profile: " + (error.message || "Unknown error"));
@@ -444,38 +593,51 @@ $("profileForm").addEventListener("submit", async event => {
 });
 
 $("followBtn").addEventListener("click", () => {
-  if (!user) return notify("Sign in to follow creators.");
-  notify("Following will work when the database-backed follow system is connected.");
+  if (!user) {
+    notify("Sign in to follow creators.");
+    return;
+  }
+  notify("The follow system still needs to be connected to its database.");
 });
 
 $("shareBtn").addEventListener("click", async () => {
   try {
     if (navigator.share) {
-      await navigator.share({ title: "TWOTERM Profile", url: location.href });
+      await navigator.share({
+        title: "TWOTERM Profile",
+        url: location.href
+      });
     } else if (navigator.clipboard) {
       await navigator.clipboard.writeText(location.href);
-      notify("Profile page link copied.");
+      notify("Profile link copied.");
     } else {
       notify("Copy this page's address from your browser.");
     }
   } catch (error) {
-    if (error.name !== "AbortError") notify("Sharing is unavailable.");
+    if (error.name !== "AbortError") {
+      notify("Sharing is unavailable.");
+    }
   }
 });
+
+function applyTheme(theme) {
+  if (theme === "light") {
+    document.body.style.background = "#f6f5fb";
+    document.body.style.color = "#201b32";
+  } else {
+    document.body.style.background = "";
+    document.body.style.color = "";
+  }
+}
 
 $("savePreferences").addEventListener("click", () => {
   try {
     localStorage.setItem("twoterm-profile-theme", $("theme").value);
-    localStorage.setItem("twoterm-profile-content-language", $("contentLanguage").value);
-
-    if ($("theme").value === "light") {
-      document.body.style.background = "#f6f5fb";
-      document.body.style.color = "#201b32";
-    } else {
-      document.body.style.background = "";
-      document.body.style.color = "";
-    }
-
+    localStorage.setItem(
+      "twoterm-profile-content-language",
+      $("contentLanguage").value
+    );
+    applyTheme($("theme").value);
     notify("Preferences saved on this device.");
   } catch (error) {
     notify("Could not save preferences in this browser.");
@@ -483,16 +645,15 @@ $("savePreferences").addEventListener("click", () => {
 });
 
 try {
-  const savedTheme = localStorage.getItem("twoterm-profile-theme") || "dark";
-  const savedLanguage = localStorage.getItem("twoterm-profile-content-language") || "All languages";
+  const savedTheme =
+    localStorage.getItem("twoterm-profile-theme") || "dark";
+  const savedLanguage =
+    localStorage.getItem("twoterm-profile-content-language") ||
+    "All languages";
 
   $("theme").value = savedTheme;
   $("contentLanguage").value = savedLanguage;
-
-  if (savedTheme === "light") {
-    document.body.style.background = "#f6f5fb";
-    document.body.style.color = "#201b32";
-  }
+  applyTheme(savedTheme);
 } catch (_) {}
 
 initialize();
@@ -502,3 +663,5 @@ initialize();
 </body>
 </html>
 
+
+    
