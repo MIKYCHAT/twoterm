@@ -755,6 +755,69 @@
     let searchQuery = "";
     let savedVideos = new Set();
     let followedCreators = new Set();
+    let realVideos = [];
+let videosLoading = false;
+
+async function loadRealVideos() {
+  if (!supabaseClient) return;
+
+  videosLoading = true;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("videos")
+      .select("id, user_id, caption, video_url, thumbnail_url, visibility, status, views_count, created_at")
+      .eq("visibility", "public")
+      .eq("status", "published")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    const userIds = [...new Set((data || []).map(video => video.user_id))];
+    let profilesById = {};
+
+    if (userIds.length) {
+      const { data: profiles, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("id, username, display_name, avatar_url")
+        .in("id", userIds);
+
+      if (profileError) throw profileError;
+
+      (profiles || []).forEach(profile => {
+        profilesById[profile.id] = profile;
+      });
+    }
+
+    realVideos = (data || []).map(video => {
+      const profile = profilesById[video.user_id] || {};
+      const creator = profile.display_name || profile.username || "TWOTERM Creator";
+
+      return {
+        id: video.id,
+        title: video.caption || "Untitled video",
+        creator,
+        handle: profile.username ? "@" + profile.username : "@creator",
+        category: "All",
+        likes: 0,
+        views: Number(video.views_count || 0),
+        badge: "VIDEO",
+        color: "#713b9e",
+        initials: creator.slice(0, 2).toUpperCase(),
+        description: video.caption || "",
+        videoUrl: video.video_url,
+        createdAt: video.created_at
+      };
+    });
+
+    renderVideos();
+  } catch (error) {
+    console.error("TWOTERM feed loading failed:", error);
+    notify("Could not load videos from Supabase. Check the browser console for details.", "error");
+  } finally {
+    videosLoading = false;
+  }
+}
 
     const demoVideos = [
       {
