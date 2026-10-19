@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100b20">
+<title>TWOTERM Admin Console</title>
+<meta name="robots" content="noindex, nofollow">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg:#100b20;--panel:#1c1530;--panel2:#281d40;--border:#3c2d56;
+  --text:#f8f4ff;--muted:#b9aecf;--pink:#ff4fa3;--purple:#a78bfa;
+  --green:#64e6b8;--red:#ff8097;--yellow:#ffd27a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#291747,var(--bg) 50%);
+color:var(--text);font:15px/1.55 Arial,sans-serif}
+a{color:#e7c9ff}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:700}
+button:disabled{opacity:.45;cursor:not-allowed}
+.primary{background:linear-gradient(100deg,var(--pink),var(--purple));color:#170d25}
+.secondary{background:#332448;color:white;border:1px solid var(--border)}
+.danger{background:#5a263a;color:#ffe8ee;border:1px solid #85445b}
+.wrap{max-width:1250px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 0 20px;border-bottom:1px solid var(--border)}
+.logo{font-size:1.4rem;font-weight:900;text-decoration:none;color:white}
+.logo span{color:var(--pink)}
+nav{display:flex;flex-wrap:wrap;gap:14px}
+nav a{text-decoration:none;color:var(--muted)}
+.hero{padding:28px 0 18px}
+h1{font-size:clamp(2rem,5vw,3.1rem);line-height:1.1;margin:8px 0}
+h2{font-size:1.25rem;margin:0 0 10px}
+h3{font-size:1rem}
+p,.muted{color:var(--muted)}
+.eyebrow{color:#ff9bce;font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+.notice{border:1px solid #68436f;background:#30203e;padding:14px;border-radius:13px;margin:14px 0}
+.status{padding:10px 12px;border-radius:10px;background:#1d1830;border:1px solid var(--border);margin:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--yellow)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.card{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:16px;padding:18px;min-width:0;margin-bottom:15px}
+.wide{grid-column:1/-1}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}
+.stat{background:#1b1430;border:1px solid var(--border);border-radius:13px;padding:14px}
+.stat strong{display:block;font-size:1.35rem}
+.stat span{font-size:.82rem;color:var(--muted)}
+label{display:block;margin:10px 0 5px;font-weight:700;font-size:.9rem}
+input,select,textarea{width:100%;padding:11px;border-radius:9px;border:1px solid #554269;background:#120d22;color:white}
+textarea{min-height:90px;resize:vertical}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.small{font-size:.83rem}
+.tag{display:inline-block;background:#3b284e;border-radius:99px;padding:4px 9px;font-size:.76rem;margin-bottom:9px}
+ul{padding-left:21px;color:var(--muted)}
+li{margin:7px 0}
+hr{border:0;border-top:1px solid var(--border);margin:16px 0}
+.hidden{display:none!important}
+footer{border-top:1px solid var(--border);padding:20px 0;margin-top:25px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="logo" href="index.html">TWO<span>TERM</span></a>
+  <nav aria-label="Main navigation">
+    <a href="index.html">Home</a>
+    <a href="discover.html">Discover</a>
+    <a href="safety.html">Safety Center</a>
+    <a href="creator-tools.html">Creator Tools</a>
+  </nav>
+</header>
+
+<main>
+<section class="hero">
+  <div class="eyebrow">Restricted staff area</div>
+  <h1>Admin Console</h1>
+  <p>Manage platform operations through authorized, audited backend actions.</p>
+</section>
+
+<div class="notice">
+  <strong>Security notice:</strong> A hidden button or private URL does not provide security.
+  This page must receive explicit staff authorization from a trusted server. Never put a
+  Supabase service-role key, payment secret, or other server secret in this file.
+</div>
+
+<div id="authStatus" class="status" role="status" aria-live="polite">
+  Checking your sign-in session…
+</div>
+
+<section id="signedOut" class="card hidden">
+  <h2>Sign in required</h2>
+  <p>You must sign in through TWOTERM before the console can check staff access.</p>
+  <div class="actions">
+    <a href="index.html">Return to TWOTERM</a>
+    <button class="secondary" id="retryAuth" type="button">Check again</button>
+  </div>
+</section>
+
+<section id="denied" class="card hidden">
+  <h2>Staff access not confirmed</h2>
+  <p>Your session may be valid, but the backend has not confirmed administrator permissions.</p>
+  <p>Do not attempt to bypass this check. Ask the platform owner to configure the secure admin Edge Function and assign the appropriate role in the database.</p>
+  <button class="secondary" id="retryAdmin" type="button">Retry access check</button>
+</section>
+
+<section id="adminApp" class="hidden">
+  <div class="grid">
+    <article class="card">
+      <span class="tag">Authorized session</span>
+      <h2>Staff identity</h2>
+      <p id="staffEmail">Signed-in staff member</p>
+      <p id="staffRole" class="good">Staff permissions confirmed by server</p>
+      <div class="actions">
+        <button class="secondary" id="refreshDashboard" type="button">Refresh dashboard</button>
+        <button class="secondary" id="signOut" type="button">Sign out</button>
+      </div>
+    </article>
+    <article class="card">
+      <span class="tag">Platform operations</span>
+      <h2>Quick actions</h2>
+      <p>Choose a module below. Each operation requires a server-side authorization check.</p>
+      <div class="actions">
+        <button class="secondary" data-load="overview" type="button">Load overview</button>
+        <button class="secondary" data-load="reports" type="button">Load reports</button>
+        <button class="secondary" data-load="support" type="button">Load support tickets</button>
+      </div>
+    </article>
+  </div>
+
+  <section class="card">
+    <span class="tag">Live data — backend required</span>
+    <h2>Platform overview</h2>
+    <p class="small">Numbers are displayed only when returned by the authorized backend. No sample numbers are presented as real metrics.</p>
+    <div class="stats">
+      <div class="stat"><strong id="metricUsers">—</strong><span>Registered users</span></div>
+      <div class="stat"><strong id="metricActive">—</strong><span>Active users</span></div>
+      <div class="stat"><strong id="metricVideos">—</strong><span>Video uploads</span></div>
+      <div class="stat"><strong id="metricReports">—</strong><span>Open reports</span></div>
+    </div>
+    <div id="overviewStatus" class="status">Overview not loaded.</div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <span class="tag">286–288 • Administration</span>
+      <h2>User management and roles</h2>
+      <p>Search for an account and request an authorized action. The server must verify the staff member's permissions and validate the target account.</p>
+      <label for="userId">User ID</label>
+      <input id="userId" placeholder="Supabase user UUID">
+      <label for="userAction">Action</label>
+      <select id="userAction">
+        <option value="review">Review account</option>
+        <option value="restrict">Apply a restriction</option>
+        <option value="restore">Request restoration of access</option>
+        <option value="change_role">Change role (high privilege)</option>
+      </select>
+      <label for="userReason">Reason and case reference</label>
+      <textarea id="userReason" maxlength="1500" placeholder="Provide a clear, factual reason."></textarea>
+      <div class="actions"><button class="primary" data-action="manage_user" type="button">Submit user action</button></div>
+      <p class="small warn">Role changes and restrictions must be validated and audited by the server.</p>
+    </section>
+
+    <section class="card">
+      <span class="tag">289–290 • Creator access</span>
+      <h2>Creator verification and LIVE eligibility</h2>
+      <label for="creatorId">Creator user ID</label>
+      <input id="creatorId" placeholder="Supabase user UUID">
+      <label for="creatorAction">Review action</label>
+      <select id="creatorAction">
+        <option value="review_verification">Review verification application</option>
+        <option value="approve_verification">Approve verification</option>
+        <option value="reject_verification">Reject verification</option>
+        <option value="review_live">Review LIVE eligibility</option>
+        <option value="approve_live">Approve LIVE eligibility</option>
+        <option value="suspend_live">Suspend LIVE access</option>
+      </select>
+      <label for="creatorReason">Reason / evidence reference</label>
+      <textarea id="creatorReason" maxlength="1500"></textarea>
+      <div class="actions"><button class="primary" data-action="manage_creator" type="button">Submit creator review</button></div>
+    </section>
+
+    <section class="card">
+      <span class="tag">291–292 • Moderation</span>
+      <h2>Reported-content queue</h2>
+      <p>Load the private queue through the backend. Reports may contain sensitive information and must not be exposed to ordinary users.</p>
+      <label for="reportId">Report ID</label>
+      <input id="reportId" placeholder="Report UUID or case ID">
+      <label for="reportAction">Review action</label>
+      <select id="reportAction">
+        <option value="review_report">Open report for review</option>
+        <option value="dismiss_report">Dismiss report with reason</option>
+        <option value="remove_content">Request content removal</option>
+        <option value="escalate_report">Escalate case</option>
+      </select>
+      <label for="reportReason">Decision reason</label>
+      <textarea id="reportReason" maxlength="1500"></textarea>
+      <div class="actions">
+        <button class="secondary" data-load="reports" type="button">Load report queue</button>
+        <button class="primary" data-action="moderate_report" type="button">Submit moderation action</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <span class="tag">293 • Finance</span>
+      <h2>Financial oversight</h2>
+      <p>Review payment and payout records, disputes, and reconciliation results. Never edit balances or mark payouts paid from browser-only code.</p>
+      <label for="financeRef">Transaction or payout reference</label>
+      <input id="financeRef" placeholder="Transaction ID">
+      <label for="financeAction">Review action</label>
+      <select id="financeAction">
+        <option value="review_transaction">Review transaction</option>
+        <option value="review_payout">Review payout</option>
+        <option value="review_dispute">Review dispute</option>
+        <option value="reconcile_payment">Request payment reconciliation</option>
+      </select>
+      <label for="financeReason">Notes / reason</label>
+      <textarea id="financeReason" maxlength="1500"></textarea>
+      <div class="actions"><button class="primary" data-action="review_finance" type="button">Submit finance review</button></div>
+      <p class="small warn">No payment is sent, refunded, or withdrawn by this interface.</p>
+    </section>
+
+    <section class="card">
+      <span class="tag">294–295 • Monitoring</span>
+      <h2>Analytics and system health</h2>
+      <p>Request authorized platform metrics and health checks. Do not expose private user data or secret configuration in dashboard responses.</p>
+      <div class="actions">
+        <button class="secondary" data-load="analytics" type="button">Load analytics</button>
+        <button class="secondary" data-load="health" type="button">Check system health</button>
+      </div>
+      <div id="healthStatus" class="status">Health status not checked.</div>
+    </section>
+
+    <section class="card">
+      <span class="tag">296 • Accountability</span>
+      <h2>Audit trail</h2>
+      <p>Audit records should be created by the server for important privileged actions, including staff identity, action, target, timestamp, result, and case reference.</p>
+      <div class="actions"><button class="secondary" data-load="audit" type="button">Load audit records</button></div>
+      <p class="small">Audit records should not be editable by the staff member whose action is being recorded.</p>
+    </section>
+
+    <section class="card">
+      <span class="tag">297–298 • Platform settings</span>
+      <h2>Feature flags and announcements</h2>
+      <label for="settingAction">Operation</label>
+      <select id="settingAction">
+        <option value="set_feature_flag">Update feature flag</option>
+        <option value="publish_announcement">Publish announcement</option>
+        <option value="disable_feature">Request feature disable</option>
+      </select>
+      <label for="settingKey">Feature key or announcement title</label>
+      <input id="settingKey" maxlength="120" placeholder="Example: live_streaming_enabled">
+      <label for="settingValue">Value or announcement message</label>
+      <textarea id="settingValue" maxlength="3000" placeholder="Enter the intended value or message."></textarea>
+      <div class="actions"><button class="primary" data-action="manage_settings" type="button">Submit settings change</button></div>
+      <p class="small warn">Production changes should support validation, audit records, staged rollout, and rollback.</p>
+    </section>
+
+    <section class="card">
+      <span class="tag">299 • Customer support</span>
+      <h2>Support tickets</h2>
+      <label for="ticketId">Ticket ID</label>
+      <input id="ticketId" placeholder="Support ticket ID">
+      <label for="ticketAction">Action</label>
+      <select id="ticketAction">
+        <option value="review_ticket">Review ticket</option>
+        <option value="assign_ticket">Assign ticket</option>
+        <option value="resolve_ticket">Resolve ticket</option>
+        <option value="escalate_ticket">Escalate ticket</option>
+      </select>
+      <label for="ticketNotes">Internal notes</label>
+      <textarea id="ticketNotes" maxlength="2000"></textarea>
+      <div class="actions">
+        <button class="secondary" data-load="support" type="button">Load ticket queue</button>
+        <button class="primary" data-action="manage_support" type="button">Submit ticket action</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <span class="tag">300–301 • Resilience</span>
+      <h2>Backups, recovery and fraud</h2>
+      <p>Backup operations must use the hosting provider's protected procedures. Never display database backup credentials or secret storage URLs here.</p>
+      <label for="opsAction">Operation</label>
+      <select id="opsAction">
+        <option value="review_backup_status">Review backup status</option>
+        <option value="request_recovery_plan">Review recovery readiness</option>
+        <option value="review_suspicious_activity">Review suspicious activity</option>
+        <option value="review_fraud_case">Review fraud case</option>
+      </select>
+      <label for="opsReference">Incident or case reference (optional)</label>
+      <input id="opsReference" placeholder="Reference ID">
+      <label for="opsNotes">Reason / notes</label>
+      <textarea id="opsNotes" maxlength="1500"></textarea>
+      <div class="actions"><button class="primary" data-action="manage_operations" type="button">Submit operations request</button></div>
+    </section>
+
+    <section class="card">
+      <span class="tag">302–303 • Engineering controls</span>
+      <h2>Configuration and database migrations</h2>
+      <p>Secrets belong in server-side secret storage. Schema migrations should be versioned, reviewed, tested, and applied through a controlled deployment process.</p>
+      <label for="engineeringAction">Request</label>
+      <select id="engineeringAction">
+        <option value="review_configuration">Review configuration status</option>
+        <option value="review_migrations">Review migration status</option>
+        <option value="validate_migration">Validate a proposed migration</option>
+      </select>
+      <label for="migrationRef">Migration version or change reference</label>
+      <input id="migrationRef" maxlength="150" placeholder="Migration reference">
+      <label for="migrationNotes">Description (never paste secrets)</label>
+      <textarea id="migrationNotes" maxlength="2000"></textarea>
+      <div class="actions"><button class="primary" data-action="manage_engineering" type="button">Submit engineering request</button></div>
+    </section>
+
+    <section class="card">
+      <span class="tag">304 • Incident response</span>
+      <h2>Security incidents</h2>
+      <label for="incidentType">Incident type</label>
+      <select id="incidentType">
+        <option value="service_outage">Service outage</option>
+        <option value="account_compromise">Compromised account</option>
+        <option value="suspected_data_exposure">Suspected data exposure</option>
+        <option value="payment_incident">Payment incident</option>
+        <option value="abuse_spike">Abuse or fraud spike</option>
+        <option value="other_security_incident">Other security incident</option>
+      </select>
+      <label for="incidentSeverity">Severity</label>
+      <select id="incidentSeverity">
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="critical">Critical</option>
+      </select>
+      <label for="incidentNotes">Summary and immediate containment steps</label>
+      <textarea id="incidentNotes" maxlength="3000"></textarea>
+      <div class="actions"><button class="danger" data-action="create_incident" type="button">Submit incident report</button></div>
+      <p class="small warn">For a live security incident, use your approved incident-response channel immediately. This form is not an emergency service.</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <span class="tag">Backend response</span>
+    <h2>Operation results</h2>
+    <p>Authorized backend responses appear below. Sensitive secrets should never be returned to this page.</p>
+    <pre id="resultBox" class="status" style="white-space:pre-wrap;overflow-wrap:anywhere">No operation submitted.</pre>
+  </section>
+</section>
+</main>
+
+<footer>
+  <a href="index.html">TWOTERM Home</a> ·
+  <a href="safety.html">Safety Center</a>
+  <p class="small">Administrative access is subject to server authorization and audit logging.</p>
+</footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+  const ADMIN_FUNCTION_URL = SUPABASE_URL + "/functions/v1/admin-api";
+
+  const $ = id => document.getElementById(id);
+  const authStatus = $("authStatus");
+  let supabase = null;
+  let session = null;
+  let adminVerified = false;
+  let busy = false;
+
+  function status(message, type) {
+    authStatus.className = "status " + (type || "");
+    authStatus.textContent = message;
+  }
+
+  function show(id, visible) {
+    $(id).classList.toggle("hidden", !visible);
+  }
+
+  function value(id) {
+    return $(id).value.trim();
+  }
+
+  function displayResult(message, data) {
+    $("resultBox").textContent = message +
+      (data === undefined ? "" : "\n\n" + JSON.stringify(data, null, 2));
+  }
+
+  function setBusy(value) {
+    busy = value;
+    document.querySelectorAll("[data-action], [data-load]").forEach(button => {
+      button.disabled = value || !adminVerified;
+    });
+  }
+
+  async function getSession() {
+    if (!supabase) {
+      supabase = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY,
+        {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+          }
+        }
+      );
+    }
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    session = data.session;
+    return session;
+  }
+
+  async function callAdmin(action, payload = {}) {
+    if (!adminVerified || !session?.access_token) {
+      throw new Error("Admin access has not been verified.");
+    }
+
+    const response = await fetch(ADMIN_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": "Bearer " + session.access_token
+      },
+      body: JSON.stringify({ action, payload })
+    });
+
+    const text = await response.text();
+    let data;
+    try { data = text ? JSON.parse(text) : {}; }
+    catch (_) { data = { message: text }; }
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error ||
+        ("Backend request failed with HTTP " + response.status));
+    }
+    if (data && data.authorized === false) {
+      adminVerified = false;
+      show("adminApp", false);
+      show("denied", true);
+      throw new Error("The server did not authorize this account.");
+    }
+    return data;
+  }
+
+  async function checkAccess() {
+    adminVerified = false;
+    show("signedOut", false);
+    show("denied", false);
+    show("adminApp", false);
+    status("Checking your sign-in session…");
+
+    try {
+      const current = await getSession();
+      if (!current) {
+        status("You are not signed in.", "warn");
+        show("signedOut", true);
+        return;
+      }
+
+      status("Checking staff permissions with the secure backend…");
+      let result;
+      try {
+        result = await callAccessCheck(current);
+      } catch (error) {
+        status("Could not verify staff access: " + error.message, "bad");
+        show("denied", true);
+        return;
+      }
+
+      if (result.authorized !== true || result.is_admin !== true) {
+        status("The backend did not confirm administrator access.", "bad");
+        show("denied", true);
+        return;
+      }
+
+      adminVerified = true;
+      $("staffEmail").textContent = current.user.email || "Authenticated staff user";
+      $("staffRole").textContent = "Server-confirmed role: " +
+        (result.role || "administrator");
+      show("adminApp", true);
+      status("Staff access confirmed by backend.", "good");
+      setBusy(false);
+      await loadModule("overview");
+    } catch (error) {
+      status("Unable to initialize admin console: " + error.message, "bad");
+      show("signedOut", true);
+    }
+  }
+
+  async function callAccessCheck(current) {
+    const response = await fetch(ADMIN_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": "Bearer " + current.access_token
+      },
+      body: JSON.stringify({ action: "check_access", payload: {} })
+    });
+
+    const text = await response.text();
+    let data;
+    try { data = text ? JSON.parse(text) : {}; }
+    catch (_) { data = { message: text }; }
+
+    if (!response.ok) {
+      throw new Error(data.message || data.error ||
+        ("Admin Edge Function returned HTTP " + response.status));
+    }
+    return data;
+  }
+
+  function renderOverview(data) {
+    const metrics = data.metrics || data;
+    const map = {
+      metricUsers: ["registered_users", "total_users"],
+      metricActive: ["active_users", "daily_active_users"],
+      metricVideos: ["video_uploads", "total_videos"],
+      metricReports: ["open_reports", "pending_reports"]
+    };
+
+    for (const [elementId, keys] of Object.entries(map)) {
+      const key = keys.find(k => metrics[k] !== undefined);
+      $(elementId).textContent = key ? String(metrics[key]) : "—";
+    }
+    $("overviewStatus").textContent =
+      "Overview returned by authorized backend at " + new Date().toLocaleString();
+  }
+
+  async function loadModule(module) {
+    if (!adminVerified || busy) return;
+    setBusy(true);
+    displayResult("Loading " + module + "…");
+    try {
+      const data = await callAdmin("load_" + module, {});
+      if (module === "overview") renderOverview(data);
+      if (module === "health") {
+        $("healthStatus").textContent =
+          JSON.stringify(data, null, 2);
+      }
+      displayResult("Backend returned " + module + " data.", data);
+    } catch (error) {
+      displayResult("Could not load " + module + ": " + error.message);
+      if (module === "overview") $("overviewStatus").textContent = error.message;
+      if (module === "health") $("healthStatus").textContent = error.message;
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function getActionPayload(action) {
+    switch (action) {
+      case "manage_user":
+        return { user_id: value("userId"), operation: value("userAction"), reason: value("userReason") };
+      case "manage_creator":
+        return { user_id: value("creatorId"), operation: value("creatorAction"), reason: value("creatorReason") };
+      case "moderate_report":
+        return { report_id: value("reportId"), operation: value("reportAction"), reason: value("reportReason") };
+      case "review_finance":
+        return { reference: value("financeRef"), operation: value("financeAction"), reason: value("financeReason") };
+      case "manage_settings":
+        return { operation: value("settingAction"), key: value("settingKey"), value: value("settingValue") };
+      case "manage_support":
+        return { ticket_id: value("ticketId"), operation: value("ticketAction"), notes: value("ticketNotes") };
+      case "manage_operations":
+        return { operation: value("opsAction"), reference: value("opsReference"), notes: value("opsNotes") };
+      case "manage_engineering":
+        return { operation: value("engineeringAction"), reference: value("migrationRef"), notes: value("migrationNotes") };
+      case "create_incident":
+        return { incident_type: value("incidentType"), severity: value("incidentSeverity"), summary: value("incidentNotes") };
+      default:
+        throw new Error("Unknown admin operation.");
+    }
+  }
+
+  function validatePayload(action, payload) {
+    const required = {
+      manage_user: ["user_id", "reason"],
+      manage_creator: ["user_id", "reason"],
+      moderate_report: ["report_id", "reason"],
+      review_finance: ["reference", "reason"],
+      manage_settings: ["key", "value"],
+      manage_support: ["ticket_id", "notes"],
+      manage_engineering: ["reference", "notes"],
+      create_incident: ["summary"]
+    };
+    for (const field of (required[action] || [])) {
+      if (!payload[field]) {
+        throw new Error("Please complete the required field: " + field.replaceAll("_", " "));
+      }
+    }
+  }
+
+  async function submitAction(action) {
+    if (!adminVerified || busy) return;
+    let payload;
+    try {
+      payload = getActionPayload(action);
+      validatePayload(action, payload);
+    } catch (error) {
+      displayResult(error.message);
+      return;
+    }
+
+    const warningText = "Submit this request to the authorized TWOTERM backend?\n\n" +
+      "The server must validate permissions and record an audit event.";
+    if (!window.confirm(warningText)) return;
+
+    setBusy(true);
+    displayResult("Submitting " + action + "…");
+    try {
+      const data = await callAdmin(action, payload);
+      displayResult("Backend response for " + action + ".", data);
+    } catch (error) {
+      displayResult("Action failed: " + error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  document.querySelectorAll("[data-action]").forEach(button => {
+    button.addEventListener("click", () => submitAction(button.dataset.action));
+  });
+
+  document.querySelectorAll("[data-load]").forEach(button => {
+    button.addEventListener("click", () => loadModule(button.dataset.load));
+  });
+
+  $("retryAuth").addEventListener("click", checkAccess);
+  $("retryAdmin").addEventListener("click", checkAccess);
+  $("refreshDashboard").addEventListener("click", () => loadModule("overview"));
+
+  $("signOut").addEventListener("click", async () => {
+    adminVerified = false;
+    show("adminApp", false);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      session = null;
+      status("Signed out.");
+      show("signedOut", true);
+    } catch (error) {
+      status("Sign-out error: " + error.message, "bad");
+    }
+  });
+
+  if (window.supabase?.createClient) {
+    checkAccess();
+  } else {
+    status("Supabase client failed to load. Check your internet connection and refresh.", "bad");
+    show("signedOut", true);
+  }
+})();
+</script>
+</body>
+</html>
