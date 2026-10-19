@@ -1,4 +1,4 @@
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,542 +6,411 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#100d20">
 <title>TWOTERM — Creator Profile</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-:root {
-  --bg:#100d20;
-  --panel:#1b1730;
-  --text:#faf8ff;
-  --muted:#aaa5bf;
-  --border:#39324f;
-  --accent:#a855f7;
-  --pink:#ec4899;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,sans-serif;transition:.2s;
-}
-header {
-  display:flex;justify-content:space-between;align-items:center;
-  gap:12px;padding:16px 5%;border-bottom:1px solid var(--border);
-}
-.logo {font-size:23px;font-weight:900;color:white;text-decoration:none}
-.logo span {color:#d28aff}
-a {color:#d8b0ff}
-button,input,textarea,select {font:inherit}
-button {cursor:pointer}
-.btn {
-  border:1px solid var(--border);border-radius:10px;padding:11px 15px;
-  background:#28213f;color:white;font-weight:bold;
-}
-.primary {background:linear-gradient(110deg,var(--accent),var(--pink));border:0}
-.btn:disabled {opacity:.55;cursor:wait}
-main {width:min(900px,94%);margin:25px auto}
-.card {
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:18px;padding:22px;margin-bottom:18px;
-}
-.hero {text-align:center;padding:30px 15px}
-h1 {font-size:clamp(27px,5vw,40px);margin:8px}
-h2 {margin-top:0}
-.muted {color:var(--muted);line-height:1.6;overflow-wrap:anywhere}
-.avatar {
-  width:110px;height:110px;border-radius:50%;object-fit:cover;
-  display:block;margin:0 auto 15px;background:#302342;
-  border:3px solid var(--accent);
-}
-.stats {
-  display:flex;justify-content:center;gap:35px;flex-wrap:wrap;margin:22px 0;
-}
-.stat {text-align:center}
-.stat strong {display:block;font-size:21px}
-.actions {display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.center {justify-content:center}
-.field {margin:15px 0}
-label {display:block;margin-bottom:7px;font-size:13px;font-weight:bold}
-input,textarea,select {
-  width:100%;padding:12px;border:1px solid var(--border);
-  border-radius:10px;background:var(--bg);color:var(--text);
-}
-input[type=checkbox] {width:auto}
-input[type=file] {max-width:100%}
-textarea {min-height:90px;resize:vertical}
-.grid {display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.notice {
-  display:none;padding:12px;border-radius:10px;margin-bottom:15px;
-  overflow-wrap:anywhere;background:#28213f;
-}
-.notice.show {display:block}
-.video-grid {
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
-}
-.post {
-  min-width:0;border:1px solid var(--border);border-radius:13px;
-  padding:12px;background:#151126;overflow:hidden;
-}
-.post video {
-  display:block;width:100%;max-height:430px;aspect-ratio:9/12;
-  object-fit:contain;background:#080710;border-radius:9px;
-}
-.post h3 {overflow-wrap:anywhere}
-.post-actions {display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.post-actions .btn {padding:9px;font-size:13px}
-.empty {
-  text-align:center;border:1px dashed var(--border);
-  padding:24px;border-radius:12px;grid-column:1/-1;
-}
-footer {text-align:center;color:var(--muted);padding:25px}
-[hidden] {display:none!important}
-body.light {
-  --bg:#f6f5fb;--panel:#fff;--text:#201b32;
-  --muted:#6b647b;--border:#ded7eb;
-}
-body.light .logo {color:#201b32}
-body.light .post {background:#f8f6fc}
-@media(max-width:600px) {
-  .grid {grid-template-columns:1fr}
-  .video-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  .card {padding:16px}
-  .stats {gap:23px}
-  .post {padding:8px}
-  .post-actions .btn {padding:8px 6px}
-}
+:root{--bg:#100d20;--panel:#1b1730;--text:#faf8ff;--muted:#aaa5bf;--border:#39324f;--accent:#a855f7;--pink:#ec4899}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 5%;border-bottom:1px solid var(--border)}
+.logo{font-size:23px;font-weight:900;color:white;text-decoration:none}
+.logo span{color:#d28aff}
+a{color:#d8b0ff}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+.btn{border:1px solid var(--border);border-radius:10px;padding:11px 15px;background:#28213f;color:white;font-weight:bold}
+.primary{background:linear-gradient(110deg,var(--accent),var(--pink));border:0}
+main{width:min(950px,94%);margin:25px auto}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:18px}
+.hero{text-align:center;padding:30px 15px}
+h1{font-size:clamp(27px,5vw,40px);margin:8px}
+h2{margin-top:0}
+.muted{color:var(--muted);line-height:1.6}
+.avatar{width:110px;height:110px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 15px;background:#302342;border:3px solid var(--accent)}
+.stats{display:flex;justify-content:center;gap:35px;margin:22px 0}
+.stat{text-align:center}
+.stat strong{display:block;font-size:21px}
+.field{margin:15px 0}
+label{display:block;margin-bottom:7px;font-size:13px;font-weight:bold}
+input,textarea,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#100d20;color:white}
+input[type=checkbox]{width:auto}
+input[type=file]{max-width:100%}
+textarea{min-height:90px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.notice{display:none;padding:12px;border-radius:10px;margin-bottom:15px;overflow-wrap:anywhere}
+.notice.show{display:block;background:#28213f}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.video-card{min-width:0;overflow:hidden;border:1px solid var(--border);border-radius:13px;background:#120f23}
+.video-card video{width:100%;aspect-ratio:3/4;object-fit:cover;background:#080711;display:block}
+.video-info{padding:12px}
+.video-info h3{font-size:16px;overflow-wrap:anywhere;margin:4px 0 8px}
+.video-info p{overflow-wrap:anywhere}
+.video-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.empty{padding:25px 10px;text-align:center;border:1px dashed var(--border);border-radius:12px;grid-column:1/-1}
+footer{text-align:center;color:var(--muted);padding:25px}
+[hidden]{display:none!important}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{gap:22px}.card{padding:16px}}
 </style>
 </head>
-
 <body>
 <header>
-  <a class="logo" href="index.html">TWO<span>TERM.</span></a>
-  <a href="index.html">← Home</a>
+<a class="logo" href="index.html">TWO<span>TERM.</span></a>
+<a href="index.html">← Home</a>
 </header>
 
 <main>
-  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+<div id="notice" class="notice" role="status" aria-live="polite"></div>
 
-  <section class="card hero">
-    <img id="avatar" class="avatar"
-      src="https://placehold.co/220x220/302342/ffffff?text=TWOTERM"
-      alt="Profile photo">
+<section class="card hero">
+<img id="avatar" class="avatar" alt="Profile photo" src="https://placehold.co/220x220/302342/ffffff?text=TWOTERM">
+<h1 id="publicName">TWOTERM Creator</h1>
+<p id="publicUsername" class="muted">@username</p>
+<p id="bioText" class="muted">Connect. Create. Stream. Earn.</p>
+<div class="stats">
+<div class="stat"><strong id="postsCount">0</strong><span class="muted">Videos</span></div>
+<div class="stat"><strong id="followersCount">0</strong><span class="muted">Followers</span></div>
+<div class="stat"><strong id="followingCount">0</strong><span class="muted">Following</span></div>
+</div>
+<div class="actions">
+<button class="btn primary" id="editBtn" type="button" hidden>Edit profile</button>
+<button class="btn" id="followBtn" type="button" hidden>Follow</button>
+<button class="btn" id="shareBtn" type="button">Share profile</button>
+</div>
+<p id="accountStatus" class="muted">Connecting to TWOTERM…</p>
+</section>
 
-    <h1 id="publicName">TWOTERM Creator</h1>
-    <p id="publicUsername" class="muted">@username</p>
-    <p id="bioText" class="muted">Connect. Create. Share your creativity.</p>
-    <p id="locationText" class="muted"></p>
+<section class="card" id="editor" hidden>
+<h2>Edit your profile</h2>
+<form id="profileForm">
+<div class="field">
+<label for="photo">Profile photo (JPG, PNG or WebP; max 5 MB)</label>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
+</div>
+<div class="grid">
+<div class="field"><label for="displayName">Display name</label><input id="displayName" maxlength="50" required></div>
+<div class="field"><label for="username">Username</label><input id="username" maxlength="24" pattern="[A-Za-z0-9_]{3,24}" required></div>
+</div>
+<div class="field"><label for="bio">Biography</label><textarea id="bio" maxlength="300" placeholder="Tell people about yourself"></textarea></div>
+<div class="actions">
+<button class="btn primary" id="saveBtn" type="submit">Save profile</button>
+<button class="btn" id="cancelBtn" type="button">Cancel</button>
+</div>
+</form>
+</section>
 
-    <div class="stats">
-      <div class="stat"><strong id="postsCount">0</strong><span class="muted">Posts</span></div>
-      <div class="stat"><strong id="followersCount">0</strong><span class="muted">Followers</span></div>
-      <div class="stat"><strong id="followingCount">0</strong><span class="muted">Following</span></div>
-    </div>
+<section class="card">
+<h2>Videos and creativity</h2>
+<p id="videosMessage" class="muted">Loading published videos…</p>
+<div class="actions" style="justify-content:flex-start;margin:14px 0">
+<button class="btn primary" id="showAddVideoBtn" type="button" hidden>+ Add video</button>
+</div>
+<form id="addVideoForm" hidden>
+<h3>Publish a video</h3>
+<div class="field"><label for="videoTitle">Video title</label><input id="videoTitle" maxlength="100" required></div>
+<div class="field"><label for="videoDescription">Caption / description</label><textarea id="videoDescription" maxlength="1000"></textarea></div>
+<div class="field">
+<label for="videoUrl">Direct video URL</label>
+<input id="videoUrl" type="url" placeholder="https://example.com/video.mp4" required>
+<p class="muted">Use a direct video-file link, not an ordinary webpage link. This form does not upload files from your phone.</p>
+</div>
+<div class="actions" style="justify-content:flex-start">
+<button class="btn primary" id="publishVideoBtn" type="submit">Publish video</button>
+<button class="btn" id="cancelVideoBtn" type="button">Cancel</button>
+</div>
+</form>
+<div id="videosGrid" class="video-grid"></div>
+</section>
 
-    <div class="actions center">
-      <button class="btn primary" id="editBtn">Edit profile</button>
-      <button class="btn" id="followBtn" hidden>Follow</button>
-      <button class="btn" id="shareBtn">Share profile</button>
-    </div>
-
-    <p class="muted" id="accountStatus">Connecting to TWOTERM...</p>
-  </section>
-
-  <section class="card" id="editor" hidden>
-    <h2>Edit your profile</h2>
-    <form id="profileForm">
-      <div class="field">
-        <label for="photo">Profile photo (JPG, PNG or WebP, max 5 MB)</label>
-        <input id="photo" type="file" accept="image/jpeg,image/png,image/webp">
-      </div>
-
-      <div class="grid">
-        <div class="field">
-          <label for="displayName">Display name</label>
-          <input id="displayName" maxlength="50" required>
-        </div>
-        <div class="field">
-          <label for="username">Username (3–24 characters)</label>
-          <input id="username" maxlength="24"
-            pattern="[A-Za-z0-9_]{3,24}" required>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="bio">Biography</label>
-        <textarea id="bio" maxlength="300"
-          placeholder="Tell people about yourself..."></textarea>
-      </div>
-
-      <div class="grid">
-        <div class="field">
-          <label for="country">Country / region</label>
-          <select id="country">
-            <option value="">Choose region</option>
-            <option>Kenya</option>
-            <option>Tanzania</option>
-            <option>Nigeria</option>
-            <option>United States</option>
-            <option>United Kingdom</option>
-            <option>France</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="language">Preferred language</label>
-          <select id="language">
-            <option value="en">English</option>
-            <option value="sw">Kiswahili</option>
-            <option value="fr">French</option>
-          </select>
-        </div>
-      </div>
-
-      <label>
-        <input id="publicProfile" type="checkbox" checked>
-        Make my profile public
-      </label>
-
-      <div class="actions" style="margin-top:18px">
-        <button class="btn primary" id="saveBtn" type="submit">Save profile</button>
-        <button class="btn" id="cancelBtn" type="button">Cancel</button>
-      </div>
-    </form>
-  </section>
-
-  <section class="card" id="createSection">
-    <h2>Share your creativity</h2>
-    <p class="muted">Publish a video to your profile for other people to watch.</p>
-    <button class="btn primary" id="showAddVideoBtn" type="button">
-      + Create a post
-    </button>
-
-    <form id="addVideoForm" hidden>
-      <div class="field">
-        <label for="videoTitle">Video title</label>
-        <input id="videoTitle" maxlength="100" required
-          placeholder="Give your video a title">
-      </div>
-
-      <div class="field">
-        <label for="videoDescription">Caption</label>
-        <textarea id="videoDescription" maxlength="1000"
-          placeholder="Tell people about your video"></textarea>
-      </div>
-
-      <div class="field">
-        <label for="videoUrl">Direct video URL</label>
-        <input id="videoUrl" type="url" required
-          placeholder="https://your-host/video.mp4">
-        <p class="muted">
-          This must link directly to a playable video file. A normal YouTube
-          webpage link will not work in this player.
-        </p>
-      </div>
-
-      <div class="actions">
-        <button class="btn primary" id="publishVideoBtn" type="submit">
-          Publish post
-        </button>
-        <button class="btn" id="cancelPostBtn" type="button">Cancel</button>
-      </div>
-    </form>
-  </section>
-
-  <section class="card">
-    <h2>Videos and posts</h2>
-    <p class="muted" id="videosMessage">Loading posts...</p>
-    <div id="videosGrid" class="video-grid"></div>
-    <button class="btn" id="loadMoreBtn" hidden>Load more posts</button>
-  </section>
-
-  <section class="card">
-    <h2>Personalization</h2>
-    <p class="muted">Choose how TWOTERM looks on this device.</p>
-
-    <div class="grid">
-      <div class="field">
-        <label for="theme">Appearance</label>
-        <select id="theme">
-          <option value="dark">Dark</option>
-          <option value="light">Light</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="contentLanguage">Content language</label>
-        <select id="contentLanguage">
-          <option>All languages</option>
-          <option>English</option>
-          <option>Kiswahili</option>
-          <option>French</option>
-        </select>
-      </div>
-    </div>
-
-    <button class="btn" id="savePreferences">Save preferences</button>
-  </section>
+<section class="card">
+<h2>Personalization</h2>
+<div class="grid">
+<div class="field"><label for="theme">Appearance</label><select id="theme"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+<div class="field"><label for="contentLanguage">Content language</label><select id="contentLanguage"><option>All languages</option><option>English</option><option>Kiswahili</option><option>French</option></select></div>
+</div>
+<button class="btn" id="savePreferences" type="button">Save preferences</button>
+</section>
 </main>
-
 <footer>TWOTERM · Connect. Create. Stream. Earn.</footer>
 
 <script>
 "use strict";
 
-/* Keep your existing TWOTERM Supabase project. */
 const SUPABASE_URL = "https://rhysucxztnjlskodkads.supabase.co";
-const SUPABASE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
-const AVATAR_BUCKET = "twoterm-media";
-const FALLBACK_AVATAR =
-  "https://placehold.co/220x220/302342/ffffff?text=TWOTERM";
-const PAGE_SIZE = 12;
-
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4";
+const AVATAR_BUCKET = "avatars";
+const FALLBACK_AVATAR = "https://placehold.co/220x220/302342/ffffff?text=TWOTERM";
 const $ = id => document.getElementById(id);
-const params = new URLSearchParams(location.search);
 
-let db = null;
+let client = null;
 let user = null;
-let targetId = null;
 let profile = null;
-let isFollowing = false;
+let profileId = null;
 let selectedPhoto = null;
 let previewUrl = null;
-let postOffset = 0;
-let postsBusy = false;
-let morePosts = true;
-let noticeTimer = null;
+let isFollowing = false;
+let loading = false;
+
+const params = new URLSearchParams(location.search);
+const requestedId = params.get("id") || params.get("user");
+const requestedUsername = params.get("username");
 
 function notify(message) {
   $("notice").textContent = message;
   $("notice").classList.add("show");
-  clearTimeout(noticeTimer);
-  noticeTimer = setTimeout(() => $("notice").classList.remove("show"), 7000);
 }
-
-function formatError(error) {
-  if (!error) return "Unknown error";
-  if (error.code === "23505") return "That username is already taken.";
-  if (error.code === "42501") return "Database permission denied. Check your Supabase RLS policies.";
-  if (error.code === "42P01") return "A required database table is missing. Run Step 1 SQL.";
-  if (error.code === "42703") return "A required database column is missing. Check Step 1 SQL.";
-  return error.message || String(error);
+function clearNotice() {
+  $("notice").textContent = "";
+  $("notice").classList.remove("show");
 }
-
-function safeUrl(value) {
-  try {
-    const u = new URL(value);
-    return ["https:", "http:"].includes(u.protocol) ? u.href : "";
-  } catch (_) {
-    return "";
-  }
+function validUsername(value) {
+  return /^[a-zA-Z0-9_]{3,24}$/.test(value);
 }
-
+function releasePreview() {
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = null;
+}
 function showAvatar(url) {
   const img = $("avatar");
   img.onerror = () => {
     img.onerror = null;
     img.src = FALLBACK_AVATAR;
   };
-  img.src = safeUrl(url || "") || FALLBACK_AVATAR;
+  img.src = url || FALLBACK_AVATAR;
 }
-
-function releasePreview() {
-  if (previewUrl) URL.revokeObjectURL(previewUrl);
-  previewUrl = null;
+function isOwner() {
+  return !!user && !!profileId && user.id === profileId;
 }
-
-function signedInOwnProfile() {
-  return !!user && user.id === targetId;
+function setControls() {
+  $("editBtn").hidden = !isOwner();
+  $("showAddVideoBtn").hidden = !isOwner();
+  $("followBtn").hidden = !user || !profileId || isOwner();
+  $("followBtn").textContent = isFollowing ? "Following ✓" : "Follow";
 }
-
 function renderProfile() {
   if (!profile) return;
-
   $("publicName").textContent = profile.display_name || "TWOTERM Creator";
-  $("publicUsername").textContent =
-    profile.username ? "@" + profile.username : "@creator";
-  $("bioText").textContent = profile.bio ||
-    "Connect. Create. Share your creativity.";
-  $("locationText").textContent = profile.country || "";
-  showAvatar(profile.avatar_url);
-
+  $("publicUsername").textContent = profile.username ? "@" + profile.username : "@creator";
+  $("bioText").textContent = profile.bio || "Connect. Create. Stream. Earn.";
   $("displayName").value = profile.display_name || "";
   $("username").value = profile.username || "";
   $("bio").value = profile.bio || "";
-  $("country").value = profile.country || "";
-  $("language").value = profile.language || "en";
-  $("publicProfile").checked = profile.is_public !== false;
-
-  const own = signedInOwnProfile();
-  $("editBtn").hidden = !own;
-  $("followBtn").hidden = !user || own;
-  $("createSection").hidden = !own;
-  $("editor").hidden = true;
-
-  if (own) {
-    $("accountStatus").textContent =
-      "Your profile · " + (user.email || user.phone || "Signed in");
-  } else if (profile.is_public === false) {
-    $("accountStatus").textContent = "This profile is private.";
-  } else {
-    $("accountStatus").textContent = "Creator profile";
-  }
-
-  updateFollowButton();
+  showAvatar(profile.avatar_url);
+  setControls();
 }
-
-function updateFollowButton() {
-  $("followBtn").textContent = isFollowing ? "Following ✓" : "Follow";
+async function getProfileById(id) {
+  const { data, error } = await client.from("profiles")
+    .select("id,username,display_name,avatar_url,bio")
+    .eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data;
 }
+async function ensureOwnProfile() {
+  const existing = await getProfileById(user.id);
+  if (existing) return existing;
 
-async function getCounts() {
-  const results = await Promise.all([
-    db.from("twoterm_posts").select("id", { count: "exact", head: true })
-      .eq("user_id", targetId),
-    db.from("twoterm_follows").select("id", { count: "exact", head: true })
-      .eq("following_id", targetId),
-    db.from("twoterm_follows").select("id", { count: "exact", head: true })
-      .eq("follower_id", targetId)
+  const meta = user.user_metadata || {};
+  const username = meta.username || ("user_" + user.id.slice(0,8));
+  const row = {
+    id: user.id,
+    username,
+    display_name: meta.display_name || user.email?.split("@")[0] || "TWOTERM Creator",
+    bio: meta.bio || "",
+    avatar_url: meta.avatar_url || null
+  };
+  const { error } = await client.from("profiles").upsert(row, {onConflict:"id"});
+  if (error) throw error;
+  return await getProfileById(user.id);
+}
+async function loadFollowCounts() {
+  if (!profileId) return;
+  const [followers, following] = await Promise.all([
+    client.from("follows").select("follower_id",{count:"exact",head:true}).eq("creator_id",profileId),
+    client.from("follows").select("creator_id",{count:"exact",head:true}).eq("follower_id",profileId)
   ]);
+  if (followers.error) throw followers.error;
+  if (following.error) throw following.error;
+  $("followersCount").textContent = followers.count ?? 0;
+  $("followingCount").textContent = following.count ?? 0;
 
-  const labels = ["postsCount", "followersCount", "followingCount"];
+  if (user && user.id !== profileId) {
+    const {data,error} = await client.from("follows").select("follower_id")
+      .eq("follower_id",user.id).eq("creator_id",profileId).maybeSingle();
+    if (error) throw error;
+    isFollowing = !!data;
+    setControls();
+  }
+}
+function makeVideoCard(video) {
+  const card = document.createElement("article");
+  card.className = "video-card";
 
-  results.forEach((result, i) => {
-    if (result.error) {
-      console.error("Count error:", result.error);
-      $(labels[i]).textContent = "—";
-    } else {
-      $(labels[i]).textContent = result.count ?? 0;
+  const player = document.createElement("video");
+  player.src = video.video_url;
+  player.controls = true;
+  player.playsInline = true;
+  player.preload = "metadata";
+
+  const info = document.createElement("div");
+  info.className = "video-info";
+  const title = document.createElement("h3");
+  title.textContent = video.title || "Untitled video";
+  const caption = document.createElement("p");
+  caption.className = "muted";
+  caption.textContent = video.description || "";
+
+  const actions = document.createElement("div");
+  actions.className = "video-actions";
+  const share = document.createElement("button");
+  share.className = "btn";
+  share.type = "button";
+  share.textContent = "Share";
+  share.addEventListener("click", async () => {
+    const url = location.origin + location.pathname + "?id=" + encodeURIComponent(profileId);
+    try {
+      if (navigator.share) await navigator.share({title:video.title || "TWOTERM video",url});
+      else {
+        await navigator.clipboard.writeText(url);
+        notify("Profile link copied.");
+      }
+    } catch(e) {
+      if(e.name !== "AbortError") notify("Could not share this link.");
     }
   });
+  actions.appendChild(share);
+
+  if (isOwner()) {
+    const remove = document.createElement("button");
+    remove.className = "btn";
+    remove.type = "button";
+    remove.textContent = "Delete";
+    remove.addEventListener("click", async () => {
+      if (!confirm("Delete this video from your profile?")) return;
+      remove.disabled = true;
+      const {error} = await client.from("videos").delete()
+        .eq("id",video.id).eq("user_id",user.id);
+      if (error) {
+        notify("Could not delete video: " + error.message);
+        remove.disabled = false;
+        return;
+      }
+      notify("Video deleted.");
+      await loadVideos();
+    });
+    actions.appendChild(remove);
+  }
+
+  info.append(title,caption,actions);
+  card.append(player,info);
+  return card;
 }
+async function loadVideos() {
+  if (!profileId) return;
+  $("videosMessage").textContent = "Loading published videos…";
+  $("videosGrid").replaceChildren();
 
-async function loadProfile() {
-  const requestedId = params.get("id");
-  const requestedUsername = params.get("username");
-
-  if (requestedId) {
-    targetId = requestedId;
-  } else if (user && !requestedUsername) {
-    targetId = user.id;
-  }
-
-  if (targetId) {
-    const { data, error } = await db.from("profiles")
-      .select("id,username,display_name,avatar_url,bio,country,language,is_public")
-      .eq("id", targetId).maybeSingle();
-
-    if (error) throw error;
-    profile = data;
-  } else if (requestedUsername) {
-    const { data, error } = await db.from("profiles")
-      .select("id,username,display_name,avatar_url,bio,country,language,is_public")
-      .eq("username", requestedUsername.toLowerCase()).maybeSingle();
-
-    if (error) throw error;
-    profile = data;
-    targetId = data?.id || null;
-  }
-
-  if (!profile && user && !requestedId && !requestedUsername) {
-    targetId = user.id;
-    profile = {
-      id: user.id,
-      username: user.user_metadata?.username || "",
-      display_name: user.user_metadata?.display_name || "",
-      avatar_url: user.user_metadata?.avatar_url || "",
-      bio: user.user_metadata?.bio || "",
-      country: user.user_metadata?.country || "",
-      language: user.user_metadata?.language || "en",
-      is_public: user.user_metadata?.is_public !== false
-    };
-
-    const { error } = await db.from("profiles").upsert({
-      id: user.id,
-      username: profile.username || null,
-      display_name: profile.display_name || null,
-      avatar_url: profile.avatar_url || null,
-      bio: profile.bio || null,
-      country: profile.country || null,
-      language: profile.language,
-      is_public: profile.is_public,
-      updated_at: new Date().toISOString()
-    }, { onConflict: "id", ignoreDuplicates: true });
-
-    if (error) console.warn("Initial profile creation:", error);
-  }
-
-  if (!profile || !targetId) {
-    $("accountStatus").textContent =
-      "Profile not found. Sign in or open a valid profile link.";
-    $("editBtn").hidden = true;
-    $("followBtn").hidden = true;
-    $("createSection").hidden = true;
-    $("videosMessage").textContent = "No profile selected.";
-    return;
-  }
-
-  if (profile.is_public === false && !signedInOwnProfile()) {
-    $("accountStatus").textContent = "This profile is private.";
-    $("editBtn").hidden = true;
-    $("followBtn").hidden = true;
-    $("createSection").hidden = true;
-    $("videosGrid").replaceChildren();
-    $("videosMessage").textContent = "This creator has a private profile.";
-    return;
-  }
-
-  renderProfile();
-  await Promise.all([getCounts(), checkFollowStatus()]);
-  await loadPosts(true);
-}
-
-async function checkFollowStatus() {
-  if (!user || !targetId || user.id === targetId) {
-    isFollowing = false;
-    updateFollowButton();
-    return;
-  }
-
-  const { data, error } = await db.from("twoterm_follows")
-    .select("id")
-    .eq("follower_id", user.id)
-    .eq("following_id", targetId)
-    .maybeSingle();
+  const {data,error} = await client.from("videos")
+    .select("id,user_id,title,description,video_url,thumbnail_url,visibility,status,created_at")
+    .eq("user_id",profileId).eq("status","published")
+    .eq("visibility","public").order("created_at",{ascending:false});
 
   if (error) {
-    console.error("Follow check:", error);
-    return notify("Could not check follow status: " + formatError(error));
+    $("videosMessage").textContent = "Could not load videos: " + error.message;
+    return;
   }
 
-  isFollowing = !!data;
-  updateFollowButton();
+  $("postsCount").textContent = (data || []).length;
+  if (!data || data.length === 0) {
+    $("videosMessage").textContent = isOwner()
+      ? "You have not published any public videos yet. Tap Add video to get started."
+      : "This creator has no public videos yet.";
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "🎬 Videos will appear here";
+    $("videosGrid").appendChild(empty);
+    return;
+  }
+
+  $("videosMessage").textContent = "Published videos";
+  data.forEach(video => $("videosGrid").appendChild(makeVideoCard(video)));
+}
+async function loadAll() {
+  if (!client || loading) return;
+  loading = true;
+  clearNotice();
+
+  try {
+    const {data:sessionData,error:sessionError} = await client.auth.getSession();
+    if (sessionError) throw sessionError;
+    user = sessionData.session?.user || null;
+
+    if (requestedId) {
+      profile = await getProfileById(requestedId);
+    } else if (requestedUsername) {
+      const {data,error} = await client.from("profiles")
+        .select("id,username,display_name,avatar_url,bio")
+        .eq("username",requestedUsername).maybeSingle();
+      if (error) throw error;
+      profile = data;
+    } else if (user) {
+      profile = await ensureOwnProfile();
+    } else {
+      profile = null;
+    }
+
+    if (!profile) {
+      profileId = null;
+      $("accountStatus").textContent = "Sign in to view and edit your profile, or open a creator profile link.";
+      $("editBtn").hidden = true;
+      $("followBtn").hidden = true;
+      $("showAddVideoBtn").hidden = true;
+      $("videosMessage").textContent = "No profile selected.";
+      $("videosGrid").replaceChildren();
+      return;
+    }
+
+    profileId = profile.id;
+    isFollowing = false;
+    renderProfile();
+    $("accountStatus").textContent = isOwner()
+      ? "You are viewing your own profile."
+      : "Viewing a TWOTERM creator profile.";
+
+    const results = await Promise.allSettled([loadFollowCounts(),loadVideos()]);
+    results.forEach(result => {
+      if (result.status === "rejected") {
+        console.error(result.reason);
+        notify("Some profile details could not load: " + result.reason.message);
+      }
+    });
+  } catch(error) {
+    console.error(error);
+    notify("Could not load profile: " + error.message);
+    $("accountStatus").textContent = "There was a problem loading this profile.";
+  } finally {
+    loading = false;
+  }
+}
+
+async function initialize() {
+  try {
+    if (!window.supabase) throw new Error("Supabase library did not load. Refresh the page.");
+    client = window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+    await loadAll();
+    client.auth.onAuthStateChange(() => {
+      setTimeout(() => loadAll(),0);
+    });
+  } catch(error) {
+    console.error(error);
+    notify("Connection failed: " + error.message);
+    $("accountStatus").textContent = "Could not connect to Supabase.";
+  }
 }
 
 $("editBtn").addEventListener("click", () => {
-  if (!user) return notify("Sign in through your TWOTERM homepage first.");
+  if (!user) return notify("Sign in on the TWOTERM homepage first.");
   $("editor").hidden = !$("editor").hidden;
-  if (!$("editor").hidden) $("editor").scrollIntoView({behavior:"smooth"});
 });
-
-$("photo").addEventListener("change", event => {
-  const file = event.target.files?.[0];
-  if (!file) return;
-
-  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-    event.target.value = "";
-    return notify("Choose a JPG, PNG or WebP photo.");
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    event.target.value = "";
-    return notify("Photo must be 5 MB or smaller.");
-  }
-
-  selectedPhoto = file;
-  releasePreview();
-  previewUrl = URL.createObjectURL(file);
-  showAvatar(previewUrl);
-  notify("Photo selected. Save your profile to upload it.");
-});
-
 $("cancelBtn").addEventListener("click", () => {
   $("editor").hidden = true;
   selectedPhoto = null;
@@ -549,92 +418,206 @@ $("cancelBtn").addEventListener("click", () => {
   releasePreview();
   renderProfile();
 });
+$("photo").addEventListener("change", event => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (!["image/jpeg","image/png","image/webp"].includes(file.type)) {
+    event.target.value = "";
+    return notify("Choose a JPG, PNG or WebP image.");
+  }
+  if (file.size > 5*1024*1024) {
+    event.target.value = "";
+    return notify("The photo must be smaller than 5 MB.");
+  }
+  selectedPhoto = file;
+  releasePreview();
+  previewUrl = URL.createObjectURL(file);
+  showAvatar(previewUrl);
+  notify("Photo selected. Tap Save profile.");
+});
 
-$("profileForm").addEventListener("submit", async event => {
+$("profileForm").addEventListener("submit",async event => {
   event.preventDefault();
-  if (!user || !signedInOwnProfile()) return notify("Sign in to edit your profile.");
+  if (!client || !user || !isOwner()) return notify("Sign in to edit your own profile.");
 
   const displayName = $("displayName").value.trim();
   const username = $("username").value.trim().toLowerCase();
   const bio = $("bio").value.trim();
-
   if (!displayName) return notify("Enter your display name.");
-  if (!/^[a-z0-9_]{3,24}$/.test(username)) {
-    return notify("Username must be 3–24 letters, numbers or underscores.");
-  }
+  if (!validUsername(username)) return notify("Username must be 3–24 letters, numbers or underscores.");
 
-  const btn = $("saveBtn");
-  btn.disabled = true;
-  btn.textContent = "Saving...";
-
+  $("saveBtn").disabled = true;
   try {
-    let avatarUrl = profile.avatar_url || "";
+    let avatarUrl = profile.avatar_url || null;
 
     if (selectedPhoto) {
-      const ext = selectedPhoto.type === "image/png" ? "png" :
-        selectedPhoto.type === "image/webp" ? "webp" : "jpg";
+      const ext = selectedPhoto.type === "image/png" ? "png"
+        : selectedPhoto.type === "image/webp" ? "webp" : "jpg";
       const path = user.id + "/avatar-" + Date.now() + "." + ext;
-
-      const { error } = await db.storage.from(AVATAR_BUCKET).upload(
-        path, selectedPhoto, {
-          contentType: selectedPhoto.type,
-          cacheControl: "3600",
-          upsert: true
-        }
-      );
-      if (error) throw error;
-
-      avatarUrl = db.storage.from(AVATAR_BUCKET).getPublicUrl(path).data.publicUrl;
+      const {error:uploadError} = await client.storage.from(AVATAR_BUCKET)
+        .upload(path,selectedPhoto,{
+          upsert:false,
+          contentType:selectedPhoto.type,
+          cacheControl:"3600"
+        });
+      if (uploadError) throw uploadError;
+      avatarUrl = client.storage.from(AVATAR_BUCKET).getPublicUrl(path).data.publicUrl;
     }
 
-    const updated = {
-      id: user.id,
+    const {error} = await client.from("profiles").upsert({
+      id:user.id,
       username,
-      display_name: displayName,
+      display_name:displayName,
+      avatar_url:avatarUrl,
       bio,
-      country: $("country").value,
-      language: $("language").value,
-      avatar_url: avatarUrl || null,
-      is_public: $("publicProfile").checked,
-      updated_at: new Date().toISOString()
-    };
-
-    const { error } = await db.from("profiles").upsert(updated, {
-      onConflict: "id"
-    });
+      updated_at:new Date().toISOString()
+    },{onConflict:"id"});
     if (error) throw error;
 
-    const { error: metadataError } = await db.auth.updateUser({
-      data: {
-        username,
-        display_name: displayName,
-        bio,
-        country: updated.country,
-        language: updated.language,
-        avatar_url: avatarUrl,
-        is_public: updated.is_public
-      }
+    const {error:authError} = await client.auth.updateUser({
+      data:{username,display_name:displayName,bio,avatar_url:avatarUrl}
     });
+    if (authError) console.warn("Auth metadata update failed:",authError.message);
 
-    profile = updated;
+    profile = {...profile,username,display_name:displayName,bio,avatar_url:avatarUrl};
     selectedPhoto = null;
     $("photo").value = "";
     releasePreview();
     renderProfile();
     $("editor").hidden = true;
-
-    notify(metadataError
-      ? "Profile saved. Some account metadata could not be updated: " + formatError(metadataError)
-      : "Your profile was saved successfully.");
-
-    await getCounts();
-  } catch (error) {
-    console.error("Profile save:", error);
-    notify("Could not save profile: " + formatError(error));
+    notify("Profile saved successfully.");
+  } catch(error) {
+    console.error(error);
+    notify("Could not save profile: " + error.message);
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Save profile";
+    $("saveBtn").disabled = false;
   }
 });
 
-$("followBtn").addEventListener("click", async () =
+$("followBtn").addEventListener("click",async () => {
+  if (!user) return notify("Sign in to follow creators.");
+  if (!profileId || isOwner()) return;
+
+  $("followBtn").disabled = true;
+  try {
+    if (isFollowing) {
+      const {error} = await client.from("follows").delete()
+        .eq("follower_id",user.id).eq("creator_id",profileId);
+      if (error) throw error;
+      isFollowing = false;
+      notify("You unfollowed this creator.");
+    } else {
+      const {error} = await client.from("follows").insert({
+        follower_id:user.id,
+        creator_id:profileId
+      });
+      if (error) throw error;
+      isFollowing = true;
+      notify("You are now following this creator.");
+    }
+    $("followBtn").textContent = isFollowing ? "Following ✓" : "Follow";
+    await loadFollowCounts();
+  } catch(error) {
+    notify("Follow action failed: " + error.message);
+  } finally {
+    $("followBtn").disabled = false;
+  }
+});
+
+$("shareBtn").addEventListener("click",async () => {
+  const url = profileId
+    ? location.origin + location.pathname + "?id=" + encodeURIComponent(profileId)
+    : location.href;
+  try {
+    if (navigator.share) {
+      await navigator.share({title:"TWOTERM Profile",url});
+    } else {
+      await navigator.clipboard.writeText(url);
+      notify("Profile link copied.");
+    }
+  } catch(error) {
+    if (error.name !== "AbortError") notify("Could not share. Copy the page address instead.");
+  }
+});
+
+$("showAddVideoBtn").addEventListener("click",() => {
+  $("addVideoForm").hidden = !$("addVideoForm").hidden;
+});
+$("cancelVideoBtn").addEventListener("click",() => {
+  $("addVideoForm").reset();
+  $("addVideoForm").hidden = true;
+});
+
+$("addVideoForm").addEventListener("submit",async event => {
+  event.preventDefault();
+  if (!client || !user || !isOwner()) return notify("Sign in to your own profile before publishing.");
+
+  const title = $("videoTitle").value.trim();
+  const description = $("videoDescription").value.trim();
+  const videoUrl = $("videoUrl").value.trim();
+  if (!title || !videoUrl) return notify("Enter a video title and URL.");
+
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(videoUrl);
+    if (!["https:","http:"].includes(parsedUrl.protocol)) throw new Error("Use an HTTP or HTTPS video URL.");
+  } catch(error) {
+    return notify("Enter a valid video URL.");
+  }
+
+  $("publishVideoBtn").disabled = true;
+  try {
+    const {error} = await client.from("videos").insert({
+      user_id:user.id,
+      title,
+      description,
+      video_url:parsedUrl.href,
+      visibility:"public",
+      status:"published"
+    });
+    if (error) throw error;
+
+    $("addVideoForm").reset();
+    $("addVideoForm").hidden = true;
+    notify("Video published successfully.");
+    await loadVideos();
+  } catch(error) {
+    console.error(error);
+    notify("Could not publish video: " + error.message);
+  } finally {
+    $("publishVideoBtn").disabled = false;
+  }
+});
+
+function applyTheme(theme) {
+  if (theme === "light") {
+    document.body.style.background = "#f6f5fb";
+    document.body.style.color = "#201b32";
+  } else {
+    document.body.style.background = "";
+    document.body.style.color = "";
+  }
+}
+$("savePreferences").addEventListener("click",() => {
+  try {
+    localStorage.setItem("twoterm-profile-theme",$("theme").value);
+    localStorage.setItem("twoterm-profile-content-language",$("contentLanguage").value);
+    applyTheme($("theme").value);
+    notify("Preferences saved on this device.");
+  } catch(error) {
+    notify("Could not save preferences in this browser.");
+  }
+});
+try {
+  $("theme").value = localStorage.getItem("twoterm-profile-theme") || "dark";
+  $("contentLanguage").value = localStorage.getItem("twoterm-profile-content-language") || "All languages";
+  applyTheme($("theme").value);
+} catch(error) {
+  console.warn("Could not load saved preferences:",error);
+}
+
+initialize();
+</script>
+<script src="twoterm-nav.js" defer></script>
+</body>
+</html>
