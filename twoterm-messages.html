@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TWOTERM — Messages</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#0b0a12;--panel:#14121f;--panel2:#1b1829;--line:#2b263b;--text:#f7f5ff;--muted:#a49bb8;--pink:#ff3d91;--purple:#8b5cf6;--green:#43d9a3;--danger:#ff647c}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#211437 0,transparent 40%),var(--bg);color:var(--text);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer;border:0;color:inherit}a{color:inherit;text-decoration:none}
+.app{max-width:1240px;margin:auto;padding:22px;min-height:100vh;display:flex;flex-direction:column;gap:18px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:4px 2px}.brand{display:flex;align-items:center;gap:11px;font-weight:850;font-size:21px;letter-spacing:.3px}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,var(--pink),var(--purple));display:grid;place-items:center;box-shadow:0 8px 25px #8b5cf633}.logo svg{width:22px}.top-actions{display:flex;gap:10px;align-items:center}.pill{padding:10px 15px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-weight:700}.pill:hover{border-color:#6b4ca1}.primary{background:linear-gradient(120deg,var(--pink),var(--purple));font-weight:800;border-radius:12px;padding:11px 16px}.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:18px;flex:1;min-height:650px;max-height:calc(100vh - 110px)}
+.sidebar,.chat{background:rgba(20,18,31,.94);border:1px solid var(--line);border-radius:22px;overflow:hidden;min-height:0;box-shadow:0 20px 60px #0002}
+.sidebar{display:flex;flex-direction:column}.sidehead{padding:22px 20px 16px;border-bottom:1px solid var(--line)}h1{font-size:25px;margin:0 0 4px;letter-spacing:-.5px}.sub{color:var(--muted);font-size:13px}.searchbox{margin-top:17px;display:flex;gap:8px}.searchbox input,.compose input,.loginbox input{min-width:0;width:100%;background:#0e0c17;border:1px solid var(--line);border-radius:12px;padding:12px 13px;color:var(--text);outline:none}.searchbox input:focus,.compose input:focus,.loginbox input:focus{border-color:var(--purple);box-shadow:0 0 0 3px #8b5cf622}.section-label{padding:15px 20px 8px;text-transform:uppercase;font-size:10px;letter-spacing:1.6px;color:var(--muted);font-weight:800}.people{overflow:auto;padding:0 9px 12px}.person{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:15px;text-align:left;background:transparent;border:1px solid transparent}.person:hover{background:#ffffff08}.person.active{background:#8b5cf61b;border-color:#8b5cf64d}.avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#ff3d91,#7657ed);display:grid;place-items:center;flex-shrink:0;font-weight:850;font-size:15px}.avatar.small{width:39px;height:39px}.person-main{min-width:0;flex:1}.person-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.person-last{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}.person-time{font-size:10px;color:var(--muted);white-space:nowrap}
+.chat{display:flex;flex-direction:column;position:relative}.chat-empty{flex:1;display:grid;place-items:center;text-align:center;padding:30px}.empty-icon{width:74px;height:74px;border-radius:24px;display:grid;place-items:center;margin:0 auto 16px;background:linear-gradient(135deg,#ff3d9126,#8b5cf62c);color:#f5c5e2}.empty-icon svg{width:32px}.empty h2{margin:0 0 8px;font-size:22px}.empty p{color:var(--muted);max-width:330px;margin:0 auto 18px}.chathead{display:flex;align-items:center;gap:12px;padding:17px 20px;border-bottom:1px solid var(--line);min-height:82px}.chat-title{font-weight:850}.online{font-size:12px;color:var(--green);margin-top:2px}.chat-tools{margin-left:auto;display:flex;gap:8px}.iconbtn{width:39px;height:39px;border-radius:12px;background:#ffffff08;border:1px solid var(--line);display:grid;place-items:center}.iconbtn:hover{background:#ffffff12}.iconbtn svg{width:18px;height:18px}.messages{padding:22px;overflow:auto;display:flex;flex-direction:column;gap:13px;flex:1;min-height:0;scroll-behavior:smooth}.dayline{text-align:center;color:var(--muted);font-size:11px;margin:4px 0 7px}.msgrow{display:flex;gap:8px;align-items:flex-end;max-width:82%}.msgrow.mine{align-self:flex-end;flex-direction:row-reverse}.bubble{padding:11px 14px;border-radius:17px 17px 17px 5px;background:#242035;border:1px solid #ffffff08;overflow-wrap:anywhere;white-space:pre-wrap}.mine .bubble{background:linear-gradient(135deg,#b82f7b,#6541c8);border:0;border-radius:17px 17px 5px 17px}.msgmeta{font-size:10px;color:#c1b8d1;margin-top:5px;text-align:right}.mine .msgmeta{color:#f6d9ef}.compose-wrap{padding:14px 18px 18px;border-top:1px solid var(--line);background:#11101a}.compose{display:flex;gap:10px;align-items:center}.compose input{border-radius:15px;padding:14px 15px}.send{width:48px;height:48px;flex-shrink:0;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),var(--purple))}.send svg{width:21px}.hint{font-size:11px;color:var(--muted);margin:8px 3px 0}.status{padding:11px 14px;margin:12px 18px 0;border-radius:12px;font-size:13px;display:none}.status.show{display:block}.status.error{background:#ff647c18;color:#ff9aab;border:1px solid #ff647c44}.status.good{background:#43d9a314;color:#84f2ca;border:1px solid #43d9a344}.loginbox{max-width:460px;margin:6vh auto;padding:28px;background:var(--panel);border:1px solid var(--line);border-radius:22px}.loginbox h2{margin-top:0}.loginbox label{display:block;margin:15px 0 6px;font-size:13px;color:var(--muted)}.loginbox button{width:100%;margin-top:16px}.hidden{display:none!important}.loading{padding:20px;text-align:center;color:var(--muted);font-size:13px}.new-search-results{padding:0 9px 10px}.empty-note{color:var(--muted);padding:16px 12px;font-size:13px;text-align:center}
+@media(max-width:760px){.app{padding:10px;gap:10px}.topbar{padding:4px 2px}.brand{font-size:18px}.top-actions .pill{padding:9px 10px}.layout{grid-template-columns:1fr;max-height:none;min-height:calc(100vh - 85px);gap:10px}.sidebar{min-height:250px;max-height:38vh}.sidehead{padding:16px}.section-label{padding:10px 16px 6px}.people{padding:0 7px 8px}.person{padding:9px}.avatar{width:40px;height:40px}.chat{min-height:54vh}.chat-empty{min-height:360px}.messages{padding:15px}.msgrow{max-width:92%}.chathead{padding:13px 15px;min-height:70px}.compose-wrap{padding:11px}.loginbox{margin:20px 10px;padding:22px}}
+</style>
+</head>
+<body>
+<div id="loginScreen" class="loginbox hidden">
+  <div class="brand"><div class="logo">T</div> TWOTERM</div>
+  <h2>Sign in to messages</h2><p class="sub">Log in to your TWOTERM account to send and receive messages.</p>
+  <label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+  <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Your password">
+  <button id="loginBtn" class="primary">Log in</button><div id="loginStatus" class="status"></div>
+</div>
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 0 1-9 8.5 9.6 9.6 0 0 1-4-.9L3 21l1.9-4.5A8.4 8.4 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/></svg></div> TWOTERM <span style="color:var(--muted);font-weight:500">/ Messages</span></div>
+    <div class="top-actions"><button class="pill" id="refreshBtn">Refresh</button><button class="pill" id="logoutBtn">Log out</button></div>
+  </header>
+  <main class="layout">
+    <aside class="sidebar">
+      <div class="sidehead"><h1>Messages</h1><div class="sub">Your conversations, all in one place.</div>
+        <div class="searchbox"><input id="userSearch" type="search" placeholder="Find people by username…"><button id="searchBtn" class="primary">Find</button></div>
+      </div>
+      <div id="searchArea" class="new-search-results hidden"></div>
+      <div class="section-label">Recent conversations</div>
+      <div id="peopleList" class="people"><div class="loading">Loading conversations…</div></div>
+    </aside>
+    <section class="chat" id="chatPanel">
+      <div class="chat-empty"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 11.5a8.5 8.5 0 0 1-9 8.5 9.6 9.6 0 0 1-4-.9L3 21l1.9-4.5A8.4 8.4 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg></div><h2>Your conversations start here</h2><p>Choose someone from your recent conversations or search for a TWOTERM user to send a message.</p><button class="primary" id="startChatBtn">Find people</button></div></div>
+    </section>
+  </main>
+</div>
+<script>
+(() => {
+'use strict';
+const SUPABASE_URL = 'https://rhysucxztnjlskodkads.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_cFrF4JmuSfQvf064BoFG7A_Y8KfSnv4';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+let me = null, activeUser = null, activeProfile = null, messagesChannel = null, refreshTimer = null;
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = p => (p?.display_name || p?.username || p?.full_name || 'U').trim().slice(0,2).toUpperCase();
+const avatar = p => p?.avatar_url ? `<img class="avatar" src="${esc(p.avatar_url)}" alt="" onerror="this.style.display='none'">` : `<div class="avatar">${esc(initials(p))}</div>`;
+function setStatus(el, text, type='error'){el.textContent=text;el.className='status show '+type;}
+function hideStatus(el){el.className='status';el.textContent='';}
+function shortTime(date){if(!date)return '';const d=new Date(date);if(Number.isNaN(d.getTime()))return '';return d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
+async function getProfile(id){
+  const {data,error}=await db.from('profiles').select('id,username,display_name,full_name,avatar_url').eq('id',id).maybeSingle();
+  if(error) console.warn('Profile lookup:',error.message);
+  return data || {id,username:'TWOTERM user'};
+}
+async function boot(){
+  const {data:{session},error}=await db.auth.getSession();
+  if(error){showLogin();setStatus($('loginStatus'),error.message);return;}
+  if(!session){showLogin();return;}
+  me=session.user; $('loginScreen').classList.add('hidden');$('app').classList.remove('hidden');
+  await loadConversations();
+  if(refreshTimer)clearInterval(refreshTimer);
+  refreshTimer=setInterval(()=>{if(!document.hidden)loadConversations(true);},15000);
+}
+function showLogin(){$('app').classList.add('hidden');$('loginScreen').classList.remove('hidden');}
+async function login(){
+  hideStatus($('loginStatus'));
+  const email=$('email').value.trim(),password=$('password').value;
+  if(!email||!password){setStatus($('loginStatus'),'Enter your email and password.');return;}
+  $('loginBtn').disabled=true;$('loginBtn').textContent='Signing in…';
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+  $('loginBtn').disabled=false;$('loginBtn').textContent='Log in';
+  if(error){setStatus($('loginStatus'),error.message);return;}
+  me=data.user;await boot();
+}
+function personButton(p,last='',time='',active=false){
+  const label=p.display_name||p.full_name||p.username||'TWOTERM user';
+  return `<button class="person ${active?'active':''}" data-user="${esc(p.id)}">${avatar(p)}<span class="person-main"><span class="person-name">${esc(label)}</span><span class="person-last">${esc(last||('@'+(p.username||'Open conversation')))}</span></span><span class="person-time">${esc(time)}</span></button>`;
+}
+async function loadConversations(quiet=false){
+  if(!me)return;
+  if(!quiet)$('peopleList').innerHTML='<div class="loading">Loading conversations…</div>';
+  const {data,error}=await db.from('messages').select('id,sender_id,receiver_id,content,created_at').or(`sender_id.eq.${me.id},receiver_id.eq.${me.id}`).order('created_at',{ascending:false}).limit(250);
+  if(error){
+    $('peopleList').innerHTML=`<div class="empty-note">Could not load messages.<br>${esc(error.message)}<br><br>Check the messages table and its RLS policies.</div>`;
+    return;
+  }
+  const latest=new Map();
+  (data||[]).forEach(m=>{const other=m.sender_id===me.id?m.receiver_id:m.sender_id;if(other&&!latest.has(other))latest.set(other,m);});
+  if(!latest.size){$('peopleList').innerHTML='<div class="empty-note">No conversations yet. Search for a username above to start one.</div>';return;}
+  const ids=[...latest.keys()];
+  const {data:profiles,error:profileError}=await db.from('profiles').select('id,username,display_name,full_name,avatar_url').in('id',ids);
+  if(profileError)console.warn(profileError.message);
+  const byId=new Map((profiles||[]).map(p=>[p.id,p]));
+  const entries=ids.map(id=>({p:byId.get(id)||{id,username:'TWOTERM user'},m:latest.get(id)}));
+  $('peopleList').innerHTML=entries.map(({p,m})=>personButton(p,(m.sender_id===me.id?'You: ':'')+(m.content||''),shortTime(m.created_at),activeUser===p.id)).join('');
+  $('peopleList').querySelectorAll('[data-user]').forEach(b=>b.addEventListener('click',()=>openChat(b.dataset.user)));
+}
+async function searchUsers(){
+  const term=$('userSearch').value.trim().replace(/^@/,'');
+  $('searchArea').classList.remove('hidden');
+  if(term.length<2){$('searchArea').innerHTML='<div class="empty-note">Type at least 2 characters to search.</div>';return;}
+  $('searchArea').innerHTML='<div class="loading">Searching…</div>';
+  const {data,error}=await db.from('profiles').select('id,username,display_name,full_name,avatar_url').ilike('username',`%${term}%`).neq('id',me.id).limit(20);
+  if(error){$('searchArea').innerHTML=`<div class="empty-note">Search failed: ${esc(error.message)}</div>`;return;}
+  if(!data?.length){$('searchArea').innerHTML='<div class="empty-note">No matching users found.</div>';return;}
+  $('searchArea').innerHTML='<div class="section-label" style="padding-left:10px">People found</div>'+data.map(p=>personButton(p,'@'+(p.username||'user'),'Message',activeUser===p.id)).join('');
+  $('searchArea').querySelectorAll('[data-user]').forEach(b=>b.addEventListener('click',()=>openChat(b.dataset.user)));
+}
+async function openChat(userId){
+  if(!userId||userId===me.id)return;
+  activeUser=userId;activeProfile=await getProfile(userId);
+  const name=activeProfile.display_name||activeProfile.full_name||activeProfile.username||'TWOTERM user';
+  $('chatPanel').innerHTML=`
+    <div class="chathead">${avatar(activeProfile)}<div><div class="chat-title">${esc(name)}</div><div class="sub">@${esc(activeProfile.username||'user')}</div></div>
+      <div class="chat-tools"><button class="iconbtn" id="reloadChat" title="Refresh messages" aria-label="Refresh messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg></button></div>
+    </div>
+    <div id="chatStatus" class="status"></div>
+    <div id="messages" class="messages"><div class="loading">Loading messages…</div></div>
+    <div class="compose-wrap"><form class="compose" id="sendForm"><input id="messageInput" maxlength="4000" autocomplete="off" placeholder="Write a message…" aria-label="Write a message"><button class="send" id="sendBtn" aria-label="Send message" title="Send message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></form><div class="hint">Press Enter to send · Be respectful and keep your account safe.</div></div>`;
+  $('reloadChat').addEventListener('click',()=>loadMessages());
+  $('sendForm').addEventListener('submit',sendMessage);
+  await loadMessages();
+  await loadConversations(true);
+  if(messagesChannel){db.removeChannel(messagesChannel);messagesChannel=null;}
+  // Realtime is optional; periodic refresh below still works if realtime is not enabled.
+  try{
+    messagesChannel=db.channel('twoterm-msg-'+me.id+'-'+userId)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},payload=>{
+        const m=payload.new;if((m.sender_id===me.id&&m.receiver_id===activeUser)||(m.sender_id===activeUser&&m.receiver_id===me.id))loadMessages();
+      }).subscribe();
+  }catch(e){console.warn('Realtime not available:',e);}
+}
+async function loadMessages(){
+  if(!me||!activeUser)return;
+  const pane=$('messages');if(!pane)return;
+  const {data,error}=await db.from('messages').select('id,sender_id,receiver_id,content,created_at').or(`and(sender_id.eq.${me.id},receiver_id.eq.${activeUser}),and(sender_id.eq.${activeUser},receiver_id.eq.${me.id})`).order('created_at',{ascending:true}).limit(500);
+  if(error){pane.innerHTML=`<div class="empty-note">Could not load this conversation: ${esc(error.message)}<br><br>Confirm the messages table columns and RLS policies.</div>`;return;}
+  if(!data?.length){pane.innerHTML='<div class="chat-empty" style="min-height:220px"><div class="empty"><h2>Say hello 👋</h2><p>This is the beginning of your conversation.</p></div></div>';return;}
+  pane.innerHTML=data.map(m=>{
+    const mine=m.sender_id===me.id;
+    return `<div class="msgrow ${mine?'mine':''}"><div class="bubble">${esc(m.content)}<div class="msgmeta">${esc(shortTime(m.created_at))}${mine?' · You':''}</div></div></div>`;
+  }).join('');
+  pane.scrollTop=pane.scrollHeight;
+}
+async function sendMessage(event){
+  event.preventDefault();
+  if(!activeUser||!me)return;
+  const input=$('messageInput'),content=input.value.trim();if(!content)return;
+  const btn=$('sendBtn'),status=$('chatStatus');
+  btn.disabled=true;input.disabled=true;hideStatus(status);
+  const {error}=await db.from('messages').insert({sender_id:me.id,receiver_id:activeUser,content});
+  btn.disabled=false;input.disabled=false;input.focus();
+  if(error){setStatus(status,'Message could not be sent: '+error.message);return;}
+  input.value='';await loadMessages();await loadConversations(true);
+}
+$('loginBtn').addEventListener('click',login);
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+$('email').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+$('searchBtn').addEventListener('click',searchUsers);
+$('userSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchUsers();}});
+$('startChatBtn').addEventListener('click',()=>{$('userSearch').focus();$('userSearch').scrollIntoView({behavior:'smooth',block:'center'});});
+$('refreshBtn').addEventListener('click',async()=>{await loadConversations();if(activeUser)await loadMessages();});
+$('logoutBtn').addEventListener('click',async()=>{if(messagesChannel)db.removeChannel(messagesChannel);if(refreshTimer)clearInterval(refreshTimer);await db.auth.signOut();me=null;activeUser=null;showLogin();});
+db.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){me=null;showLogin();}else if(event==='SIGNED_IN'&&session?.user&&!me){me=session.user;boot();}});
+boot();
+})();
+</script>
+</body>
+</html>
