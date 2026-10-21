@@ -1,159 +1,196 @@
 
-/* TWOTERM shared navigation
-   Safe to add as a separate file.
-   Does not replace Supabase login or LiveKit code.
-*/
+/*
+ * TWOTERM — Central Navigation System
+ * File: nav.js
+ *
+ * Responsibilities:
+ * - Organize platform features
+ * - Create consistent navigation
+ * - Support desktop and mobile layouts
+ * - Keep existing authentication code untouched
+ * - Avoid duplicate navigation if loaded twice
+ */
+
 (() => {
   "use strict";
 
-  const pages = [
-    ["Home & Video Feed", "index.html", "01"],
-    ["Account", "account.html", "02"],
-    ["My Profile", "profile.html", "03"],
-    ["Feed", "feed.html", "04"],
-    ["Video Feed", "video-feed.html", "05"],
-    ["Messages", "inbox.html", "06"],
-    ["Notifications", "notifications.html", "07"],
-    ["Go LIVE", "live.html", "08"],
-    ["Gifts", "gifts.html", "09"],
-    ["Payments", "payments.html", "10"],
-    ["Discover", "discover.html", "11"],
-    ["Creator Tools", "creator-tools.html", "12"],
-    ["Community", "community.html", "13"],
-    ["Safety Center", "safety.html", "14"],
-    ["Admin Dashboard", "admin.html", "15"],
-    ["Performance", "performance.html", "16"],
-    ["Mobile App", "mobile-app.html", "17"],
-    ["Business & Revenue", "business-revenue.html", "18"],
-    ["Advanced Features", "advanced-features.html", "19"],
-    ["Backend Status", "backend-status.html", "20"],
-    ["Security Center", "security-center.html", "21"]
-  ];
+  // Prevent duplicate initialization.
+  if (window.TWOTERM_NAV) return;
 
-  const currentFile = location.pathname.split("/").pop() || "index.html";
+  const NAV = {
+    brand: "TWOTERM",
 
-  const style = document.createElement("style");
-  style.textContent = `
-    #twoterm-global-nav {
-      position: relative;
-      z-index: 9999;
-      margin: 12px auto;
-      max-width: 1100px;
-      padding: 12px;
-      border: 1px solid #49335f;
-      border-radius: 14px;
-      background: #171022;
-      color: #fff;
-      font: 14px Arial, sans-serif;
-    }
-    #twoterm-global-nav .ttn-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    #twoterm-global-nav .ttn-brand {
-      color: #f0abfc;
-      font-size: 18px;
-      font-weight: 700;
-      text-decoration: none;
-    }
-    #twoterm-global-nav button {
-      padding: 9px 13px;
-      border: 0;
-      border-radius: 8px;
-      background: #7c3aed;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    #twoterm-global-nav .ttn-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    #twoterm-global-nav .ttn-links[hidden] {
-      display: none;
-    }
-    #twoterm-global-nav .ttn-links a {
-      display: inline-block;
-      padding: 9px 10px;
-      border-radius: 8px;
-      background: #281c39;
-      color: #eee5ff;
-      text-decoration: none;
-    }
-    #twoterm-global-nav .ttn-links a:hover,
-    #twoterm-global-nav .ttn-links a[aria-current="page"] {
-      background: #6d28d9;
-      color: #fff;
-    }
-    #twoterm-global-nav .ttn-note {
-      margin: 10px 0 0;
-      color: #c4b5d8;
-      font-size: 12px;
-    }
-  `;
-  document.head.appendChild(style);
+    // Main application navigation.
+    main: [
+      {
+        id: "home",
+        label: "Home",
+        icon: "⌂",
+        href: "index.html"
+      },
+      {
+        id: "friends",
+        label: "Friends",
+        icon: "♧",
+        href: "friends.html"
+      },
+      {
+        id: "create",
+        label: "Create",
+        icon: "+",
+        href: "create.html",
+        primary: true
+      },
+      {
+        id: "messages",
+        label: "Messages",
+        icon: "✉",
+        href: "messages.html"
+      },
+      {
+        id: "profile",
+        label: "Profile",
+        icon: "◎",
+        href: "profile.html"
+      }
+    ],
 
-  function buildNavigation() {
-    if (document.getElementById("twoterm-global-nav")) return;
+    // Video discovery and viewing.
+    videos: [
+      { id: "for-you", label: "For You", href: "index.html?feed=for-you" },
+      { id: "following", label: "Following", href: "index.html?feed=following" },
+      { id: "discover", label: "Discover", href: "discover.html" }
+    ],
 
-    const nav = document.createElement("nav");
-    nav.id = "twoterm-global-nav";
-    nav.setAttribute("aria-label", "TWOTERM site navigation");
+    // Features accessed through the central Create button.
+    create: [
+      { id: "video", label: "Create Video", href: "create-video.html" },
+      { id: "live", label: "Go Live", href: "live.html" },
+      { id: "edit", label: "Edit Video", href: "edit-video.html" },
+      { id: "camera", label: "Camera", href: "camera.html" }
+    ],
 
-    const top = document.createElement("div");
-    top.className = "ttn-top";
+    // Social features.
+    social: [
+      { id: "friends", label: "Friends", href: "friends.html" },
+      { id: "followers", label: "Followers", href: "followers.html" },
+      { id: "following-users", label: "Following", href: "following.html" },
+      { id: "notifications", label: "Notifications", href: "notifications.html" },
+      { id: "messages", label: "Messages", href: "messages.html" }
+    ],
 
-    const brand = document.createElement("a");
-    brand.className = "ttn-brand";
-    brand.href = "index.html";
-    brand.textContent = "TWOTERM";
+    // Creator tools and monetization.
+    creator: [
+      { id: "creator-dashboard", label: "Creator Dashboard", href: "creator-dashboard.html" },
+      { id: "verification", label: "Creator Verification", href: "verification.html" },
+      { id: "tips", label: "Tips and Gifts", href: "tips.html" },
+      { id: "earnings", label: "Earnings", href: "earnings.html" },
+      { id: "withdrawals", label: "Withdrawals", href: "withdrawals.html" },
+      { id: "live-studio", label: "Live Studio", href: "live.html" }
+    ],
 
-    const toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.textContent = "☰ All Sections";
-    toggle.setAttribute("aria-expanded", "false");
+    // Personal account tools.
+    account: [
+      { id: "profile", label: "My Profile", href: "profile.html" },
+      { id: "edit-profile", label: "Edit Profile", href: "edit-profile.html" },
+      { id: "settings", label: "Settings", href: "settings.html" },
+      { id: "privacy", label: "Privacy and Security", href: "privacy.html" },
+      { id: "help", label: "Help and Support", href: "help.html" }
+    ]
+  };
 
-    const links = document.createElement("div");
-    links.className = "ttn-links";
-    links.hidden = true;
+  // Make the navigation configuration available to other scripts.
+  window.TWOTERM_NAV = {
+    config: NAV,
 
-    pages.forEach(([label, href, number]) => {
-      const link = document.createElement("a");
-      link.href = href;
-      link.textContent = number + " · " + label;
+    // Render a navigation group into an existing HTML element.
+    renderGroup(container, items) {
+      const target =
+        typeof container === "string"
+          ? document.querySelector(container)
+          : container;
 
-      if (href === currentFile) {
-        link.setAttribute("aria-current", "page");
+      if (!target) {
+        console.warn("TWOTERM navigation target not found:", container);
+        return;
       }
 
-      links.appendChild(link);
-    });
+      target.replaceChildren();
 
-    // Section 22 will be added once its exact page and requirements are known.
-    const note = document.createElement("p");
-    note.className = "ttn-note";
-    note.textContent =
-      "Navigation connects pages; each feature still needs its own backend integration and permission checks.";
+      items.forEach((item) => {
+        const link = document.createElement("a");
 
-    toggle.addEventListener("click", () => {
-      links.hidden = !links.hidden;
-      toggle.setAttribute("aria-expanded", String(!links.hidden));
-    });
+        link.href = item.href;
+        link.className = "twoterm-nav-link";
+        link.dataset.navId = item.id;
 
-    top.append(brand, toggle);
-    nav.append(top, links, note);
+        if (item.primary) {
+          link.classList.add("twoterm-nav-primary");
+        }
 
-    document.body.insertBefore(nav, document.body.firstChild);
-  }
+        const icon = document.createElement("span");
+        icon.className = "twoterm-nav-icon";
+        icon.textContent = item.icon || "";
+
+        const label = document.createElement("span");
+        label.className = "twoterm-nav-label";
+        label.textContent = item.label;
+
+        link.append(icon, label);
+        target.appendChild(link);
+      });
+
+      this.setActivePage(target);
+    },
+
+    // Highlight the link matching the current page.
+    setActivePage(container = document) {
+      const currentFile =
+        window.location.pathname.split("/").pop() || "index.html";
+
+      container.querySelectorAll("[data-nav-id]").forEach((link) => {
+        const linkUrl = new URL(link.href, window.location.href);
+        const linkFile = linkUrl.pathname.split("/").pop();
+
+        const samePage = linkFile === currentFile;
+        const sameFeed =
+          linkFile === "index.html" &&
+          linkUrl.searchParams.get("feed") ===
+            new URLSearchParams(window.location.search).get("feed");
+
+        const active = samePage && (
+          linkUrl.searchParams.has("feed") ? sameFeed : true
+        );
+
+        link.classList.toggle("active", active);
+
+        if (active) {
+          link.setAttribute("aria-current", "page");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    },
+
+    // Initialize navigation slots already present in a page.
+    init() {
+      document.querySelectorAll("[data-twoterm-nav]").forEach((slot) => {
+        const group = slot.dataset.twotermNav;
+
+        if (Object.prototype.hasOwnProperty.call(NAV, group)) {
+          this.renderGroup(slot, NAV[group]);
+        }
+      });
+
+      this.setActivePage();
+    }
+  };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", buildNavigation);
+    document.addEventListener("DOMContentLoaded", () => {
+      window.TWOTERM_NAV.init();
+    }, { once: true });
   } else {
-    buildNavigation();
+    window.TWOTERM_NAV.init();
   }
 })();
