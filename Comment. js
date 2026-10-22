@@ -1,0 +1,145 @@
+
+/*
+  TWOTERM comments.js
+  Uses the existing public.post_comments table.
+  Required columns: id, post_id, user_id, body, created_at.
+*/
+
+(() => {
+  "use strict";
+
+  const db =
+    window.supabaseClient ||
+    window.sb ||
+    window.twotermSupabase;
+
+  if (!db) {
+    console.error("TWOTERM: Supabase client was not found.");
+    return;
+  }
+
+  const escapeHTML = (value) =>
+    String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[ch]);
+
+  async function load(postId, container) {
+    if (!postId || !container) return;
+
+    container.dataset.postId = postId;
+    container.textContent = "Loading comments...";
+
+    const { data, error } = await db
+      .from("post_comments")
+      .select("id, post_id, user_id, body, created_at")
+      .eq("post_id", postId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("TWOTERM load comments:", error);
+      container.textContent = "Unable to load comments.";
+      return;
+    }
+
+    if (!data.length) {
+      container.textContent = "No comments yet. Be the first!";
+      return;
+    }
+
+    const userIds = [...new Set(data.map(c => c.user_id))];
+
+    const { data: profiles, error: profileError } = await db
+      .from("profiles")
+      .select("id, username, display_name, avatar_url")
+      .in("id", userIds);
+
+    if (profileError) {
+      console.warn("Could not load commenter profiles:", profileError);
+    }
+
+    const users = Object.fromEntries(
+      (profiles || []).map(p => [p.id, p])
+    );
+
+    container.innerHTML = data.map(comment => {
+      const user = users[comment.user_id] || {};
+      const name = user.display_name || user.username || "TWOTERM user";
+      const avatar = user.avatar_url
+        ? `<img src="${escapeHTML(user.avatar_url)}" alt=""
+                class="twoterm-comment-avatar">`
+        : `<span class="twoterm-comment-avatar">
+             ${escapeHTML(name.charAt(0).toUpperCase())}
+           </span>`;
+
+      return `
+        <article class="twoterm-comment">
+          ${avatar}
+          <div>
+            <strong>${escapeHTML(name)}</strong>
+            <p>${escapeHTML(comment.body)}</p>
+            <small>${escapeHTML(
+              new Date(comment.created_at).toLocaleString()
+            )}</small>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  async function submit(postId, body, container, button) {
+    const text = body?.value?.trim();
+
+    if (!postId || !text) {
+      alert("Write a comment first.");
+      return;
+    }
+
+    if (text.length > 2000) {
+      alert("Comments cannot exceed 2,000 characters.");
+      return;
+    }
+
+    const { data: result, error: authError } =
+      await db.auth.getUser();
+
+    if (authError || !result.user) {
+      alert("Please log in before commenting.");
+      return;
+    }
+
+    const original = button?.textContent;
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Posting...";
+    }
+
+    try {
+      const { error } = await db
+        .from("post_comments")
+        .insert({
+          post_id: postId,
+          user_id: result.user.id,
+          body: text
+        });
+
+      if (error) throw error;
+
+      body.value = "";
+      await load(postId, container);
+    } catch (error) {
+      console.error("TWOTERM submit comment:", error);
+      alert("Comment failed. Check the post ID and database permissions.");
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = original || "Comment";
+      }
+    }
+  }
+
+  window.TWOTERMComments = { load, submit };
+})();
