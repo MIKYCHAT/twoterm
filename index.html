@@ -20,6 +20,7 @@
     #featurePage .feature-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ff2c55,#6c63ff);color:#fff;font-weight:800;overflow:hidden;flex-shrink:0}
     #featurePage .feature-avatar img{width:100%;height:100%;object-fit:cover}
     #featurePage .muted{opacity:.7;font-size:13px}
+    .tw-modal-list{max-height:45vh;overflow:auto;display:flex;flex-direction:column;gap:10px;margin:14px 0}.tw-comment{display:flex;gap:10px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#ffffff05}.tw-comment-avatar{width:36px;height:36px;flex:0 0 36px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--pink),var(--purple));font-weight:800}.tw-comment-content{min-width:0;flex:1}.tw-comment-content strong{font-size:13px}.tw-comment-content p{margin:5px 0 0;line-height:1.5;font-size:13px;overflow-wrap:anywhere}.tw-gift-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.tw-gift-option{border:1px solid var(--line);border-radius:14px;padding:12px;background:#ffffff06;text-align:left}.tw-gift-option.selected{border-color:var(--pink);background:#ff2d7518}.tw-gift-option b{display:block;margin-top:5px}.tw-modal-input{width:100%;box-sizing:border-box;border:1px solid var(--line);background:#0c0c14;color:white;padding:12px;border-radius:12px;margin:8px 0}
 
 
     /* Professional TikTok-style creator profile */
@@ -83,7 +84,7 @@
     <div class="side-separator"></div>
     <button class="side-link" data-nav="live"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="m8 3 2 4m6-4-2 4M10 12l5 2-5 2z"/></svg>LIVE</button>
     <button class="side-link" data-nav="saved"><svg viewBox="0 0 24 24"><path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18l-6-4-6 4z"/></svg>Saved</button>
-    <button class="side-link" data-nav="wallet"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="15" rx="3"/><path d="M3 9h18M16 14h2"/></svg>Wallet & earnings</button>
+    <button class="side-link" data-nav="wallet"><span style="display:inline-grid;place-items:center;width:23px;height:23px;font-size:24px;font-weight:900">$</span>Wallet & earnings</button>
     <div class="sidebar-note">Your world. Your creativity.<br><b>Connect. Create. Stream. Earn.</b><br><br>© 2026 TWOTERM</div>
   </aside>
   <main class="main" id="mainArea">
@@ -148,7 +149,7 @@
   <button class="nav-item" id="mobileCreate" aria-label="Create"><span class="create-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></span><span>Create</span></button>
   <button class="nav-item" data-nav="messages"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/></svg><span>Messages</span></button>
   <button class="nav-item" data-nav="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2z"/></svg><span>Profile</span></button>
-<button class="nav-item" data-nav="wallet" type="button" aria-label="Wallet"><span style="font-size:20px">₭</span><span>Wallet</span></button></nav>
+<button class="nav-item" data-nav="wallet" type="button" aria-label="Wallet"><span style="font-size:23px;font-weight:900">$</span><span>Wallet</span></button></nav>
 </div>
 
 <div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
@@ -183,14 +184,27 @@
       <div style="font-size:13px;font-weight:800" id="workspaceTitle">Your video</div>
       <div class="upload-zone" id="uploadZone"><div style="font-size:27px">▣</div><b>Select a video</b><div style="font-size:12px;color:var(--muted);margin-top:5px">MP4, WebM or MOV supported by your browser</div><input type="file" id="videoFile" accept="video/*"></div>
       <video class="preview" id="videoPreview" controls playsinline></video>
+      <label style="display:block;margin-top:12px;font-size:12px;font-weight:800">Add a sound or meme audio (optional)
+        <input type="file" id="soundFile" accept="audio/*" style="display:block;width:100%;margin-top:7px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0c0c14;color:white">
+      </label>
+      <audio id="soundPreview" controls style="display:none;width:100%;margin-top:8px"></audio>
+      <label style="display:block;margin-top:12px;font-size:12px;font-weight:800">Who can see this video?
+        <select id="videoVisibility" style="display:block;width:100%;margin-top:7px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#0c0c14;color:white">
+          <option value="public">Public — show in the feed</option>
+          <option value="private">Private — hidden from feed</option>
+          <option value="draft">Draft — save for later</option>
+        </select>
+      </label>
       <div id="cameraControls" style="display:none;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="outline-btn" id="startCamera" style="width:auto">Enable camera</button><button class="outline-btn" id="recordBtn" style="width:auto" disabled>● Record</button><button class="outline-btn" id="stopRecord" style="width:auto" disabled>Stop</button><button class="outline-btn" id="phoneCameraFallback" style="width:auto">Use phone camera</button><input type="file" id="cameraCaptureFile" accept="video/*" capture="environment" style="display:none"></div>
       <textarea class="caption-input" id="videoCaption" placeholder="Write a caption for your video... #TWOTERM"></textarea>
-      <div class="modal-actions"><button class="outline-btn" id="backOptions">Back</button><button class="primary-btn" id="saveDraft">Publish video</button></div>
-      <p style="font-size:11px;line-height:1.5;color:var(--muted)">Your video will upload to TWOTERM and appear in the feed after publishing.</p>
+      <div class="modal-actions"><button class="outline-btn" id="backOptions">Back</button><button class="outline-btn" id="saveToPhone" type="button">Save to phone</button><button class="primary-btn" id="saveDraft" type="button">Publish video</button></div>
+      <p style="font-size:11px;line-height:1.5;color:var(--muted)">Choose Public, Private or Draft before saving. Save to phone downloads your selected or recorded video without publishing it. Private/draft files still use the current storage bucket; secure private-file access needs a private bucket.</p>
     </div>
   </div>
 </div>
 <input type="file" id="hiddenGallery" accept="video/*" style="display:none">
+<div class="modal-backdrop" id="commentsModal" role="dialog" aria-modal="true" aria-labelledby="commentsTitle"><div class="modal"><div class="modal-head"><h2 id="commentsTitle">Comments</h2><button class="close-btn" type="button" data-close-tw-modal="commentsModal">×</button></div><p class="modal-sub">Join the conversation. Keep it respectful and constructive.</p><div id="commentsList" class="tw-modal-list">Loading comments…</div><form id="commentForm"><textarea id="commentText" class="tw-modal-input" rows="3" maxlength="1000" placeholder="Write a thoughtful comment…" required></textarea><button class="primary-btn" type="submit">Post comment</button></form></div></div>
+<div class="modal-backdrop" id="giftModal" role="dialog" aria-modal="true" aria-labelledby="giftTitle"><div class="modal"><div class="modal-head"><h2 id="giftTitle">Send a gift</h2><button class="close-btn" type="button" data-close-tw-modal="giftModal">×</button></div><p class="modal-sub">Choose a gift amount. Gifts use your TWOTERM wallet balance.</p><div class="tw-gift-grid" id="giftOptions"></div><label for="customGiftAmount">Or enter a custom amount (KSh 10–10,000)</label><input id="customGiftAmount" class="tw-modal-input" type="number" min="10" max="10000" step="10" placeholder="e.g. 500"><p class="muted" style="font-size:12px">20% platform fee; 80% goes to the creator. Sending is final.</p><button class="primary-btn" id="confirmGift" type="button">Send gift</button></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 (() => {
@@ -352,14 +366,17 @@
       if(error)throw error;
       if(data)profile={...profile,...data};
       const own=!!currentUser&&userId===currentUser.id;
-      const [followersRes,followingRes,allPostsRes,followStateRes]=await Promise.all([
+      let [followersRes,followingRes,allPostsRes,followStateRes]=await Promise.all([
         supabase.from("twoterm_follows").select("follower_id",{count:"exact",head:true}).eq("following_id",userId),
         supabase.from("twoterm_follows").select("following_id",{count:"exact",head:true}).eq("follower_id",userId),
-        supabase.from("videos").select("id,caption,media_url,video_url,thumbnail_url,media_type,created_at").eq("user_id",userId).eq("visibility","public").eq("status","published").order("created_at",{ascending:false}).limit(1000),
+        supabase.from("videos").select("id,caption,media_url,video_url,thumbnail_url,media_type,audio_url,created_at").eq("user_id",userId).eq("visibility","public").eq("status","published").order("created_at",{ascending:false}).limit(1000),
         currentUser ? supabase.from("twoterm_follows").select("following_id").eq("follower_id",currentUser.id) : Promise.resolve({data:[],error:null})
       ]);
       if(followersRes.error)throw followersRes.error;
       if(followingRes.error)throw followingRes.error;
+      if(allPostsRes.error && /audio_url|column .* does not exist|schema cache/i.test(allPostsRes.error.message||"")){
+        allPostsRes=await supabase.from("videos").select("id,caption,media_url,video_url,thumbnail_url,media_type,created_at").eq("user_id",userId).eq("visibility","public").eq("status","published").order("created_at",{ascending:false}).limit(1000);
+      }
       if(allPostsRes.error)throw allPostsRes.error;
       if(followStateRes.error)throw followStateRes.error;
       followingIds=new Set((followStateRes.data||[]).map(x=>x.following_id));
@@ -386,7 +403,7 @@
         const thumb=v.thumbnail_url||"";
         const isVideo=(v.media_type||"").toLowerCase().includes("video")||(!v.media_type&&url&&!/\\.(png|jpe?g|gif|webp)(\\?|$)/i.test(url));
         const media=thumb?`<img src="${escapeHtml(thumb)}" alt="">`:isVideo&&url?`<video src="${escapeHtml(url)}" muted playsinline preload="metadata"></video>`:url?`<img src="${escapeHtml(url)}" alt="">`:`<div style="position:absolute;inset:0;display:grid;place-items:center;font-size:34px">▶</div>`;
-        return `<button type="button" class="profile-video-tile" data-feature-action="home" title="${escapeHtml(v.caption||"Open feed")}">${media}<span class="profile-video-caption">${escapeHtml(v.caption||"TWOTERM video")}</span></button>`;
+        return `<div class="profile-video-wrap" style="position:relative;min-width:0"><button type="button" class="profile-video-tile" data-feature-action="home" title="${escapeHtml(v.caption||"Open feed")}">${media}<span class="profile-video-caption">${escapeHtml(v.caption||"TWOTERM video")}</span></button>${own?`<button type="button" class="feature-btn" style="position:absolute;right:7px;top:7px;background:#b91c1c" data-feature-action="delete-video:${v.id}">Delete</button>`:""}</div>`;
       }).join(""):'<div class="feature-panel" style="grid-column:1/-1;text-align:center;padding:28px"><div style="font-size:30px;margin-bottom:8px">▣</div><strong>No public videos yet</strong><p class="muted">When this creator publishes videos, they will appear here.</p></div>';
       $("profileFeatureBody").innerHTML=`
         <section class="profile-hero">
@@ -462,7 +479,7 @@
       const {data:requests,error:reqError}=await supabase.from("twoterm_payment_requests").select("id,request_type,amount_kes,status,phone_number,created_at").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(10);
       if(reqError)throw reqError;
       page.innerHTML=featureHeader("Wallet & creator earnings","Your balance, gifts, and payment activity.")+`
-        <section class="wallet-hero"><div class="muted">Available wallet balance</div><div class="wallet-balance">KSh ${balance.toLocaleString("en-KE",{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="muted">Creator earnings received: KSh ${earned.toLocaleString("en-KE",{minimumFractionDigits:2,maximumFractionDigits:2})}</div><p class="muted">Wallet balances update only through secure Supabase functions. Real M-Pesa deposits and withdrawals require the TWOTERM Daraja payment callback to be configured.</p></section>
+        <section class="wallet-hero"><div class="muted">Available wallet balance</div><div class="wallet-balance">KSh ${balance.toLocaleString("en-KE",{minimumFractionDigits:2,maximumFractionDigits:2})}</div><button type="button" class="feature-btn secondary" data-feature-action="refresh-balance">↻ Check balance</button><div class="muted">Creator earnings received: KSh ${earned.toLocaleString("en-KE",{minimumFractionDigits:2,maximumFractionDigits:2})}</div><p class="muted">Wallet balances update only through secure Supabase functions. Real M-Pesa deposits and withdrawals require the TWOTERM Daraja payment callback to be configured.</p></section>
         <div class="wallet-grid"><div class="wallet-stat"><span class="muted">Creator earnings</span><strong>KSh ${earned.toLocaleString("en-KE",{maximumFractionDigits:2})}</strong></div><div class="wallet-stat"><span class="muted">Transactions</span><strong>${(tx||[]).length}</strong></div></div>
         <section class="feature-panel"><h3>Request a payment</h3><p class="muted">Submit a request for review. This does not itself send or collect money.</p><label>Phone number (M-Pesa)<input id="walletPhone" inputmode="tel" placeholder="07XXXXXXXX"></label><label>Amount (KSh)<input id="walletAmount" type="number" min="100" step="1" placeholder="e.g. 500"></label><div style="display:flex;gap:8px;flex-wrap:wrap">${featureButton("Request M-Pesa top-up","wallet-topup")}${featureButton("Request withdrawal","wallet-withdraw",true)}</div></section>
         <section class="feature-panel"><h3>Recent transactions</h3>${(tx||[]).length?(tx||[]).map(t=>`<div class="feature-row"><div style="flex:1"><strong>${escapeHtml(t.description||t.transaction_type||"Wallet transaction")}</strong><div class="muted">${escapeHtml(t.status||"completed")} · ${escapeHtml(t.created_at?new Date(t.created_at).toLocaleString():"")}</div></div><strong>KSh ${Number(t.amount_kes||0).toLocaleString("en-KE",{maximumFractionDigits:2})}</strong></div>`).join(""):'<p class="muted">No transactions yet. Gifts received and sent will appear here.</p>'}</section>
@@ -499,6 +516,8 @@
       if(action.startsWith("followers-list:")){await showProfileConnections("followers",action.slice(15));return;}
       if(action.startsWith("following-list:")){await showProfileConnections("following",action.slice(15));return;}
       if(action==="toggle-edit-profile"){const box=$("profileEditBox");if(box)box.style.display=box.style.display==="none"?"block":"none";return;}
+      if(action==="refresh-balance"){await renderWalletPage();toast("Wallet balance refreshed.");return;}
+      if(action.startsWith("delete-video:")){const videoId=action.slice(13);if(!currentUser){toast("Log in to manage your videos.");return;}if(!confirm("Delete this post permanently? This removes the post record from TWOTERM."))return;const {error}=await supabase.from("videos").delete().eq("id",videoId).eq("user_id",currentUser.id);if(error)throw error;toast("Post deleted.");await renderProfilePage(currentUser.id);await loadFeed();return;}
       if(action.startsWith("profile:")){routeFor("profile",action.slice(8));return;}
       if(action.startsWith("message:")){const recipient=action.slice(8);routeFor("messages");setTimeout(()=>{const input=$("messageRecipient");if(input)input.value=recipient;$("messageBody")?.focus();},180);return;}
       if(action.startsWith("follow:")){const target=action.slice(7);if(!currentUser){toast("Log in to follow creators.");return;}if(followingIds.has(target)){const {error}=await supabase.from("twoterm_follows").delete().eq("follower_id",currentUser.id).eq("following_id",target);if(error)throw error;followingIds.delete(target);}else{const {error}=await supabase.from("twoterm_follows").insert({follower_id:currentUser.id,following_id:target});if(error)throw error;followingIds.add(target);}toast(followingIds.has(target)?"Following creator.":"Unfollowed creator.");if(activeFeature==="profile")renderProfilePage($("featurePage").dataset.profileTarget||currentUser.id);else renderFeaturePage(activeFeature,$("featurePage").dataset.profileTarget);return;}
@@ -564,6 +583,15 @@
     selectedFile = null;
     fileInput.value = "";
     $("cameraCaptureFile").value = "";
+    $("soundFile").value = "";
+    selectedSoundFile = null;
+    $("soundPreview").pause();
+    $("soundPreview").removeAttribute("src");
+    $("soundPreview").style.display = "none";
+    if (soundObjectUrl) URL.revokeObjectURL(soundObjectUrl);
+    soundObjectUrl = null;
+    $("videoVisibility").value = "public";
+    $("saveDraft").textContent = "Publish video";
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = null;
   }
@@ -601,6 +629,39 @@
     preview.load();
     toast("Video ready to preview. Add a caption, then publish.");
   }
+  let selectedSoundFile = null, soundObjectUrl = null;
+  $("soundFile").addEventListener("change", () => {
+    const sound = $("soundFile").files && $("soundFile").files[0];
+    selectedSoundFile = sound || null;
+    const audio = $("soundPreview");
+    if (soundObjectUrl) URL.revokeObjectURL(soundObjectUrl);
+    soundObjectUrl = null;
+    if (!sound) { audio.pause(); audio.removeAttribute("src"); audio.style.display = "none"; return; }
+    if (!sound.type.startsWith("audio/")) { selectedSoundFile = null; $("soundFile").value = ""; toast("Please choose an audio file."); return; }
+    soundObjectUrl = URL.createObjectURL(sound);
+    audio.src = soundObjectUrl;
+    audio.style.display = "block";
+    audio.load();
+    toast("Sound selected. It will be saved with the post as a separate soundtrack.");
+  });
+  $("videoVisibility").addEventListener("change", () => {
+    const v = $("videoVisibility").value;
+    $("saveDraft").textContent = v === "draft" ? "Save draft" : v === "private" ? "Save privately" : "Publish video";
+  });
+  $("saveToPhone").addEventListener("click", () => {
+    if (!selectedFile || !selectedFile.size) { toast("Record or choose a video first."); return; }
+    const url = URL.createObjectURL(selectedFile);
+    const a = document.createElement("a");
+    a.href = url;
+    const ext = selectedFile.type.includes("webm") ? "webm" : selectedFile.type.includes("quicktime") ? "mov" : "mp4";
+    a.download = selectedFile.name || `twoterm-video-${Date.now()}.${ext}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    toast("Download started. Check your phone's Downloads folder.");
+  });
+
   $("startCamera").addEventListener("click", async () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       toast("Camera access needs HTTPS and a supported browser."); return;
@@ -695,7 +756,7 @@
     const liked = likedVideoIds.has(id);
     const following = followingIds.has(userId);
     return `<article class="video-card" data-id="${escapeHtml(id)}" data-owner="${escapeHtml(userId || "")}">
-      <div class="video-frame">${mediaMarkup(video)}
+      <div class="video-frame">${mediaMarkup(video)}${video.audio_url ? `<audio controls preload="none" src="${escapeHtml(video.audio_url)}" style="position:absolute;z-index:5;left:12px;right:12px;bottom:145px;width:calc(100% - 24px)"></audio>` : ""}
         <div class="video-bottom"><div class="creator-line"><div class="creator-avatar">${escapeHtml((name[0] || "T").toUpperCase())}</div><div><div class="creator-name">@${escapeHtml(handle)}</div><div class="creator-handle">TWOTERM creator</div></div>
         ${currentUser && !isOwn ? `<button class="follow-btn ${following ? "following" : ""}" data-follow-user="${escapeHtml(userId)}">${following ? "Following ✓" : "Follow +"}</button>` : ""}</div>
         <p class="caption">${escapeHtml(caption)}</p><div class="hashtags">#TWOTERM</div><div class="music-line">♫ <span>Original post</span></div><div class="muted" style="color:#fff;opacity:.85;font-size:12px">▶ ${shortCount(video.view_count||0)} views</div>
@@ -796,13 +857,17 @@
   }
   $("saveDraft").addEventListener("click", async () => {
     if (!selectedFile || !selectedFile.size) { toast("Choose a video file or record a video first."); return; }
-    if (!supabase) { toast("Supabase is not connected. Your video was not published."); return; }
+    if (!supabase) { toast("Supabase is not connected. Your video was not saved."); return; }
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     const user = sessionData?.session?.user;
-    if (sessionError || !user) { toast("Please log in before publishing a video."); return; }
+    if (sessionError || !user) { toast("Please log in before saving a video."); return; }
     const button = $("saveDraft");
-    button.disabled = true; button.textContent = "Uploading…";
+    const savePhone = $("saveToPhone");
+    button.disabled = true; savePhone.disabled = true; button.textContent = "Uploading…";
     try {
+      const visibilityChoice = $("videoVisibility").value;
+      const visibility = visibilityChoice === "private" ? "private" : "public";
+      const status = visibilityChoice === "draft" ? "draft" : "published";
       const extFromName = (selectedFile.name.split(".").pop() || "").toLowerCase().replace(/[^a-z0-9]/g, "");
       const ext = extFromName || (selectedFile.type.includes("webm") ? "webm" : selectedFile.type.includes("quicktime") ? "mov" : "mp4");
       const filePath = `posts/${user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
@@ -813,27 +878,65 @@
       const { data: publicData } = supabase.storage.from("twoterm-media").getPublicUrl(filePath);
       const mediaUrl = publicData?.publicUrl;
       if (!mediaUrl) throw new Error("Could not create the media URL.");
-      const { error: insertError } = await supabase.from("videos").insert({
-        user_id: user.id, caption: $("videoCaption").value.trim(),
-        media_url: mediaUrl, media_type: selectedFile.type.startsWith("image/") ? "image" : "video",
-        visibility: "public", status: "published"
-      });
-      if (insertError) throw new Error("Video uploaded but database publish failed: " + insertError.message);
-      toast("Published! Your video is now in the feed.");
+
+      let audioUrl = null;
+      if (selectedSoundFile) {
+        const audioExt = (selectedSoundFile.name.split(".").pop() || "audio").toLowerCase().replace(/[^a-z0-9]/g, "") || "audio";
+        const audioPath = `sounds/${user.id}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${audioExt}`;
+        const { error: audioUploadError } = await supabase.storage.from("twoterm-media").upload(audioPath, selectedSoundFile, {
+          contentType: selectedSoundFile.type || "audio/mpeg", upsert: false
+        });
+        if (audioUploadError) throw new Error("Video uploaded, but soundtrack upload failed: " + audioUploadError.message);
+        audioUrl = supabase.storage.from("twoterm-media").getPublicUrl(audioPath).data?.publicUrl || null;
+      }
+
+      const row = {
+        user_id: user.id,
+        caption: $("videoCaption").value.trim(),
+        media_url: mediaUrl,
+        media_type: "video",
+        visibility,
+        status
+      };
+      if (audioUrl) row.audio_url = audioUrl;
+      const { error: insertError } = await supabase.from("videos").insert(row);
+      if (insertError) throw new Error("Media uploaded but database save failed: " + insertError.message);
+      const message = status === "draft" ? "Draft saved to TWOTERM." : visibility === "private" ? "Video saved privately." : "Published! Your video is now in the feed.";
+      toast(message);
       $("videoCaption").value = "";
       closeCreate();
-      activeFeed = "for-you";
-      setFeed("for-you");
-      await loadFeed();
+      if (status === "published" && visibility === "public") {
+        activeFeed = "for-you";
+        setFeed("for-you");
+        await loadFeed();
+      }
     } catch (error) {
-      console.error("TWOTERM publish error:", error);
-      toast(error.message || "Could not publish. Check Storage and videos table permissions.");
+      console.error("TWOTERM publish/save error:", error);
+      toast(error.message || "Could not save. Check Storage and videos table permissions.");
     } finally {
-      button.disabled = false; button.textContent = "Publish video";
+      button.disabled = false; savePhone.disabled = false;
+      const v = $("videoVisibility").value;
+      button.textContent = v === "draft" ? "Save draft" : v === "private" ? "Save privately" : "Publish video";
     }
   });
 
   // Delegate actions so cards loaded from Supabase work exactly like the original feed buttons.
+  let activeCommentVideoId=null, activeGiftVideoId=null, selectedGiftAmount=10;
+  function closeTwModal(id){const el=$(id);if(el)el.classList.remove("open");}
+  document.addEventListener("click",event=>{const close=event.target.closest("[data-close-tw-modal]");if(close)closeTwModal(close.dataset.closeTwModal);});
+  async function openComments(videoId){
+    activeCommentVideoId=videoId;$("commentsModal").classList.add("open");$("commentsList").innerHTML="Loading comments…";$("commentText").value="";
+    try{const {data:rows,error}=await supabase.from("post_comments").select("id,user_id,body,created_at").eq("post_id",videoId).order("created_at",{ascending:true}).limit(100);if(error)throw error;
+      const ids=[...new Set((rows||[]).map(r=>r.user_id).filter(Boolean))];let profiles=[];if(ids.length){const res=await supabase.from("profiles").select("id,username,display_name,avatar_url").in("id",ids);if(!res.error)profiles=res.data||[];}
+      const byId=Object.fromEntries(profiles.map(p=>[p.id,p]));$("commentsList").innerHTML=(rows||[]).length?(rows||[]).map(r=>{const p=byId[r.user_id]||{};const name=p.display_name||p.username||"TWOTERM member";return `<div class="tw-comment"><div class="tw-comment-avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div><div class="tw-comment-content"><strong>${escapeHtml(name)}</strong><span class="muted" style="font-size:11px;margin-left:7px">${escapeHtml(r.created_at?new Date(r.created_at).toLocaleString():"")}</span><p>${escapeHtml(r.body||"")}</p></div></div>`;}).join(""):'<div class="feature-panel" style="text-align:center"><strong>Start the conversation</strong><p class="muted">Be the first to comment on this post.</p></div>';
+    }catch(e){$("commentsList").innerHTML=`<p>Comments could not load: ${escapeHtml(e.message||"Check comment table permissions.")}</p>`;}
+  }
+  $("commentForm")?.addEventListener("submit",async event=>{event.preventDefault();if(!currentUser){toast("Log in to comment.");return;}const body=$("commentText").value.trim();if(!body)return;const submit=event.submitter;if(submit)submit.disabled=true;try{const {error}=await supabase.from("post_comments").insert({post_id:activeCommentVideoId,user_id:currentUser.id,body});if(error)throw error;$("commentText").value="";toast("Comment posted.");await openComments(activeCommentVideoId);await loadFeed();}catch(e){toast(e.message||"Could not post comment.");}finally{if(submit)submit.disabled=false;}});
+  async function openGiftPicker(videoId){activeGiftVideoId=videoId;selectedGiftAmount=10;$("customGiftAmount").value="";const options=[{emoji:"🌹",name:"Rose",amount:10},{emoji:"💖",name:"Heart",amount:50},{emoji:"💎",name:"Diamond",amount:100},{emoji:"🎉",name:"Celebration",amount:500},{emoji:"👑",name:"Royal",amount:1000},{emoji:"🚀",name:"Superstar",amount:5000},{emoji:"🌟",name:"Legend",amount:10000}];$("giftOptions").innerHTML=options.map((g,i)=>`<button type="button" class="tw-gift-option ${i===0?"selected":""}" data-gift-amount="${g.amount}"><span style="font-size:24px">${g.emoji}</span><b>${g.name}</b><span class="muted">KSh ${g.amount.toLocaleString("en-KE")}</span></button>`).join("");$("giftModal").classList.add("open");}
+  $("giftOptions")?.addEventListener("click",event=>{const btn=event.target.closest("[data-gift-amount]");if(!btn)return;selectedGiftAmount=Number(btn.dataset.giftAmount);$("customGiftAmount").value="";document.querySelectorAll(".tw-gift-option").forEach(b=>b.classList.toggle("selected",b===btn));});
+  $("customGiftAmount")?.addEventListener("input",()=>{if($("customGiftAmount").value!=="")document.querySelectorAll(".tw-gift-option").forEach(b=>b.classList.remove("selected"));});
+  $("confirmGift")?.addEventListener("click",async()=>{const video=loadedVideos.find(v=>v.id===activeGiftVideoId);if(!video||video.user_id===currentUser?.id){toast("You cannot gift your own post.");return;}const custom=$("customGiftAmount").value.trim();const amount=custom?Number(custom):selectedGiftAmount;if(!Number.isInteger(amount)||amount<10||amount>10000){toast("Enter a whole KSh amount between 10 and 10,000.");return;}const type=({10:"rose",50:"heart",100:"diamond",500:"celebration",1000:"royal",5000:"superstar",10000:"legend"})[amount]||"custom";const btn=$("confirmGift");btn.disabled=true;try{const {error}=await supabase.rpc("twoterm_send_video_gift_amount",{p_video_id:activeGiftVideoId,p_amount_kes:amount,p_gift_type:type});if(error)throw error;closeTwModal("giftModal");toast(`Gift sent: KSh ${amount.toLocaleString("en-KE")}.`);await renderWalletPage();}catch(e){toast(e.message||"Gift could not be sent. Check wallet balance and gift SQL setup.");}finally{btn.disabled=false;}});
+
   $("feed").addEventListener("click", async event => {
     const button = event.target.closest("button");
     if (!button) return;
@@ -878,12 +981,7 @@
       if (button.matches("[data-comment-video]")) {
         if (!currentUser) { toast("Log in to comment."); return; }
         const videoId = button.dataset.commentVideo;
-        const message = prompt("Write your comment:");
-        if (!message || !message.trim()) return;
-        const { error } = await supabase.from("post_comments").insert({ post_id: videoId, user_id: currentUser.id, body: message.trim() });
-        if (error) throw error;
-        toast("Comment posted.");
-        await loadFeed(); return;
+        await openComments(videoId); return;
       }
       if (button.matches("[data-profile-user]")) { routeFor("profile", button.dataset.profileUser); return; }
       if (button.matches("[data-gift-video]")) {
@@ -891,14 +989,7 @@
         const videoId=button.dataset.giftVideo;
         const video=loadedVideos.find(v=>v.id===videoId);
         if(!video||video.user_id===currentUser.id){toast("You cannot send a gift to your own post.");return;}
-        const choice=prompt("Send a creator gift:\n1 = Rose (KSh 10)\n2 = Heart (KSh 50)\n3 = Diamond (KSh 100)\nEnter 1, 2 or 3:");
-        const gifts={"1":{type:"rose",amount:10},"2":{type:"heart",amount:50},"3":{type:"diamond",amount:100}};
-        const gift=gifts[(choice||"").trim()];
-        if(!gift)return;
-        const {error}=await supabase.rpc("twoterm_send_video_gift",{p_video_id:videoId,p_gift_type:gift.type});
-        if(error)throw error;
-        toast(`${gift.type} gift sent. Creator earnings and platform fee updated.`);
-        return;
+        await openGiftPicker(videoId); return;
       }
       if (button.matches("[data-share-video]")) {
         const video = loadedVideos.find(v => v.id === button.dataset.shareVideo);
