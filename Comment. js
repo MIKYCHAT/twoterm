@@ -1,8 +1,8 @@
 
 /*
-  TWOTERM comments.js
-  Uses the existing public.post_comments table.
-  Required columns: id, post_id, user_id, body, created_at.
+  TWOTERM video comments
+  Database: public.video_comments
+  Reuses the existing Supabase client.
 */
 
 (() => {
@@ -14,36 +14,32 @@
     window.twotermSupabase;
 
   if (!db) {
-    console.error("TWOTERM: Supabase client was not found.");
+    console.error(
+      "TWOTERM: Supabase client not found. " +
+      "Connect the existing authentication helper first."
+    );
     return;
   }
 
-  const escapeHTML = (value) =>
-    String(value ?? "").replace(/[&<>"']/g, ch => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    })[ch]);
+  async function load(videoId, container) {
+    if (!videoId || !container) return;
 
-  async function load(postId, container) {
-    if (!postId || !container) return;
-
-    container.dataset.postId = postId;
+    container.dataset.videoId = videoId;
     container.textContent = "Loading comments...";
 
     const { data, error } = await db
-      .from("post_comments")
-      .select("id, post_id, user_id, body, created_at")
-      .eq("post_id", postId)
+      .from("video_comments")
+      .select("id, video_id, user_id, body, created_at")
+      .eq("video_id", videoId)
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.error("TWOTERM load comments:", error);
+      console.error("Loading video comments failed:", error);
       container.textContent = "Unable to load comments.";
       return;
     }
+
+    container.replaceChildren();
 
     if (!data.length) {
       container.textContent = "No comments yet. Be the first!";
@@ -61,57 +57,75 @@
       console.warn("Could not load commenter profiles:", profileError);
     }
 
-    const users = Object.fromEntries(
+    const profileMap = Object.fromEntries(
       (profiles || []).map(p => [p.id, p])
     );
 
-    container.innerHTML = data.map(comment => {
-      const user = users[comment.user_id] || {};
-      const name = user.display_name || user.username || "TWOTERM user";
-      const avatar = user.avatar_url
-        ? `<img src="${escapeHTML(user.avatar_url)}" alt=""
-                class="twoterm-comment-avatar">`
-        : `<span class="twoterm-comment-avatar">
-             ${escapeHTML(name.charAt(0).toUpperCase())}
-           </span>`;
+    for (const comment of data) {
+      const profile = profileMap[comment.user_id] || {};
+      const name =
+        profile.display_name ||
+        profile.username ||
+        "TWOTERM user";
 
-      return `
-        <article class="twoterm-comment">
-          ${avatar}
-          <div>
-            <strong>${escapeHTML(name)}</strong>
-            <p>${escapeHTML(comment.body)}</p>
-            <small>${escapeHTML(
-              new Date(comment.created_at).toLocaleString()
-            )}</small>
-          </div>
-        </article>
-      `;
-    }).join("");
+      const item = document.createElement("article");
+      item.className = "twoterm-comment";
+
+      const avatar = document.createElement("div");
+      avatar.className = "twoterm-comment-avatar";
+
+      if (profile.avatar_url) {
+        const img = document.createElement("img");
+        img.src = profile.avatar_url;
+        img.alt = "";
+        img.loading = "lazy";
+        avatar.appendChild(img);
+      } else {
+        avatar.textContent = name.charAt(0).toUpperCase();
+      }
+
+      const content = document.createElement("div");
+
+      const username = document.createElement("strong");
+      username.textContent = name;
+
+      const message = document.createElement("p");
+      message.textContent = comment.body;
+
+      const date = document.createElement("small");
+      date.textContent = new Date(
+        comment.created_at
+      ).toLocaleString();
+
+      content.append(username, message, date);
+      item.append(avatar, content);
+      container.appendChild(item);
+    }
   }
 
-  async function submit(postId, body, container, button) {
-    const text = body?.value?.trim();
+  async function submit(videoId, input, container, button) {
+    const body = input?.value?.trim();
 
-    if (!postId || !text) {
-      alert("Write a comment first.");
+    if (!videoId || !body) {
+      alert("Please write a comment first.");
       return;
     }
 
-    if (text.length > 2000) {
-      alert("Comments cannot exceed 2,000 characters.");
+    if (body.length > 2000) {
+      alert("Your comment is too long.");
       return;
     }
 
-    const { data: result, error: authError } =
+    const { data: auth, error: authError } =
       await db.auth.getUser();
 
-    if (authError || !result.user) {
-      alert("Please log in before commenting.");
+    if (authError || !auth.user) {
+      alert("Please log in to comment.");
       return;
     }
 
-    const original = button?.textContent;
+    const originalLabel = button?.textContent;
+
     if (button) {
       button.disabled = true;
       button.textContent = "Posting...";
@@ -119,24 +133,25 @@
 
     try {
       const { error } = await db
-        .from("post_comments")
+        .from("video_comments")
         .insert({
-          post_id: postId,
-          user_id: result.user.id,
-          body: text
+          video_id: videoId,
+          user_id: auth.user.id,
+          body
         });
 
       if (error) throw error;
 
-      body.value = "";
-      await load(postId, container);
+      input.value = "";
+      await load(videoId, container);
+
     } catch (error) {
-      console.error("TWOTERM submit comment:", error);
-      alert("Comment failed. Check the post ID and database permissions.");
+      console.error("Posting video comment failed:", error);
+      alert("Comment failed. Please try again.");
     } finally {
       if (button) {
         button.disabled = false;
-        button.textContent = original || "Comment";
+        button.textContent = originalLabel || "Comment";
       }
     }
   }
